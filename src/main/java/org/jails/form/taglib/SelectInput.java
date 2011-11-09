@@ -9,13 +9,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class SelectInput
-		extends FormInputBodyTag {
+		extends FormInputBodyTagSupport {
 
 	private static Logger logger = LoggerFactory.getLogger(SelectInput.class);
 
 	@Override
-	protected BodyTagInputConstructor getBodyInputConstructor(ServletRequest request) throws JspTagException {
-		return new SelectConstructor(this, request);
+	protected BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+		return new SelectConstructor(this, formTag, repeatTag, request);
 	}
 }
 

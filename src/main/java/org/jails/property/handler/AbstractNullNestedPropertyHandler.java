@@ -6,7 +6,7 @@ import org.jails.property.parser.PropertyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractNullNestedPropertyHandler<T> implements NullNestedPropertyHandler<T> {
+public abstract class AbstractNullNestedPropertyHandler implements NullNestedPropertyHandler {
 	private static Logger logger = LoggerFactory.getLogger(AbstractNullNestedPropertyHandler.class);
 
 	protected AbstractNullNestedPropertyHandler() {}
@@ -32,5 +32,5 @@ public abstract class AbstractNullNestedPropertyHandler<T> implements NullNested
 		}
 	}
 
-	protected abstract T getObject(Class<T> classType, String nestedProperty, String[] valArray);
+	protected abstract Object getObject(Class classType, String nestedProperty, String[] valArray);
 }

@@ -1,13 +1,14 @@
 package org.jails.form.constructor;
 
+import org.jails.form.taglib.RepeaterTag;
+import org.jails.form.taglib.SimpleFormTag;
 import org.jails.form.taglib.TextAreaInput;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspTagException;
 
 public class TextAreaConstructor extends TagInputConstructor<TextAreaInput> {
-	public TextAreaConstructor(TextAreaInput tag, ServletRequest request) throws JspTagException {
-		super(tag, request);
+	public TextAreaConstructor(TextAreaInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+		super(tag, formTag, repeatTag, request);
 	}
 
 	@Override

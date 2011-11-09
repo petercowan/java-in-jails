@@ -1,9 +1,9 @@
 package org.jails.validation;
 
 import com.thoughtworks.xstream.XStream;
+import org.jails.property.MapToBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jails.property.MapToBean;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -62,4 +62,26 @@ public class BeanValidator {
 	public <T> void validate(T bean, Map<String, String[]> params) throws ValidationException {
 		validate(bean, params, RequiredChecks.class, Default.class);
 	}
+
+	public <T> T validate(Class<T> classType, Map<String, String[]> params, Class<?>... groups)
+			throws ValidationException {
+		T bean;
+		try {
+			bean = classType.newInstance();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			throw new IllegalArgumentException("Class must have an public constructor with no args to use this method");
+		}
+		T copy = (T) xStream.fromXML(xStream.toXML(bean));
+		beanMapper.setBeanProperties(params, copy);
+
+		validate(copy, groups);
+
+		return bean;
+	}
+
+	public <T> T validate(Class<T> classType, Map<String, String[]> params) throws ValidationException {
+		return validate(classType, params, RequiredChecks.class, Default.class);
+	}
+
 }

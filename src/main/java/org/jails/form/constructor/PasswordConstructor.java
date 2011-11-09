@@ -1,13 +1,14 @@
 package org.jails.form.constructor;
 
 import org.jails.form.taglib.PasswordInput;
+import org.jails.form.taglib.RepeaterTag;
+import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspTagException;
 
 public class PasswordConstructor extends TagInputConstructor<PasswordInput> {
-	public PasswordConstructor(PasswordInput tag, ServletRequest request) throws JspTagException {
-		super(tag, request);
+	public PasswordConstructor(PasswordInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+		super(tag, formTag, repeatTag, request);
 	}
 
 	@Override

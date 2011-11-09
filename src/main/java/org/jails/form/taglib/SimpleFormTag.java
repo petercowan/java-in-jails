@@ -1,44 +1,49 @@
 package org.jails.form.taglib;
 
+import org.jails.form.FormTag;
 import org.jails.form.SimpleForm;
-import org.jails.form.SimpleFormRequest;
+import org.jails.form.SimpleFormRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-public abstract class SimpleFormTag<T extends SimpleForm> extends BodyTagSupport {
+public class SimpleFormTag
+		extends BodyTagSupport
+		implements FormTag {
 	private static Logger logger = LoggerFactory.getLogger(SimpleFormTag.class);
 
 	public static String STACKED = "stacked";
 	public static String SIDE_BY_SIDE = "side";
 
+	protected Map<Integer, List<String>> formElementMap = new LinkedHashMap<Integer, List<String>>();
+
 	protected Map<String, String> labelMap = new HashMap<String, String>();
-	protected T simpleForm;
+	protected SimpleForm simpleForm;
+	protected RepeaterTag repeatTag;
 	protected String name;
-	protected String submitButton;
 	protected String action;
 	protected String method;
 	protected String style = STACKED;
 
-	protected abstract void setFormFromRequest();
+	protected void setFormFromRequest() {
+		String simpleFormParam = "_" + name + "_form";
+		logger.info("Getting SimpleForm: " + simpleFormParam);
+		simpleForm = (SimpleForm) pageContext.getRequest().getAttribute(simpleFormParam);
+		logger.info("Loaded form " + simpleForm);
+	}
 
 	public void setName(String name) {
 		this.name = name;
 		setFormFromRequest();
-	}
-
-	public void setSubmitButton(String submitButton) {
-		logger.info("setSubmitButton:" + submitButton) ;
-		this.submitButton = submitButton;
-	}
-
-	protected String getSubmitButton() {
-		logger.info("submitButton:" + submitButton) ;
-		return (submitButton == null) ? "" : submitButton;
 	}
 
 	public void setAction(String action) {
@@ -61,9 +66,15 @@ public abstract class SimpleFormTag<T extends SimpleForm> extends BodyTagSupport
 		return simpleForm;
 	}
 
-	public abstract void addElement(String fieldName);
+	public void addElement(String fieldName, int index) {
+		List<String> formElements = formElementMap.get(index);
+		if (formElements == null) {
+			formElements = new ArrayList<String>();
+			formElementMap.put(index, formElements);
+		}
+		if (!formElements.contains(fieldName)) formElements.add(fieldName);
+	}
 
-	public abstract boolean fieldHasError(String fieldName);
 
 	public void addLabel(String inputName, String label) {
 		labelMap.put(inputName, label);
@@ -99,7 +110,7 @@ public abstract class SimpleFormTag<T extends SimpleForm> extends BodyTagSupport
 		String hiddenMethod;
 
 		if (simpleForm != null) {
-			if (simpleForm.isBoundToObject()) {
+			if (simpleForm.isBound()) {
 				hiddenMethod = "POST";
 			} else {
 				hiddenMethod = "PUT";
@@ -115,12 +126,12 @@ public abstract class SimpleFormTag<T extends SimpleForm> extends BodyTagSupport
 		String submitValue;
 
 		if (simpleForm != null) {
-			if (simpleForm.isBoundToObject()) {
-				submitValue = simpleForm.getMetaParameterName(SimpleFormRequest.SUBMIT_EDIT);
+			if (simpleForm.isBound()) {
+				submitValue = simpleForm.getMetaParameterName(SimpleFormRouter.SUBMIT_EDIT);
 			} else {
-				submitValue = simpleForm.getMetaParameterName(SimpleFormRequest.SUBMIT_NEW);
+				submitValue = simpleForm.getMetaParameterName(SimpleFormRouter.SUBMIT_NEW);
 			}
-			return "<input type=\"hidden\" name=\"" + simpleForm.getMetaParameterName(SimpleFormRequest.ACTION_SUBMIT)
+			return "<input type=\"hidden\" name=\"" + simpleForm.getMetaParameterName(SimpleFormRouter.ACTION_SUBMIT)
 					+ "\" value=\"" + submitValue + "\" />";
 		} else {
 			return "";
@@ -140,10 +151,41 @@ public abstract class SimpleFormTag<T extends SimpleForm> extends BodyTagSupport
 		return errorMessage.toString();
 	}
 
-	protected abstract String getErrorMessage();
+	protected String getErrorMessage() {
+		StringBuffer errorMessage = new StringBuffer();
+		for (Integer index : formElementMap.keySet()){
+			List<String> formElements = formElementMap.get(index);
+			if (formElements != null) {
+				for (String fieldName : formElements) {
+					if (simpleForm.fieldHasError(fieldName, index)) {
+						errorMessage.append(simpleForm.getFieldError(fieldName, labelMap.get(fieldName), index));
+					}
+				}
+			}
+		}
+		return errorMessage.toString();
+	}
 
 	public int doStartTag() throws JspException {
 		return EVAL_BODY_TAG;
+	}
+
+	public int doEndTag() throws JspException {
+		try {
+			// Get the current bodyContent for this tag and
+			//wrap with form content
+			JspWriter jspOut = pageContext.getOut();
+			jspOut.print(getBeginForm());
+			if (simpleForm.hasError()) jspOut.print(getError());
+			jspOut.print(bodyContent.getString());
+			jspOut.print(getHiddenMethod());
+			jspOut.print(getSubmitValue());
+			jspOut.print(getEndForm());
+
+			return EVAL_PAGE;
+		} catch (IOException ioe) {
+			throw new JspException(ioe.getMessage());
+		}
 	}
 }
 

@@ -18,8 +18,8 @@ public class CountrySelectInput
 	private static Logger logger = LoggerFactory.getLogger(CountrySelectInput.class);
 
 	@Override
-	protected BodyTagInputConstructor getBodyInputConstructor(ServletRequest request) throws JspTagException {
-		SelectConstructor constructor = new SelectConstructor(this, request);
+	protected BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+		SelectConstructor constructor = new SelectConstructor(this, formTag, repeatTag, request);
 
 		List<Country> countries = Country.getCountries();
 		Map<String, String> options = new LinkedHashMap<String, String>();

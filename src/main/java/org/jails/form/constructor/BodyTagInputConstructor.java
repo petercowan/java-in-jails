@@ -1,14 +1,14 @@
 package org.jails.form.constructor;
 
-import org.jails.form.taglib.FormInput;
+import org.jails.form.FormInput;
+import org.jails.form.taglib.RepeaterTag;
+import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspTagException;
 
 public abstract class BodyTagInputConstructor<T extends FormInput> extends InputConstructor<T> {
-
-	public BodyTagInputConstructor(T tag, ServletRequest request) throws JspTagException {
-		super(tag, request);
+	protected BodyTagInputConstructor(T tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+		super(tag, formTag, repeatTag, request);
 	}
 
 	public abstract String getOpeningHtml();

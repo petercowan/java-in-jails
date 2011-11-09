@@ -17,54 +17,49 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 
 	protected Class<T> classType;
 	protected String path;
-
-	public BaseSimpleFormActionHandler(Class<T> classType) {
-		this.classType = classType;
-		path = StringUtil.flattenCamelCase(classType.getSimpleName(), "_");
-	}
+	protected SimpleFormRouter simpleFormRequest;
 
 	protected BaseSimpleFormActionHandler(Class<T> classType, String path) {
 		this.classType = classType;
 		this.path = path;
+		simpleFormRequest = new SimpleFormRouter(path);
 	}
 
-	protected SimpleBeanForm newSimpleForm(HttpServletRequest request) {
-		SimpleBeanForm simpleForm = new SimpleBeanForm(classType).setFormInRequest(request);
+	public BaseSimpleFormActionHandler(Class<T> classType) {
+		this(classType, StringUtil.flattenCamelCase(classType.getSimpleName(), "_"));
+	}
+
+	protected SimpleForm newSimpleForm(HttpServletRequest request) {
+		SimpleForm simpleForm = new SimpleForm(classType).inRequest(request);
 		return simpleForm;
 	}
 
 	
-	protected SimpleFormRequest<SimpleBeanForm> getSimpleFormRequest(HttpServletRequest request) {
-		SimpleBeanForm simpleForm = newSimpleForm(request);
-		SimpleFormRequest<SimpleBeanForm> simpleFormRequest = new SimpleFormRequest<SimpleBeanForm>(request, simpleForm, path);
-		return simpleFormRequest;
-	}
-
 	public String handleRequest(HttpServletRequest request, HttpServletResponse response) {
-		SimpleFormRequest<SimpleBeanForm> simpleFormRequest = getSimpleFormRequest(request);
-
-		if (simpleFormRequest.isShow()) {
-			return show(simpleFormRequest);
-		} else if (simpleFormRequest.isNew()) {
-			return create(simpleFormRequest);
-		} else if (simpleFormRequest.isEdit()) {
-			return edit(simpleFormRequest);
-		} else if (simpleFormRequest.isDelete()) {
-			return delete(simpleFormRequest);
+		SimpleForm simpleForm = newSimpleForm(request);
+		if (simpleFormRequest.isShow(request, simpleForm)) {
+			return show(request, response, simpleForm);
+		} else if (simpleFormRequest.isNew(request, simpleForm)) {
+			return create(request, response, simpleForm);
+		} else if (simpleFormRequest.isEdit(request, simpleForm)) {
+			return edit(request, response, simpleForm);
+		} else if (simpleFormRequest.isDelete(request, simpleForm)) {
+			return delete(request, response, simpleForm);
 		} else {
-			return index(simpleFormRequest);
+			return index(request, response, simpleForm);
 		}
 	}
 
 	public String index(HttpServletRequest request, HttpServletResponse response) {
-		return index(getSimpleFormRequest(request));
+		SimpleForm simpleForm = newSimpleForm(request);
+		return index(request, response, simpleForm);
 	}
 
-	public String index(SimpleFormRequest<SimpleBeanForm> simpleFormRequest) {
+	public String index(HttpServletRequest request, HttpServletResponse response, SimpleForm simpleForm) {
 		List<T> objects;
 		try {
 			objects = findAll(classType);
-			simpleFormRequest.setAttribute(path + "s", objects);
+			request.setAttribute(path + "s", objects);
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
@@ -72,39 +67,40 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public String show(HttpServletRequest request, HttpServletResponse response) {
-		return show(getSimpleFormRequest(request));
+		SimpleForm simpleForm = newSimpleForm(request);
+		return show(request, response, simpleForm);
 	}
 
-	protected String show(SimpleFormRequest simpleFormRequest) {
+	protected String show(HttpServletRequest request, HttpServletResponse response, SimpleForm simpleForm) {
 		try {
-			T object = find(classType, simpleFormRequest.getId());
-			simpleFormRequest.setAttribute(path, object);
+			T object = find(classType, simpleFormRequest.getId(request));
+			request.setAttribute(path, object);
 			return getShowView();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
-			return index(simpleFormRequest);
+			return index(request, response, simpleForm);
 		}
 	}
 
 	public String create(HttpServletRequest request, HttpServletResponse response) {
-		return create(getSimpleFormRequest(request));
+		SimpleForm simpleForm = newSimpleForm(request);
+		return create(request, response, simpleForm);
 	}
 
-	public String create(SimpleFormRequest<SimpleBeanForm> simpleFormRequest) {
+	public String create(HttpServletRequest request, HttpServletResponse response, SimpleForm simpleForm) {
 		try {
-			if (simpleFormRequest.isSubmitted()) {
-				T object = create(classType, simpleFormRequest.getParameterMap());
-				simpleFormRequest.getSimpleForm()
-								.bindTo(object)
-								.identifyWith(idField);
-				simpleFormRequest.setAttribute(path, object);
+			if (simpleFormRequest.isSubmitted(request, simpleForm)) {
+				T object = create(classType, request.getParameterMap());
+				simpleForm.bindTo(object)
+						  .identifyBy(idField);
+				request.setAttribute(path, object);
 				return getShowView();
 			} else {
 				return getCreateView();
 			}
 		} catch (ValidationException e) {
 			logger.warn(e.getMessage());
-			simpleFormRequest.getSimpleForm().setErrorFieldMap(e.getErrorFields());
+			simpleForm.setErrors(e.getErrorFields());
 			return getCreateView();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -113,23 +109,23 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public String edit(HttpServletRequest request, HttpServletResponse response) {
-		return edit(getSimpleFormRequest(request));
+		SimpleForm simpleForm = newSimpleForm(request);
+		return edit(request, response, simpleForm);
 	}
 
-	protected String edit(SimpleFormRequest<SimpleBeanForm> simpleFormRequest) {
+	protected String edit(HttpServletRequest request, HttpServletResponse response, SimpleForm simpleForm) {
 		try {
-			T object = find(classType, simpleFormRequest.getId());
+			T object = find(classType, simpleFormRequest.getId(request));
 			logger.info("Binding object " + object + " to form");
-			simpleFormRequest.getSimpleForm()
-							.bindTo(object)
-							.identifyWith(idField);
-			if (simpleFormRequest.isSubmitted()) {
+			simpleForm.bindTo(object)
+					  .identifyBy(idField);
+			if (simpleFormRequest.isSubmitted(request, simpleForm)) {
 				logger.info("Updating object");
-				update(object, simpleFormRequest.getParameterMap());
+				update(object, request.getParameterMap());
 			}
 		} catch (ValidationException e) {
 			logger.warn(e.getMessage());
-			simpleFormRequest.getSimpleForm().setErrorFieldMap(e.getErrorFields());
+			simpleForm.setErrors(e.getErrorFields());
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
@@ -137,24 +133,24 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public String delete(HttpServletRequest request, HttpServletResponse response) {
-		return delete(getSimpleFormRequest(request));
+		SimpleForm simpleForm = newSimpleForm(request);
+		return delete(request, response, simpleForm);
 	}
 
-	public String delete(SimpleFormRequest<SimpleBeanForm> simpleFormRequest) {
+	protected String delete(HttpServletRequest request, HttpServletResponse response, SimpleForm simpleForm) {
 		try {
-			T object = find(classType, simpleFormRequest.getId());
-			if (simpleFormRequest.confirmDelete()) {
+			T object = find(classType, simpleFormRequest.getId(request));
+			if (simpleFormRequest.confirmDelete(request, simpleForm)) {
 				remove(object);
 			} else {
-				simpleFormRequest.getSimpleForm()
-								.bindTo(object)
-								.identifyWith(idField);
+				simpleForm.bindTo(object)
+						  .identifyBy(idField);
 				return getConfirmView();
 			}
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
-		return index(simpleFormRequest);
+		return index(request, response, simpleForm);
 	}
 
 	public String getIndexView() {

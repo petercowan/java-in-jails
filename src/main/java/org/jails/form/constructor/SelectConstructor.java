@@ -1,14 +1,15 @@
 package org.jails.form.constructor;
 
+import org.jails.form.taglib.RepeaterTag;
 import org.jails.form.taglib.SelectInput;
+import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspTagException;
 import java.util.Map;
 
 public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
-	public SelectConstructor(SelectInput tag, ServletRequest request) throws JspTagException {
-		super(tag, request);
+	public SelectConstructor(SelectInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+		super(tag, formTag, repeatTag, request);
 	}
 
 	protected Map<String, String> options;

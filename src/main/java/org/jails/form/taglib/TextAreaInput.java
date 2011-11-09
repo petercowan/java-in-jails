@@ -7,7 +7,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class TextAreaInput
-		extends FormInputTag {
+		extends FormInputTagSupport {
 
 	protected String rows;
 	protected String cols;
@@ -29,7 +29,7 @@ public class TextAreaInput
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(ServletRequest request) throws JspTagException {
-		return new TextAreaConstructor(this, request);
+	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+		return new TextAreaConstructor(this, formTag, repeatTag, request);
 	}
 }

@@ -7,7 +7,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class CheckboxInput
-		extends FormInputTag {
+		extends FormInputTagSupport {
 
 	private String checked;
 
@@ -20,8 +20,8 @@ public class CheckboxInput
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(ServletRequest request) throws JspTagException {
-		return new CheckBoxConstructor(this, request);
+	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+		return new CheckBoxConstructor(this, formTag, repeatTag, request);
 	}
 
 }

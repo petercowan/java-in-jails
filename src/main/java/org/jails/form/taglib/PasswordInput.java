@@ -7,7 +7,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class PasswordInput
-		extends FormInputTag {
+		extends FormInputTagSupport {
 
 	private String size = "25";
 
@@ -20,7 +20,7 @@ public class PasswordInput
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(ServletRequest request) throws JspTagException {
-		return new PasswordConstructor(this, request);
+	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+		return new PasswordConstructor(this, formTag, repeatTag, request);
 	}
 }

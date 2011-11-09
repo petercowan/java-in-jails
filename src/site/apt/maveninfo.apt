@@ -1,0 +1,16 @@
+  -------
+  Using java in jails with Maven
+  -------
+
+Using java in jails with Maven
+  
+  Use this as your dependency statement in your pom.xml:
+  
++--  
+    <dependency>
+        <groupId>org.jails</groupId>
+        <artifactId>jails</artifactId>
+        <version>[version]</version>
+        <scope>compile</scope>
+    </dependency>
++--  

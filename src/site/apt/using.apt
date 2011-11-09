@@ -1,0 +1,125 @@
+  -------
+  Using java in jails
+  -------
+
+Using java in jails
+
+  -------
+  Main
+  -------
+
+java in jails
+
+  java in jails? is this just a java version of ruby on rails??
+
+  The answer is "no". java in jails is not a java versino of ruby on rails, but it was <inspired heavily> by
+  parts of it.
+
+  Rails is a web application framework built around the ideas of not having to
+  write a lot of boilerplate code, and providing a set of conventions for how things are done in order
+  to avoid having to configuring every little detail.
+
+  jails is not a framework. jails is a lightweight API that provides a very simple way to display html forms,
+  populate objects with the form data, and validate that data on both the front end and the back end.
+
+  <<java in jails is meant for developers who may be stuck maintaining applications in proporietary, or legacy
+  frameworks that don't make these things simple.>>
+
+  jails is entirely configuration free, and provides a simple--but optional--set of conventions for you to follow
+  to make certain boilerplate tasks easier.
+
+  jails is primarly built around the JSR 303 bean validation specification. On top of this I have added some
+  custom annotations to give you more control if needed, but in order to use jails all you will have to do is
+  annotate your classes with JSR 303 constraints.
+
+  Here's how it works:
+
+
+  <<Create a model class>>
+
+---
+public class ModelBean {
+	@NotBlank
+	@Size(min = 2, max = 25)
+	private String name;
+
+	@Max(value = 12345)
+	@Min(value = 0)
+	private Integer size;
+
+	@NotBlank
+	@Past
+	private Date dateCreated;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
+	}
+
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+}
+---
+
+  <<Create a form>>
+
+---
+<%@ taglib uri="http://org.jails.org/form/taglib" prefix="s" %>
+<s:form name="model_bean">
+	<s:text name="name" label="Name" />
+	<s:text name="age" label="Size" />
+	<s:text name="dateCreated" label="Date Created" />
+	<s:submit label="Save Model Bean" />
+</s:form>
+---
+
+  <<Now poplate and validate it!>>
+
+---
+//in a Servlet pointing to to model_bean
+    BeanValidator beanValidator = new SimpleBeanValidator(beanMapper);
+    MapToBean beanMapper = beanValidator.getMapper();
+
+    SimpleBeanForm simpleForm = new SimpleBeanForm(ModelBean.class);
+    SimpleFormRequest<SimpleBeanForm> simpleFormRequest
+    		= new SimpleFormRequest<SimpleBeanForm>(request, simpleForm, "model_bean");
+
+    if (simpleFormRequest.isSubmitted()) {
+        ModelBean bean = new ModelBean();
+        beanMapper.setBeanProperties(request.getParameterMap(), bean);
+
+        try {
+            beanValidator.validate(bean);
+            //create in data store
+
+            simpleFormRequest.setAttribute("model_bean", bean);
+            //now display bean
+        } catch (ValidationException e) {
+            simpleForm.setErrorFieldMap(e.getErrorFields());
+            //back to form page
+        } catch (Exception e) {
+            //handle error
+        }
+    } else {
+        simpleForm.setInRequest(request);
+        //forward to formPage
+    }
+
+---
+

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="jails">
+
+
+  <bannerLeft>
+    <name>java in jails</name>
+    <src>images/jails_logo.png</src>
+    <href>http://www.jails.org/</href>
+  </bannerLeft>
+  
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-default-skin</artifactId>
+  </skin>
+  
+  <publishDate format="dd MMM yyyy" position="left" />
+  
+  <version position="left" />
+  
+  <body>
+  
+    <links>
+      <item name="Main" href="index.html" />
+      <item name="Download" href="download.html" />
+      <!-- item name="User Forum/List" href="userlist.html" / -->
+      <item name="Javadoc" href="apidocs/index.html" />
+      <item name="Github Project Page" href="http://www.github.com/petercowan/jails" />
+    </links>
+
+    <menu name="The java in jails Project">
+      <item name="Main" href="index.html"/>
+      <item name="Download" href="http://www.github.com/petercowan/jails"/>
+      <item name="Maven Info" href="maveninfo.html"/>
+      <item name="Dependencies" href="dependencies.html"/>
+      <!-- item name="? User Forum/List" href="userlist.html"/ -->
+      <!-- item name="Using jails" href="using.html"/ -->
+      <item name="License" href="license.html"/>
+      <item name="Team" href="team.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
+      <!-- item name="FAQ" href="faq.html" / -->
+    </menu>
+
+  </body>
+
+
+
+  <poweredBy>   
+       <logo name="Built with Maven 2" href="http://maven.apache.org" img="http://maven.apache.org/images/logos/maven-feather.png" />    
+       <logo name="Hosted on Github.com" href="http://github.com" img="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov6-hover.svg"/>
+  </poweredBy>    
+  
+  
+</project>

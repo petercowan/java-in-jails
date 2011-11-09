@@ -1,0 +1,30 @@
+  -------
+  java in jails dependencies
+  -------
+
+  java in jails requires Java version 1.6 or higher.
+
+  You will find the the required third party dependencies in the lib folder of the source repository,
+  for your convenience they are listed here.
+  
+  * commons-beanutil-1.8.3,jar
+  
+  * xstream-1.31.jar
+  
+  * xpp3_min-1.1.4c.jar
+  
+  * kxml2-min-2.3.0.jar
+  
+  * hibernate-validator-4.2.0.Final,jar
+  
+  * hibernate-validator-annotation-processor-4.2.0.Final,jar
+  
+  * validation-api-1.0.0.GA.jar
+  
+  * slf4j-api-1.6.1.jar
+  
+  * slf4j-simple-1.6.3.jar
+  
+ The server portion of the API, of course, depends needs to be run in a valid servlet container, and 
+ if you are using the tag library, you will need to make sure you have jstl.jar in your container as well.
+  

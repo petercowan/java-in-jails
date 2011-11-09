@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<faqs title="Frequently Asked Questions">
+
+
+  <part id="aboutjails">
+    <title>About java in jails</title>
+    
+    <faq id="where-does-jails-come-from">
+      <question>Where does java in jails come from?</question>
+      <answer>
+        <p>
+          java in jails was created by a a href="http://www.petercowan.com">peter cowan</a> in his spare time. 
+        </p>
+        <p>
+          It is a personal project, not backed by any company, and it is offered to you as is,
+          free of charge, both in binary and in source code forms, under the <b>GPL 3.0</b>.
+        </p>
+      </answer>
+    </faq>
+    
+    <faq id="contribute">
+      <question>How can I contribute to java in jails?</question>
+      <answer>
+        <p>
+          Feel free to:
+        </p>
+        <ul>
+          <li>Email me a bug report
+          <li>Send me a pull request on github.
+          <li>Use java in jails in your work and and tell others about it!</li>
+        </ul>
+      </answer>
+    </faq>
+
+  </part>
+
+    
+</faqs>

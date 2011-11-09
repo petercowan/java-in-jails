@@ -126,9 +126,8 @@ public abstract class InputConstructor<T extends FormInput> {
 			}
 		} else if (tag.getDefaultValue() != null) {
 			fieldValues = new String[]{tag.getDefaultValue()};
-		} else {
-			fieldValues = new String[]{};
 		}
+		if (fieldValues == null) fieldValues = new String[]{};
 		logger.info("fieldValues initialized");
 	}
 

@@ -1,14 +1,14 @@
 package org.jails.form.constructor;
 
-import org.jails.form.taglib.CheckboxInput;
+import org.jails.form.taglib.CheckboxTag;
 import org.jails.form.taglib.RepeaterTag;
 import org.jails.form.taglib.SimpleFormTag;
 import org.jails.util.StringUtil;
 
 import javax.servlet.ServletRequest;
 
-public class CheckBoxConstructor extends TagInputConstructor<CheckboxInput> {
-	public CheckBoxConstructor(CheckboxInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+public class CheckBoxConstructor extends TagInputConstructor<CheckboxTag> {
+	public CheckBoxConstructor(CheckboxTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

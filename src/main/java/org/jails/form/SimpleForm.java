@@ -10,6 +10,7 @@ import org.jails.validation.BeanConstraints;
 import org.jails.validation.RequiredChecks;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,8 @@ public class SimpleForm<T> {
 	public SimpleForm<T> bindTo(T formBean) {
 		if (classType != null && formBean.getClass() != classType)
 			throw new IllegalArgumentException("Binding object must be the same type as the class used to validate this form");
-		this.beanArray = (T[]) new Object[]{formBean};
+		beanArray = (T[]) Array.newInstance(classType, 1);
+		beanArray[0] = formBean;
 		validateAs(formBean.getClass());
 		if (identityField != null) identifyBy(identityField);
 		return this;
@@ -76,7 +78,6 @@ public class SimpleForm<T> {
 
 	public SimpleForm<T> identifyBy(String identityField) {
 		this.identityField = identityField;
-		//todo - check for repeatable
 		if (isBound()) {
 			setIdentities(identityField);
 		}

@@ -127,7 +127,13 @@ public class MapToBean {
 						logger.info("loading rootPropertyName " + rootPropertyName + " of Class: " + object.getClass()
 										+ ". index: " + propertyIndex);
 						//todo - used propertyIndex to find member Objects within a collection
-						Object memberObject = PropertyUtils.getProperty(object, rootPropertyName);
+						Object memberObject;
+
+						if (propertyIndex != null) {
+							memberObject = PropertyUtils.getIndexedProperty(object, rootPropertyName, propertyIndex);
+						} else {
+							memberObject = PropertyUtils.getProperty(object, rootPropertyName);
+						}
 						logger.info("memberObject: " + memberObject);
 
 						//memberObject is null, so attempt find an instance, using the PropertyHandler

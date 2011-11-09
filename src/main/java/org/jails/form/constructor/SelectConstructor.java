@@ -1,14 +1,14 @@
 package org.jails.form.constructor;
 
 import org.jails.form.taglib.RepeaterTag;
-import org.jails.form.taglib.SelectInput;
+import org.jails.form.taglib.SelectTag;
 import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
 import java.util.Map;
 
-public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
-	public SelectConstructor(SelectInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+public class SelectConstructor extends BodyTagInputConstructor<SelectTag> {
+	public SelectConstructor(SelectTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 
@@ -22,17 +22,22 @@ public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
 	public String getOpeningHtml() {
 		StringBuffer openingHtml = new StringBuffer();
 
-		String fieldValue = getFieldValue(0);
 		openingHtml.append("<select" +
 				getFieldNameAttr() +
 				getInputIdAttr() +
-				getClientValidationAttr() + ">");
+				getClientValidationAttr() +
+				getAttribute("multiple", tag.getMultiple()) + ">");
 		if (options != null && options.size() > 0) {
 			StringBuffer optionHtml = new StringBuffer();
 			for (String optionValue : options.keySet()) {
 				String optionLabel = options.get(optionValue);
 				optionHtml.append("<option" + getAttribute("value", optionValue));
-				if (optionValue.equals(fieldValue)) optionHtml.append(" SELECTED");
+				for (String fieldValue : fieldValues) {
+					if (optionValue.equals(fieldValue)) {
+						optionHtml.append(" SELECTED");
+						break;
+					}
+				}
 				optionHtml.append("> " + optionLabel + "</option>");
 			}
 			openingHtml.append(optionHtml);

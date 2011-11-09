@@ -2,12 +2,12 @@ package org.jails.form.constructor;
 
 import org.jails.form.taglib.RepeaterTag;
 import org.jails.form.taglib.SimpleFormTag;
-import org.jails.form.taglib.TextAreaInput;
+import org.jails.form.taglib.TextAreaTag;
 
 import javax.servlet.ServletRequest;
 
-public class TextAreaConstructor extends TagInputConstructor<TextAreaInput> {
-	public TextAreaConstructor(TextAreaInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+public class TextAreaConstructor extends TagInputConstructor<TextAreaTag> {
+	public TextAreaConstructor(TextAreaTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

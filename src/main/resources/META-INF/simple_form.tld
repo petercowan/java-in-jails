@@ -59,7 +59,7 @@
 
 	<tag>
 		<name>text</name>
-		<tag-class>org.jails.form.taglib.TextInput</tag-class>
+		<tag-class>org.jails.form.taglib.TextTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a text input to a SimpleForm
@@ -88,7 +88,7 @@
 
 	<tag>
 		<name>textarea_input</name>
-		<tag-class>org.jails.form.taglib.TextAreaInput</tag-class>
+		<tag-class>org.jails.form.taglib.TextAreaTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a textarea input to a SimpleForm
@@ -122,7 +122,7 @@
 
 	<tag>
 		<name>checkbox_input</name>
-		<tag-class>org.jails.form.taglib.CheckboxInput</tag-class>
+		<tag-class>org.jails.form.taglib.CheckboxTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a checkbox input to a SimpleForm
@@ -151,7 +151,7 @@
 
 	<tag>
 		<name>password</name>
-		<tag-class>org.jails.form.taglib.PasswordInput</tag-class>
+		<tag-class>org.jails.form.taglib.PasswordTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a password input to a SimpleForm
@@ -179,8 +179,32 @@
 	</tag>
 
 	<tag>
+		<name>hidden</name>
+		<tag-class>org.jails.form.taglib.HiddenTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			A tag to add a hidden input to a SimpleForm
+		</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>label</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>defaultValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>select</name>
-		<tag-class>org.jails.form.taglib.SelectInput</tag-class>
+		<tag-class>org.jails.form.taglib.SelectTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a select list to a SimpleForm
@@ -205,11 +229,16 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>multiple</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 
 	<tag>
 		<name>state_select</name>
-		<tag-class>org.jails.form.taglib.StateSelectInput</tag-class>
+		<tag-class>org.jails.form.taglib.StateSelectTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a select list of States to a SimpleForm
@@ -238,7 +267,7 @@
 
 	<tag>
 		<name>country_select</name>
-		<tag-class>org.jails.form.taglib.CountrySelectInput</tag-class>
+		<tag-class>org.jails.form.taglib.CountrySelectTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a select list of Countries to a SimpleForm
@@ -262,7 +291,7 @@
 
 	<tag>
 		<name>option</name>
-		<tag-class>org.jails.form.taglib.SelectOptionInput</tag-class>
+		<tag-class>org.jails.form.taglib.SelectOptionTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add an option to a select list in a SimpleForm
@@ -281,7 +310,7 @@
 
 	<tag>
 		<name>submit</name>
-		<tag-class>org.jails.form.taglib.SubmitButton</tag-class>
+		<tag-class>org.jails.form.taglib.SubmitButtonTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
 			A tag to add a submit button to a SimpleForm

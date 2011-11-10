@@ -1,13 +1,13 @@
 package org.jails.form.constructor;
 
+import org.jails.form.FormTag;
+import org.jails.form.Repeater;
 import org.jails.form.TextInput;
-import org.jails.form.taglib.RepeaterTag;
-import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
 
 public class TextConstructor extends TagInputConstructor<TextInput> {
-	public TextConstructor(TextInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+	public TextConstructor(TextInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

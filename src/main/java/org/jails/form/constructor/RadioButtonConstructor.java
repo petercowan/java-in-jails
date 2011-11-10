@@ -1,14 +1,14 @@
 package org.jails.form.constructor;
 
-import org.jails.form.taglib.RadioButtonTag;
-import org.jails.form.taglib.RepeaterTag;
-import org.jails.form.taglib.SimpleFormTag;
+import org.jails.form.FormTag;
+import org.jails.form.RadioButtonInput;
+import org.jails.form.Repeater;
 
 import javax.servlet.ServletRequest;
 
 public class RadioButtonConstructor
-extends TagInputConstructor<RadioButtonTag> {
-	public RadioButtonConstructor(RadioButtonTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+extends TagInputConstructor<RadioButtonInput> {
+	public RadioButtonConstructor(RadioButtonInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

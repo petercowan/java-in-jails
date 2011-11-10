@@ -1,7 +1,8 @@
 package org.jails.validation;
 
-import com.thoughtworks.xstream.XStream;
-import org.jails.property.MapToBean;
+import org.jails.cloner.Cloner;
+import org.jails.cloner.XStreamCloner;
+import org.jails.property.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,23 +16,28 @@ import java.util.Set;
  * BeanValidator validates a JaveBean based on the javax.validation Annotations
  * set in that class
  */
-public class BeanValidator {
-	private static Logger logger = LoggerFactory.getLogger(BeanValidator.class);
+public class SimpleValidator {
+	private static Logger logger = LoggerFactory.getLogger(SimpleValidator.class);
 
-	private static XStream xStream = new XStream();
-
-	private MapToBean beanMapper;
+	private Cloner cloner;
+	private Mapper beanMapper;
 	private Validator validator;
 
-	private BeanValidator() {
+	private SimpleValidator() {
 		validator = ValidatorInstance.getInstance().getValidator();
 	}
 
-	public BeanValidator(MapToBean beanMapper) {
+	public SimpleValidator(Mapper beanMapper) {
 		this();
 		this.beanMapper = beanMapper;
+		cloner = new XStreamCloner();
 	}
 
+	public SimpleValidator(Cloner cloner, Mapper beanMapper) {
+		this();
+		this.cloner = cloner;
+		this.beanMapper = beanMapper;
+	}
 
 	public <T> void validate(T bean, Class<?>... groups) throws ValidationException {
 		logger.info("Validating " + bean.getClass() + ": " + bean.toString());
@@ -53,8 +59,8 @@ public class BeanValidator {
 
 	public <T> void validate(T bean, Map<String, String[]> params, Class<?>... groups)
 			throws ValidationException {
-		T copy = (T) xStream.fromXML(xStream.toXML(bean));
-		beanMapper.setBeanProperties(params, copy);
+		T copy = cloner.deepCopy(bean);
+		beanMapper.toExistingObject(params, copy);
 
 		validate(copy, groups);
 	}
@@ -65,17 +71,9 @@ public class BeanValidator {
 
 	public <T> T validate(Class<T> classType, Map<String, String[]> params, Class<?>... groups)
 			throws ValidationException {
-		T bean;
-		try {
-			bean = classType.newInstance();
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-			throw new IllegalArgumentException("Class must have an public constructor with no args to use this method");
-		}
-		T copy = (T) xStream.fromXML(xStream.toXML(bean));
-		beanMapper.setBeanProperties(params, copy);
+		T bean = beanMapper.toObject(params, classType);
 
-		validate(copy, groups);
+		validate(bean, groups);
 
 		return bean;
 	}

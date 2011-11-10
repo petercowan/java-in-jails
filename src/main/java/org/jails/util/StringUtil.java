@@ -37,7 +37,7 @@ public class StringUtil {
 		if (str == null) return null;
 		String upper = str.substring(0, 1).toUpperCase();
 		if (str.length() > 1) {
-			return upper + str.substring(1).toLowerCase();
+			return upper + str.substring(1);
 		} else {
 			return upper;
 		}
@@ -51,11 +51,11 @@ public class StringUtil {
 	 */
 	public static String initLowercase(String str) {
 		if (str == null) return null;
-		String upper = str.substring(0, 1).toLowerCase();
+		String lower = str.substring(0, 1).toLowerCase();
 		if (str.length() > 1) {
-			return upper + str.substring(1).toLowerCase();
+			return lower + str.substring(1);
 		} else {
-			return upper;
+			return lower;
 		}
 	}
 

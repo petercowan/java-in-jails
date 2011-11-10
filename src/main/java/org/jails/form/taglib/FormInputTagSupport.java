@@ -10,6 +10,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Map;
 
 /**
  * Adds the FormInput interface to the TagSupport class to create CustomTags
@@ -25,6 +26,7 @@ public abstract class FormInputTagSupport
 	protected String name;
 	protected String defaultValue;
 	protected String cssClass;
+	protected Map<String,String> attributes;
 	protected SimpleFormTag formTag;
 	protected RepeaterTag repeatTag;
 
@@ -58,6 +60,14 @@ public abstract class FormInputTagSupport
 
 	public void setCssClass(String cssClass) {
 		this.cssClass = cssClass;
+	}
+
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Map<String, String> attributes) {
+		this.attributes = attributes;
 	}
 
 	public int doStartTag()

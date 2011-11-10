@@ -1,5 +1,6 @@
-package org.jails.form;
+package org.jails.form.controller;
 
+import org.jails.form.SimpleFormParams;
 import org.jails.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class SimpleFormRouter {
 	public static String SUBMIT_SHOW = "action_show";
 	public static String CONFIRM_DELETE = "confirm_delete";
 
+	private static SimpleFormParams simpleFormParams = new SimpleFormParams();
 
 	private String path;
 
@@ -30,47 +32,47 @@ public class SimpleFormRouter {
 		this.path = path;
 	}
 
-	public String getMethod(HttpServletRequest request, SimpleForm simpleForm) {
-		String method = request.getParameter(simpleForm.getMetaParameterName("method"));
+	public String getMethod(HttpServletRequest request) {
+		String method = request.getParameter(simpleFormParams.getMetaParameterName("method"));
 		return (method != null) ? method : request.getMethod();
 	}
 
-	public boolean isShow(HttpServletRequest request, SimpleForm simpleForm) {
+	public boolean isShow(HttpServletRequest request) {
 		boolean isShow = ((ACTION_SHOW.equals(getActionPath(request)) || StringUtil.isEmpty(getActionPath(request)))
-				&& getMethod(request, simpleForm).equalsIgnoreCase("GET"))
+				&& getMethod(request).equalsIgnoreCase("GET"))
 				&& getId(request) != null;
 		logger.info("isShow? " + isShow);
 		return isShow;
 	}
 
-	public boolean isNew(HttpServletRequest request, SimpleForm simpleForm) {
-		boolean isCreate = (ACTION_NEW.equals(getActionPath(request)) || getMethod(request, simpleForm).equalsIgnoreCase("PUT"));
+	public boolean isNew(HttpServletRequest request) {
+		boolean isCreate = (ACTION_NEW.equals(getActionPath(request)) || getMethod(request).equalsIgnoreCase("PUT"));
 		logger.info("isCreate? " + isCreate);
 		return isCreate;
 	}
 
-	public boolean isEdit(HttpServletRequest request, SimpleForm simpleForm) {
-		boolean isEdit = (ACTION_EDIT.equals(getActionPath(request)) || getMethod(request, simpleForm).equalsIgnoreCase("POST"));
+	public boolean isEdit(HttpServletRequest request) {
+		boolean isEdit = (ACTION_EDIT.equals(getActionPath(request)) || getMethod(request).equalsIgnoreCase("POST"));
 		logger.info("isEdit? " + isEdit);
 		return isEdit;
 	}
 
-	public boolean isDelete(HttpServletRequest request, SimpleForm simpleForm) {
-		boolean isDelete = (ACTION_DELETE.equals(getActionPath(request)) || getMethod(request, simpleForm).equalsIgnoreCase("DELETE"));
+	public boolean isDelete(HttpServletRequest request) {
+		boolean isDelete = (ACTION_DELETE.equals(getActionPath(request)) || getMethod(request).equalsIgnoreCase("DELETE"));
 		logger.info("isDelete? " + isDelete);
 		return isDelete;
 	}
 
-	public boolean confirmDelete(HttpServletRequest request, SimpleForm simpleForm) {
-		boolean isConfirmDelete = StringUtil.getBoolean(request.getParameter(simpleForm.getParameterName(CONFIRM_DELETE)));
+	public boolean confirmDelete(HttpServletRequest request) {
+		boolean isConfirmDelete = StringUtil.getBoolean(request.getParameter(simpleFormParams.getParameterName(CONFIRM_DELETE)));
 		logger.info("isConfirmDelete? " + isConfirmDelete);
 		return isConfirmDelete;
 	}
 
-	public boolean isSubmitted(HttpServletRequest request, SimpleForm simpleForm) {
-		boolean isSubmitted = (isDelete(request, simpleForm) && (simpleForm.getMetaParameterName(SUBMIT_DELETE)).equals(request.getParameter(simpleForm.getMetaParameterName(ACTION_SUBMIT))))
-				|| (isEdit(request, simpleForm) && (simpleForm.getMetaParameterName(SUBMIT_EDIT)).equals(request.getParameter(simpleForm.getMetaParameterName(ACTION_SUBMIT))))
-				|| (isNew(request, simpleForm) && (simpleForm.getMetaParameterName(SUBMIT_NEW)).equals(request.getParameter(simpleForm.getMetaParameterName(ACTION_SUBMIT))));
+	public boolean isSubmitted(HttpServletRequest request) {
+		boolean isSubmitted = (isDelete(request) && (simpleFormParams.getMetaParameterName(SUBMIT_DELETE)).equals(request.getParameter(simpleFormParams.getMetaParameterName(ACTION_SUBMIT))))
+				|| (isEdit(request) && (simpleFormParams.getMetaParameterName(SUBMIT_EDIT)).equals(request.getParameter(simpleFormParams.getMetaParameterName(ACTION_SUBMIT))))
+				|| (isNew(request) && (simpleFormParams.getMetaParameterName(SUBMIT_NEW)).equals(request.getParameter(simpleFormParams.getMetaParameterName(ACTION_SUBMIT))));
 		logger.info("isSubmitted? " + isSubmitted);
 		return isSubmitted;
 	}

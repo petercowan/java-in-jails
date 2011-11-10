@@ -4,8 +4,9 @@ import org.jails.form.FormInput;
 import org.jails.form.FormTag;
 import org.jails.form.Repeater;
 import org.jails.form.SimpleForm;
-import org.jails.property.BeanToMap;
-import org.jails.property.SimpleBeanToMap;
+import org.jails.form.SimpleFormParams;
+import org.jails.property.Mapper;
+import org.jails.property.SimpleMapper;
 import org.jails.validation.client.ClientConstraintInfo;
 import org.jails.validation.client.ClientConstraintInfoRegistry;
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ import java.util.List;
 public abstract class InputConstructor<T extends FormInput> {
 	protected static Logger logger = LoggerFactory.getLogger(InputConstructor.class);
 
+	protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
+
 	protected T tag;
 	protected FormTag formTag;
 	protected SimpleForm simpleForm;
@@ -33,13 +36,13 @@ public abstract class InputConstructor<T extends FormInput> {
 	protected String inputId;
 	protected String validation;
 
-	protected BeanToMap beanMapper;
+	protected Mapper beanMapper;
 
 	public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		this.tag = tag;
 		this.formTag = formTag;
 		this.repeater = repeatTag;
-		this.beanMapper = new SimpleBeanToMap();
+		this.beanMapper = new SimpleMapper();
 		initFormTag();
 		initFieldName();
 		initCssClass();
@@ -62,21 +65,17 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected void initFieldName() {
 		if (repeater != null) {
-			fieldName = simpleForm.getIndexedParameterName(
+			fieldName = simpleFormParams.getIndexedParameterName(
 					tag.getName(),
 					repeater.getIndex());
 		} else {
-			fieldName = simpleForm.getParameterName(tag.getName());
+			fieldName = simpleFormParams.getParameterName(tag.getName());
 		}
 		logger.info("constructing " + fieldName);
 	}
 
 	public String getFieldName() {
 		return fieldName;
-	}
-
-	public String getFieldNameAttr() {
-		return getAttribute("name", fieldName);
 	}
 
 	private int getIndex() {
@@ -118,11 +117,11 @@ public abstract class InputConstructor<T extends FormInput> {
 		} else if (simpleForm != null && simpleForm.isBound()) {
 			if (repeater != null) {
 				SimpleForm beanForm = simpleForm;
-				fieldValues = beanMapper.getBeanPropertyValues(
+				fieldValues = beanMapper.toValues(
 						fieldName, beanForm.getObject(repeater.getIndex()));
 			} else {
 				SimpleForm beanForm = (SimpleForm) simpleForm;
-				fieldValues = beanMapper.getBeanPropertyValues(fieldName, beanForm.getObject());
+				fieldValues = beanMapper.toValues(fieldName, beanForm.getObject());
 			}
 		} else if (tag.getDefaultValue() != null) {
 			fieldValues = new String[]{tag.getDefaultValue()};
@@ -172,12 +171,29 @@ public abstract class InputConstructor<T extends FormInput> {
 		return inputId;
 	}
 
-	public String getInputIdAttr() {
-		return getAttribute("id", inputId);
+	public String getAttribute(String attrName) {
+		return (tag.getAttributes() != null) ? tag.getAttributes().get(attrName) : null;
 	}
 
 	public String getAttribute(String attrName, String attrValue) {
-		return " " + attrName + "=\"" + attrValue + "\"";
+		if (getAttribute(attrName) != null) attrValue = getAttribute(attrName);
+		return (attrValue != null) ? " " + attrName + "=\"" + attrValue + "\"" : "";
+	}
+
+	public String getAttributes() {
+		StringBuffer attrString = new StringBuffer();
+		for (String attrName : tag.getAttributes().keySet()) {
+			getAttribute(attrName, tag.getAttributes().get(attrName));
+		}
+		return attrString.toString();
+	}
+
+	public String getFieldNameAttr() {
+		return getAttribute("name", fieldName);
+	}
+
+	public String getInputIdAttr() {
+		return getAttribute("id", inputId);
 	}
 
 	public String getTypeAttr(String type) {

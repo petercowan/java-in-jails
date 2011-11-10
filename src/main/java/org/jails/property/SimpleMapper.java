@@ -5,12 +5,12 @@ import org.jails.property.handler.NullNestedPropertyHandler;
 import org.jails.property.handler.SimplePropertyHandler;
 import org.jails.property.parser.SimplePropertyParser;
 
-public class SimpleMapToBean extends MapToBean {
-	public SimpleMapToBean() {
+public class SimpleMapper extends Mapper {
+	public SimpleMapper() {
 		super(new SimplePropertyParser(), new SimplePropertyHandler());
 	}
 
-	public SimpleMapToBean(NullNestedPropertyHandler propertyHandler) {
+	public SimpleMapper(NullNestedPropertyHandler propertyHandler) {
 		super(new SimplePropertyParser(), new BasePropertyHandler(propertyHandler));
 	}
 }

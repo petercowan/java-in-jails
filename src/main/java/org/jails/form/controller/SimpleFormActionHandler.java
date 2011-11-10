@@ -1,4 +1,4 @@
-package org.jails.form;
+package org.jails.form.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -2,7 +2,8 @@ package org.jails.form.taglib;
 
 import org.jails.form.FormTag;
 import org.jails.form.SimpleForm;
-import org.jails.form.SimpleFormRouter;
+import org.jails.form.SimpleFormParams;
+import org.jails.form.controller.SimpleFormRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,8 @@ public class SimpleFormTag
 		extends BodyTagSupport
 		implements FormTag {
 	private static Logger logger = LoggerFactory.getLogger(SimpleFormTag.class);
+
+	private static SimpleFormParams simpleFormParams = new SimpleFormParams();
 
 	public static String STACKED = "stacked";
 	public static String SIDE_BY_SIDE = "side";
@@ -115,7 +118,7 @@ public class SimpleFormTag
 			} else {
 				hiddenMethod = "PUT";
 			}
-			return "<input type=\"hidden\" name=\"" + simpleForm.getMetaParameterName("method")
+			return "<input type=\"hidden\" name=\"" + simpleFormParams.getMetaParameterName("method")
 					+ "\" value=\"" + hiddenMethod + "\" />";
 		} else {
 			return "";
@@ -127,11 +130,11 @@ public class SimpleFormTag
 
 		if (simpleForm != null) {
 			if (simpleForm.isBound()) {
-				submitValue = simpleForm.getMetaParameterName(SimpleFormRouter.SUBMIT_EDIT);
+				submitValue = simpleFormParams.getMetaParameterName(SimpleFormRouter.SUBMIT_EDIT);
 			} else {
-				submitValue = simpleForm.getMetaParameterName(SimpleFormRouter.SUBMIT_NEW);
+				submitValue = simpleFormParams.getMetaParameterName(SimpleFormRouter.SUBMIT_NEW);
 			}
-			return "<input type=\"hidden\" name=\"" + simpleForm.getMetaParameterName(SimpleFormRouter.ACTION_SUBMIT)
+			return "<input type=\"hidden\" name=\"" + simpleFormParams.getMetaParameterName(SimpleFormRouter.ACTION_SUBMIT)
 					+ "\" value=\"" + submitValue + "\" />";
 		} else {
 			return "";

@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.TextareaInput;
 import org.jails.form.constructor.TagInputConstructor;
 import org.jails.form.constructor.TextAreaConstructor;
 
@@ -7,7 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class TextAreaTag
-		extends FormInputTagSupport {
+		extends FormInputTagSupport
+		implements TextareaInput {
 
 	protected String rows;
 	protected String cols;

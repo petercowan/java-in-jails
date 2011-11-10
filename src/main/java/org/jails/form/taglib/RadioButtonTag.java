@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.RadioButtonInput;
 import org.jails.form.constructor.RadioButtonConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 
@@ -7,7 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class RadioButtonTag
-		extends FormInputTagSupport {
+		extends FormInputTagSupport
+		implements RadioButtonInput {
 
 	private String tabIndex;
 

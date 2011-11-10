@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.SelectOptionInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class SelectOptionTag
-		extends TagSupport {
+		extends TagSupport
+		implements SelectOptionInput {
 	private static Logger logger = LoggerFactory.getLogger(SelectOptionTag.class);
 
 	private String value;
@@ -30,18 +32,28 @@ public class SelectOptionTag
 		if (selectInput == null) {
 			throw new JspTagException("A SelectOptionInput tag must be nested within a SelectInput.");
 		}
+		SimpleFormTag formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+		if (formTag == null) {
+			if (formTag == null) {
+				throw new JspTagException("A FormInput tag must be nested within a FormTag.");
+			}
+		}
+		RepeaterTag repeatTag = (RepeaterTag) TagSupport.findAncestorWithClass(this, RepeaterTag.class);
+
 
 		ServletRequest request = pageContext.getRequest();
 		JspWriter out = pageContext.getOut();
 
 		try {
 
-			String[] fieldValues = selectInput.getBodyInputConstructor(request).getFieldValues();
-			String selectedValue = (fieldValues.length > 0 && fieldValues[0] != null) ? fieldValues[0] : "";
+			String[] fieldValues = selectInput.getBodyInputConstructor(formTag, repeatTag, request).getFieldValues();
 
 			StringBuffer optionHtml = new StringBuffer();
 			optionHtml.append("<option value=\"" + value + "\"");
-			if (value.equals(selectedValue)) optionHtml.append(" SELECTED");
+			for (String fieldValue : fieldValues) {
+				if (value.equals(fieldValue)) optionHtml.append(" SELECTED");
+				break;
+			}
 			optionHtml.append("> " + label + "</option>");
 
 			out.print(optionHtml);

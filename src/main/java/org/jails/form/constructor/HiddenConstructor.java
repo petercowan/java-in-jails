@@ -1,14 +1,14 @@
 package org.jails.form.constructor;
 
-import org.jails.form.taglib.HiddenTag;
+import org.jails.form.HiddenInput;
 import org.jails.form.taglib.RepeaterTag;
 import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
 
-public class HiddenConstructor extends TagInputConstructor<HiddenTag>{
+public class HiddenConstructor extends TagInputConstructor<HiddenInput>{
 
-	public HiddenConstructor(HiddenTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+	public HiddenConstructor(HiddenInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

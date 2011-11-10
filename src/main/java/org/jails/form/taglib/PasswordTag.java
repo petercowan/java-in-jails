@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.PasswordInput;
 import org.jails.form.constructor.PasswordConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 
@@ -7,7 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class PasswordTag
-		extends FormInputTagSupport {
+		extends FormInputTagSupport
+		implements PasswordInput {
 
 	private String size = "25";
 

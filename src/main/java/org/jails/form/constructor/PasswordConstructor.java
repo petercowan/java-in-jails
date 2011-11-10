@@ -1,13 +1,13 @@
 package org.jails.form.constructor;
 
-import org.jails.form.taglib.PasswordTag;
+import org.jails.form.PasswordInput;
 import org.jails.form.taglib.RepeaterTag;
 import org.jails.form.taglib.SimpleFormTag;
 
 import javax.servlet.ServletRequest;
 
-public class PasswordConstructor extends TagInputConstructor<PasswordTag> {
-	public PasswordConstructor(PasswordTag tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
+public class PasswordConstructor extends TagInputConstructor<PasswordInput> {
+	public PasswordConstructor(PasswordInput tag, SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

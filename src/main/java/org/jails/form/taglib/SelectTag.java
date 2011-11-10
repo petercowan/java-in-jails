@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.SelectInput;
 import org.jails.form.constructor.BodyTagInputConstructor;
 import org.jails.form.constructor.SelectConstructor;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class SelectTag
-		extends FormInputBodyTagSupport {
+		extends FormInputBodyTagSupport implements SelectInput {
 
 	private static Logger logger = LoggerFactory.getLogger(SelectTag.class);
 

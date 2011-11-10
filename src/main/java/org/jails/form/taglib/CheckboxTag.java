@@ -1,5 +1,6 @@
 package org.jails.form.taglib;
 
+import org.jails.form.CheckboxInput;
 import org.jails.form.constructor.CheckBoxConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 
@@ -7,7 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 
 public class CheckboxTag
-		extends FormInputTagSupport {
+		extends FormInputTagSupport
+		implements CheckboxInput {
 
 	private String checked;
 

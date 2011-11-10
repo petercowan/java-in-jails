@@ -1,8 +1,9 @@
 package org.jails.form.taglib;
 
-import org.jails.form.CheckboxInput;
+import org.jails.form.input.CheckboxInput;
 import org.jails.form.constructor.CheckBoxConstructor;
 import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.CheckboxInput;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;

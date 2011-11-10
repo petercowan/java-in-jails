@@ -1,8 +1,8 @@
 package org.jails.form.constructor;
 
-import org.jails.form.CheckboxInput;
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
+import org.jails.form.input.CheckboxInput;
+import org.jails.form.input.FormTag;
+import org.jails.form.input.Repeater;
 import org.jails.util.StringUtil;
 
 import javax.servlet.ServletRequest;

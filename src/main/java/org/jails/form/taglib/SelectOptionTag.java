@@ -1,6 +1,7 @@
 package org.jails.form.taglib;
 
-import org.jails.form.SelectOptionInput;
+import org.jails.form.input.SelectOptionInput;
+import org.jails.form.input.SelectOptionInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

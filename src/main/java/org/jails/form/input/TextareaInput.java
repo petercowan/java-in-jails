@@ -1,4 +1,4 @@
-package org.jails.form;
+package org.jails.form.input;
 
 public interface TextareaInput extends FormInput {
 	public void setRows(String rows);

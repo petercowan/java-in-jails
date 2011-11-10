@@ -14,14 +14,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapToBeanTest
+public class MapperTest
 		extends TestCase {
 	/**
 	 * Create the test case
 	 *
 	 * @param testName name of the test case
 	 */
-	public MapToBeanTest(String testName) {
+	public MapperTest(String testName) {
 		super(testName);
 	}
 
@@ -29,16 +29,16 @@ public class MapToBeanTest
 	 * @return the suite of tests being tested
 	 */
 	public static Test suite() {
-		return new TestSuite(MapToBeanTest.class);
+		return new TestSuite(MapperTest.class);
 	}
 
 	private void xMapToBean() {
 		PropertyParser parser = new SimplePropertyParser();
 		PropertyHandler handler = new SimplePropertyHandler();
-		MapToBean beanMapper = new MapToBean(parser, handler);
+		Mapper beanMapper = new Mapper(parser, handler);
 		Map<String, String[]> params = getParameters(null, null);
 		MappingBean bean = new MappingBean();
-		beanMapper.setBeanProperties(params, bean);
+		beanMapper.toExistingObject(params, bean);
 
 		assertBeanValues(bean);
 	}
@@ -46,7 +46,7 @@ public class MapToBeanTest
 	public void testMapListToBean() {
 		PropertyParser parser = new SimplePropertyParser();
 		PropertyHandler handler = new SimplePropertyHandler();
-		MapToBean beanMapper = new MapToBean(parser, handler);
+		Mapper beanMapper = new Mapper(parser, handler);
 		Map<String, String[]> paramMap = new LinkedHashMap<String, String[]>();
 		for (int i = 0; i < 2; i++) {
 			paramMap.putAll(getParameters(i, null));
@@ -56,7 +56,7 @@ public class MapToBeanTest
 		List<MappingBean> beans = new ArrayList<MappingBean>();
 		beans.add(new MappingBean());
 		beans.add(new MappingBean());
-		beanMapper.setIndexedBeanProperties(paramMap, beans);
+		beanMapper.toExistingList(paramMap, beans);
 
 		for (MappingBean bean : beans) {
 			assertBeanValues(bean);

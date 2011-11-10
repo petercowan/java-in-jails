@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.HiddenInput;
+import org.jails.form.input.HiddenInput;
 import org.jails.form.constructor.HiddenConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 

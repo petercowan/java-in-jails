@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.TextInput;
+import org.jails.form.input.TextInput;
 import org.jails.form.constructor.TagInputConstructor;
 import org.jails.form.constructor.TextConstructor;
 

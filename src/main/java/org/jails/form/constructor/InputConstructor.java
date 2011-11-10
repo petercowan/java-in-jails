@@ -1,10 +1,13 @@
 package org.jails.form.constructor;
 
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
+import org.jails.form.input.FormInput;
+import org.jails.form.input.FormInput;
+import org.jails.form.input.FormTag;
+import org.jails.form.input.FormTag;
+import org.jails.form.input.Repeater;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
+import org.jails.form.input.Repeater;
 import org.jails.property.Mapper;
 import org.jails.property.SimpleMapper;
 import org.jails.validation.client.ClientConstraintInfo;

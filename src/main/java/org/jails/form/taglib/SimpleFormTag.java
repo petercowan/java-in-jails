@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.FormTag;
+import org.jails.form.input.FormTag;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.form.controller.SimpleFormRouter;

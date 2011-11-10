@@ -1,4 +1,6 @@
-package org.jails.form;
+package org.jails.form.input;
+
+import org.jails.form.SimpleForm;
 
 public interface FormTag {
 	public void setName(String name);

@@ -10,11 +10,7 @@ public class SimpleFormBuilder<T> extends AbstractFormBuilder<T> {
 		_validateAs(classType);
 	}
 
-	protected SimpleFormBuilder(T bean) {
-		_bindTo(bean);
-	}
-
-	protected SimpleFormBuilder(T[] beanArray) {
+	protected SimpleFormBuilder(T... beanArray) {
 		_bindTo(beanArray);
 	}
 }

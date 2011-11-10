@@ -13,16 +13,20 @@ public abstract class SimpleForm<T> {
 	protected SimpleForm() {
 	}
 
-	public static <T> SimpleForm<T> validateAs(Class classType) {
+	public static <T> SimpleForm<T> validateAs(Class<T> classType) {
 		return new SimpleFormBuilder<T>(classType);
 	}
 
-	public static <T> SimpleForm<T> bindTo(T formBean) {
-		return new SimpleFormBuilder<T>(formBean);
+	public static <T> SimpleForm<T> bindTo(T... objects) {
+		return new SimpleFormBuilder<T>(objects);
 	}
 
-	public static <T> SimpleForm<T> bindTo(T[] beanArray) {
-		return new SimpleFormBuilder<T>(beanArray);
+	public static <T> SimpleForm<T> fromRequest(HttpServletRequest request, Class<T> classType, String name) {
+		return (SimpleForm<T>) request.getAttribute("_" + name + "_form");
+	}
+
+	public static <T> SimpleForm<T> fromRequest(HttpServletRequest request, Class<T> classType) {
+		return fromRequest(request, classType, classType.getSimpleName());
 	}
 
 	public abstract SimpleForm<T> named(String name);

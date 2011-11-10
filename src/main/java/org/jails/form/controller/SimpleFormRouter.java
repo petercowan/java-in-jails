@@ -107,6 +107,12 @@ public class SimpleFormRouter {
 		return (ids.length == 0) ? null : ids[0];
 	}
 
+	public int idCount(HttpServletRequest request) {
+		Integer[] ids = getIds(request);
+		return (ids != null) ? ids.length : 0;
+
+	}
+
 	protected String getActionPath(HttpServletRequest request) {
 		String actionPath = (request.getRequestURI().indexOf("/") >= 0)
 				? request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1)

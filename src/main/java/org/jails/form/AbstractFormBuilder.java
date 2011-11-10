@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,29 +31,18 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 
 	protected PropertyParser propertyParser = new SimplePropertyParser();
 
-	protected SimpleForm<T> _bindTo(T formBean) {
-		if (formBean == null)
-			throw new IllegalArgumentException("bean must not be null");
-		if (classType != null && formBean.getClass() != classType)
-			throw new IllegalArgumentException("Binding object must be the same type as the class used to validate this form");
-		beanArray = (T[]) Array.newInstance(classType, 1);
-		beanArray[0] = formBean;
-		_validateAs(formBean.getClass());
-		if (identityField != null) identifyBy(identityField);
-		return this;
-	}
-
-	protected SimpleForm<T> _bindTo(T[] formBeans) {
-		if (formBeans == null || formBeans.length == 0)
+	protected SimpleForm<T> _bindTo(T... objects) {
+		if (objects == null || objects.length == 0)
 			throw new IllegalArgumentException("beanArray may not be null or empty.");
-		if (classType != null && formBeans.length > 0 && formBeans[0].getClass() != classType)
+		if (classType != null && objects.length > 0 && objects[0].getClass() != classType)
 			throw new IllegalArgumentException("Binding object must be the same type as the class used to validate this form");
-		if (repeatCount != null && formBeans.length != repeatCount)
+		if (repeatCount != null && objects.length != repeatCount)
 			throw new IllegalArgumentException("Repeat count must be the same as the number of form beans");
-		this.beanArray = formBeans;
-		_validateAs(formBeans[0].getClass());
+		this.beanArray = objects;
+		_validateAs(objects[0].getClass());
 		if (identityField != null) identifyBy(identityField);
-		return repeat(beanArray.length);
+		if (beanArray.length > 1) repeat(beanArray.length);
+		return this;
 	}
 
 	public SimpleForm<T> identifyBy(String identityField) {

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 
@@ -70,9 +71,15 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 		SimpleForm<T> simpleForm;
 		if (simpleFormRequest.isSubmitted(request)) {
 			try {
-				T object = create(classType, request.getParameterMap());
-				request.setAttribute(path, object);
-				return getShowView();
+				if (simpleFormRequest.idCount(request) > 1) {
+					List<T> objects = createAll(classType, simpleFormRequest.getIds(request), request.getParameterMap());
+					request.setAttribute(path + "s", objects);
+					return getShowAllView();
+				} else {
+					T object = create(classType, simpleFormRequest.getId(request), request.getParameterMap());
+					request.setAttribute(path, object);
+					return getShowView();
+				}
 			} catch (ValidationException e) {
 				logger.warn(e.getMessage());
 				SimpleForm.validateAs(classType)
@@ -95,21 +102,30 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	public String edit(HttpServletRequest request, HttpServletResponse response) {
 		SimpleForm<T> simpleForm;
 
-		T object;
+		List<T> objects;
 		try {
-			object = find(classType, simpleFormRequest.getId(request));
+			objects = findAll(classType, simpleFormRequest.getIds(request));
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
-			return getEditView();
+			if (simpleFormRequest.idCount(request) > 1) {
+				return getEditAllView();
+			} else {
+				return getEditView();
+			}
 		}
-		logger.info("Binding object " + object + " to form");
+		logger.info("Binding objects  to form");
 
-		simpleForm = SimpleForm.bindTo(object)
-								.identifyBy(idField)
-								.inRequest(request);
+
+		simpleForm = SimpleForm.bindTo(listToArray(objects))
+				.identifyBy(idField)
+				.inRequest(request);
 		if (simpleFormRequest.isSubmitted(request)) {
 			try {
-				update(object, request.getParameterMap());
+				if (objects.size() > 1) {
+					editAll(objects, request.getParameterMap());
+				} else {
+					edit(objects.get(0), request.getParameterMap());
+				}
 			} catch (ValidationException e) {
 				logger.warn(e.getMessage());
 				simpleForm.setErrors(e.getErrorFields());
@@ -123,14 +139,18 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public String delete(HttpServletRequest request, HttpServletResponse response) {
-		T object = null;
+		List<T> objects = null;
 		try {
-			object = find(classType, simpleFormRequest.getId(request));
+			objects = findAll(classType, simpleFormRequest.getIds(request));
 			if (simpleFormRequest.confirmDelete(request)) {
-				remove(object);
+				if (objects.size() > 1) {
+					deleteAll(objects);
+				} else {
+					delete(objects.get(0));
+				}
 				return index(request, response);
 			} else {
-				SimpleForm.bindTo(object)
+				SimpleForm.bindTo(listToArray(objects))
 						.identifyBy(idField)
 						.inRequest(request);
 				return getConfirmView();
@@ -139,8 +159,8 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 			logger.error(e.getMessage());
 			setPageError(e.getMessage(), request);
 		} finally {
-			if (object != null) {
-				SimpleForm.bindTo(object)
+			if (objects != null && objects.size() > 0) {
+				SimpleForm.bindTo(listToArray(objects))
 						.identifyBy(idField)
 						.inRequest(request);
 				return getConfirmView();
@@ -158,12 +178,20 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 		return "/view/" + path + "/show.jsp";
 	}
 
+	public String getShowAllView() {
+		return "/view/" + path + "/showAll.jsp";
+	}
+
 	public String getCreateView() {
 		return "/view/" + path + "/create.jsp";
 	}
 
 	public String getEditView() {
 		return "/view/" + path + "/edit.jsp";
+	}
+
+	public String getEditAllView() {
+		return "/view/" + path + "/editAll.jsp";
 	}
 
 	public String getConfirmView() {
@@ -174,6 +202,14 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 		return "/view/" + path + "/delete.jsp";
 	}
 
+	public String getDeleteAllView() {
+		return "/view/" + path + "/deleteAll.jsp";
+	}
+
+	protected T[] listToArray(List<T> objects) {
+		return (T[]) Array.newInstance(classType, objects.size());
+	}
+
 	protected void setPageError(String errorMessage, HttpServletRequest request) {
 		request.setAttribute("error_message", errorMessage);
 	}
@@ -182,11 +218,18 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 
 	protected abstract T find(Class<T> classType, Integer id) throws Exception;
 
-	protected abstract T create(Class<T> classType, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract List<T> findAll(Class<T> classType, Integer[] ids) throws Exception;
 
-	protected abstract void update(T object, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract T create(Class<T> classType, Integer id, Map<String, String[]> parameterMap) throws Exception;
 
-	protected abstract void remove(T object) throws Exception;
+	protected abstract List<T> createAll(Class<T> classType, Integer[] ids, Map<String, String[]> parameterMap) throws Exception;
 
+	protected abstract void edit(T object, Map<String, String[]> parameterMap) throws Exception;
+
+	protected abstract T editAll(List<T> objects, Map<String, String[]> parameterMap) throws Exception;
+
+	protected abstract void delete(T object) throws Exception;
+
+	protected abstract void deleteAll(List<T> objects) throws Exception;
 
 }

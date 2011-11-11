@@ -205,7 +205,13 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 
 	protected T[] listToArray(List<T> objects) {
 		int size = (objects == null) ? 0 : objects.size();
-		return (T[]) Array.newInstance(classType, size);
+		T[] array = (T[]) Array.newInstance(classType, size);
+		int index = 0;
+		for (T o : objects) {
+			array[index++] = o;
+		}
+		logger.info("Created array with " + size + " elements");
+		return array;
 	}
 
 	protected void setPageError(String errorMessage, HttpServletRequest request) {

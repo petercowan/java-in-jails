@@ -82,10 +82,11 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 				}
 			} catch (ValidationException e) {
 				logger.warn(e.getMessage());
-				SimpleForm.validateAs(classType)
-						.identifyBy(idField)
-						.inRequest(request)
-						.setErrors(e.getErrorFields());
+				simpleForm = SimpleForm.validateAs(classType)
+									.identifyBy(idField)
+									.inRequest(request);
+				for (Map<String, List<String>> errors : e.getErrorFields().values())
+					simpleForm.addErrorFieldsMap(errors);
 				return getCreateView();
 			} catch (Exception e) {
 				logger.warn(e.getMessage());
@@ -127,13 +128,9 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 					edit(objects.get(0), request.getParameterMap());
 				}
 			} catch (ValidationException e) {
-				logger.warn(e.getMessage());
-				simpleForm.setErrors(e.getErrorFields());
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				setPageError(e.getMessage(), request);
+				for (Map<String, List<String>> errors : e.getErrorFields().values())
+					simpleForm.addErrorFieldsMap(errors);
 			}
-
 		}
 		return getEditView();
 	}
@@ -207,7 +204,8 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	protected T[] listToArray(List<T> objects) {
-		return (T[]) Array.newInstance(classType, objects.size());
+		int size = (objects == null) ? 0 : objects.size();
+		return (T[]) Array.newInstance(classType, size);
 	}
 
 	protected void setPageError(String errorMessage, HttpServletRequest request) {
@@ -220,13 +218,13 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 
 	protected abstract List<T> findAll(Class<T> classType, Integer[] ids) throws Exception;
 
-	protected abstract T create(Class<T> classType, Integer id, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract T create(Class<T> classType, Integer id, Map<String, String[]> parameterMap) throws ValidationException;
 
-	protected abstract List<T> createAll(Class<T> classType, Integer[] ids, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract List<T> createAll(Class<T> classType, Integer[] ids, Map<String, String[]> parameterMap) throws ValidationException;
 
-	protected abstract void edit(T object, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract void edit(T object, Map<String, String[]> parameterMap) throws ValidationException;
 
-	protected abstract T editAll(List<T> objects, Map<String, String[]> parameterMap) throws Exception;
+	protected abstract void editAll(List<T> objects, Map<String, String[]> parameterMap) throws ValidationException;
 
 	protected abstract void delete(T object) throws Exception;
 

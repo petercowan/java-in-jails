@@ -80,23 +80,43 @@ public class SimpleFormRouter {
 	//requestPath = /path/[id],[id].../action
 	public Integer[] getIds(HttpServletRequest request) {
 		Integer[] ids = null;
+		logger.info("path: " + request.getRequestURI());
 		String requestPath = request.getRequestURI().replace("/" + path + "/", "");
-		Pattern idPattern = Pattern.compile("^([0-9,]+)");
-		Matcher idMatcher = idPattern.matcher(requestPath);
-		if (idMatcher.find()) {
-			logger.info("matched: " + idMatcher.group(0));
-			String[] idStrings = idMatcher.group(0).split(",");
-			ids = new Integer[idStrings.length];
-			for (int i = 0; i < idStrings.length; i++) {
+		logger.info("action: " + requestPath);
+		if (requestPath.indexOf(",") > 0) {
+			Pattern idPattern = Pattern.compile("^([0-9,]+)");
+			Matcher idMatcher = idPattern.matcher(requestPath);
+			if (idMatcher.find()) {
+				logger.info("matched: " + idMatcher.group(0));
+				String[] idStrings = idMatcher.group(0).split(",");
+				ids = new Integer[idStrings.length];
+				for (int i = 0; i < idStrings.length; i++) {
+					try {
+						logger.info("parsing " + idStrings[i] + "|");
+						ids[i] = Integer.parseInt(idStrings[i]);
+					} catch (Exception e) {
+						logger.warn(e.toString());
+					}
+				}
+			} else {
+				logger.info("No match");
+			}
+		} else {
+			Pattern idPattern = Pattern.compile("^([0-9]+)");
+			Matcher idMatcher = idPattern.matcher(requestPath);
+			if (idMatcher.find()) {
+				logger.info("matched: " + idMatcher.group(0));
+				String idString = idMatcher.group(0);
+				ids = new Integer[1];
 				try {
-					logger.info("parsing " + idStrings[i] + "|");
-					ids[i] = Integer.parseInt(idStrings[i]);
+					logger.info("parsing " + idString + "|");
+					ids[0] = Integer.parseInt(idString);
 				} catch (Exception e) {
 					logger.warn(e.toString());
 				}
+			} else {
+				logger.info("No match");
 			}
-		} else {
-			logger.info("No match");
 		}
 		if (ids == null) ids = new Integer[0];
 		return ids;

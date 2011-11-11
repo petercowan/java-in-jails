@@ -2,18 +2,16 @@ package org.jails.property;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.jails.property.handler.PropertyHandler;
+import org.jails.property.parser.PropertyParser;
+import org.jails.property.parser.SimplePropertyParser;
+import org.jails.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jails.util.StringUtil;
-import org.jails.property.handler.PropertyHandler;
-import org.jails.property.parser.SimplePropertyParser;
-import org.jails.property.parser.PropertyParser;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,13 +85,13 @@ public class Mapper {
 	}
 
 	public <T> List<T> toList(Map<String, String[]> paramMap, Class<T> classType) {
-		LinkedHashMap<Integer, Map<String, String[]>> paramMapMap = getParamMapMap(paramMap);
+		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
-		List<T> objects = new ArrayList<T>(paramMapMap.size());
+		List<T> objects = new ArrayList<T>(multiMap.size());
 
 		try {
 			T object = classType.newInstance();
-			for (int i = 0; i < paramMapMap.size(); i++) {
+			for (int i = 0; i < multiMap.size(); i++) {
 				objects.add(object);
 			}
 		} catch (Exception e) {
@@ -101,39 +99,20 @@ public class Mapper {
 			throw new IllegalArgumentException("Class must have a public constructor with no args to use this method");
 		}
 
-		setIndexedBeanProperties(paramMapMap, objects);
+		setIndexedBeanProperties(multiMap, objects);
 
 		return objects;
 	}
 
 	public void toExistingList(Map<String, String[]> paramMap, List<?> objects) {
-		LinkedHashMap<Integer, Map<String, String[]>> paramMapMap = getParamMapMap(paramMap);
+		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
-		setIndexedBeanProperties(paramMapMap, objects);
+		setIndexedBeanProperties(multiMap, objects);
 	}
 
-	protected LinkedHashMap<Integer, Map<String, String[]>> getParamMapMap(Map<String, String[]> paramMap) {
-		LinkedHashMap<Integer, Map<String, String[]>> paramMapMap = new LinkedHashMap<Integer, Map<String, String[]>>();
-		int index = 0;
-		for (String param : paramMap.keySet()) {
-			Integer propertyIndex = propertyParser.getPropertyIndex(param);
-
-			if (propertyIndex != null) {
-				Map<String, String[]> indexedMap = paramMapMap.get(propertyIndex);
-				if (indexedMap == null) {
-					logger.info("adding index map: " + propertyIndex);
-					indexedMap = new HashMap<String, String[]>();
-					paramMapMap.put(propertyIndex, indexedMap);
-				}
-				indexedMap.put(propertyParser.getPropertyName(param), paramMap.get(param));
-			}
-		}
-		return paramMapMap;
-	}
-
-	protected void setIndexedBeanProperties(LinkedHashMap<Integer, Map<String, String[]>> paramMapMap, List<?> objects) {
-		for (Integer propertyIndex : paramMapMap.keySet()) {
-			Map<String, String[]> indexedMap = paramMapMap.get(propertyIndex);
+	protected void setIndexedBeanProperties(PropertiesMultiMap multiMap, List<?> objects) {
+		for (Integer propertyIndex : multiMap.keySet()) {
+			Map<String, String[]> indexedMap = multiMap.get(propertyIndex);
 
 			if (objects.size() > propertyIndex) {
 				Object object = objects.get(propertyIndex);

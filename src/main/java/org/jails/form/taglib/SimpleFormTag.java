@@ -1,9 +1,9 @@
 package org.jails.form.taglib;
 
-import org.jails.form.input.FormTag;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.form.controller.SimpleFormRouter;
+import org.jails.form.input.FormTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,7 @@ public class SimpleFormTag
 	protected String action;
 	protected String method;
 	protected String style = STACKED;
+	protected String errorMessage;
 
 	protected void setFormFromRequest() {
 		String simpleFormParam = "_" + name + "_form";
@@ -59,6 +60,10 @@ public class SimpleFormTag
 
 	public void setStyle(String style) {
 		this.style = (SIDE_BY_SIDE.equals(style)) ? SIDE_BY_SIDE : STACKED;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 	public boolean isStacked() {
@@ -155,18 +160,22 @@ public class SimpleFormTag
 	}
 
 	protected String getErrorMessage() {
-		StringBuffer errorMessage = new StringBuffer();
-		for (Integer index : formElementMap.keySet()){
-			List<String> formElements = formElementMap.get(index);
-			if (formElements != null) {
-				for (String fieldName : formElements) {
-					if (simpleForm.fieldHasError(fieldName, index)) {
-						errorMessage.append(simpleForm.getFieldError(fieldName, labelMap.get(fieldName), index));
+		if (errorMessage != null) {
+			return errorMessage;
+		} else {
+			StringBuffer message = new StringBuffer();
+			for (Integer index : formElementMap.keySet()) {
+				List<String> formElements = formElementMap.get(index);
+				if (formElements != null) {
+					for (String fieldName : formElements) {
+						if (simpleForm.fieldHasError(fieldName, index)) {
+							message.append(simpleForm.getFieldError(fieldName, labelMap.get(fieldName), index));
+						}
 					}
 				}
 			}
+			return message.toString();
 		}
-		return errorMessage.toString();
 	}
 
 	public int doStartTag() throws JspException {

@@ -11,6 +11,8 @@ public interface FormTag {
 
 	public void setStyle(String style);
 
+	public void setErrorMessage(String errorMessage);
+
 	public boolean isStacked();
 
 	public SimpleForm getSimpleForm();

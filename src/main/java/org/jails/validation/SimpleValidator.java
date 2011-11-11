@@ -3,6 +3,7 @@ package org.jails.validation;
 import org.jails.cloner.Cloner;
 import org.jails.cloner.XStreamCloner;
 import org.jails.property.Mapper;
+import org.jails.property.SimpleMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +24,9 @@ public class SimpleValidator {
 	private Mapper beanMapper;
 	private Validator validator;
 
-	private SimpleValidator() {
+	public SimpleValidator() {
 		validator = ValidatorInstance.getInstance().getValidator();
+		beanMapper = new SimpleMapper();
 	}
 
 	public SimpleValidator(Mapper beanMapper) {
@@ -82,4 +84,7 @@ public class SimpleValidator {
 		return validate(classType, params, RequiredChecks.class, Default.class);
 	}
 
+	public Mapper getMapper() {
+		return beanMapper;
+	}
 }

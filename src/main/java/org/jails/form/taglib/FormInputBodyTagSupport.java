@@ -98,7 +98,9 @@ public abstract class FormInputBodyTagSupport
 
 	public String getHtml(ServletRequest request) throws JspTagException {
 		BodyTagInputConstructor constructor = getBodyInputConstructor(formTag, repeatTag, request);
-		return constructor.wrapInputHtml(this, bodyContent.getString());
+		if (constructor != null) logger.info(constructor.getClass().toString());
+		String bodyContentString = (bodyContent == null) ? "" : bodyContent.getString();
+		return constructor.wrapInputHtml(this, bodyContentString);
 	}
 
 	protected abstract BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request)

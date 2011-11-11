@@ -1,10 +1,7 @@
 package org.jails.form.constructor;
 
 import org.jails.form.input.FormTag;
-import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
-import org.jails.form.input.Repeater;
-import org.jails.form.input.SelectInput;
 import org.jails.form.input.SelectInput;
 
 import javax.servlet.ServletRequest;
@@ -30,8 +27,12 @@ public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
 				getInputIdAttr() +
 				getClientValidationAttr() +
 				getAttribute("multiple", tag.getMultiple()) + ">");
+
 		if (options != null && options.size() > 0) {
 			StringBuffer optionHtml = new StringBuffer();
+			if (tag.getPrompt() != null) {
+				optionHtml.append("<option>" + tag.getPrompt() + "</option>");
+			}
 			for (String optionValue : options.keySet()) {
 				String optionLabel = options.get(optionValue);
 				optionHtml.append("<option" + getAttribute("value", optionValue));

@@ -30,7 +30,19 @@ public class PropertiesMap extends HashMap<String, String[]> {
 		String[] value = remove(oldKey);
 		put(newKey, value);
 	}
-	
+
+	public void put(String key, String value) {
+		put(key, new String[] {value});
+	}
+
+	public void update(String key, String[] newValues) {
+		put(key, newValues);
+	}
+
+	public void update(String key, String newValue) {
+		put(key, newValue);
+	}
+
 	public PropertiesMultiMap toMultiMap(PropertyParser propertyParser) {
 		PropertiesMultiMap multiMap = new PropertiesMultiMap();
 		int index = 0;

@@ -1,6 +1,5 @@
 package org.jails.form.taglib;
 
-import org.jails.form.input.SelectInput;
 import org.jails.form.constructor.BodyTagInputConstructor;
 import org.jails.form.constructor.SelectConstructor;
 import org.jails.form.input.SelectInput;
@@ -15,7 +14,8 @@ public class SelectTag
 
 	private static Logger logger = LoggerFactory.getLogger(SelectTag.class);
 
-	private String multiple = "no";
+	private String multiple;
+	private String prompt;
 
 	public String getMultiple() {
 		return multiple;
@@ -23,6 +23,14 @@ public class SelectTag
 
 	public void setMultiple(String multiple) {
 		this.multiple = multiple;
+	}
+
+	public String getPrompt() {
+		return prompt;
+	}
+
+	public void setPrompt(String prompt) {
+		this.prompt = prompt;
 	}
 
 	@Override

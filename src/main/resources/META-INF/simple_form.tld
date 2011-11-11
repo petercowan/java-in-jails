@@ -235,7 +235,7 @@
 	<tag>
 		<name>select</name>
 		<tag-class>org.jails.form.taglib.SelectTag</tag-class>
-		<body-content>empty</body-content>
+		<body-content>JSP</body-content>
 		<description>
 			A tag to add a select list to a SimpleForm
 		</description>
@@ -274,7 +274,7 @@
 	<tag>
 		<name>state_select</name>
 		<tag-class>org.jails.form.taglib.StateSelectTag</tag-class>
-		<body-content>empty</body-content>
+		<body-content>JSP</body-content>
 		<description>
 			A tag to add a select list of States to a SimpleForm
 		</description>
@@ -308,7 +308,7 @@
 	<tag>
 		<name>country_select</name>
 		<tag-class>org.jails.form.taglib.CountrySelectTag</tag-class>
-		<body-content>empty</body-content>
+		<body-content>JSP</body-content>
 		<description>
 			A tag to add a select list of Countries to a SimpleForm
 		</description>

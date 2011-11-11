@@ -1,7 +1,7 @@
 package org.jails.form.controller;
 
 import org.jails.form.SimpleFormParams;
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class SimpleFormRouter {
 	}
 
 	public boolean isShow(HttpServletRequest request) {
-		boolean isShow = ((ACTION_SHOW.equals(getActionPath(request)) || StringUtil.isEmpty(getActionPath(request)))
+		boolean isShow = ((ACTION_SHOW.equals(getActionPath(request)) || Strings.isEmpty(getActionPath(request)))
 				&& getMethod(request).equalsIgnoreCase("GET"))
 				&& getId(request) != null;
 		logger.info("isShow? " + isShow);
@@ -64,7 +64,7 @@ public class SimpleFormRouter {
 	}
 
 	public boolean confirmDelete(HttpServletRequest request) {
-		boolean isConfirmDelete = StringUtil.getBoolean(request.getParameter(simpleFormParams.getParameterName(CONFIRM_DELETE)));
+		boolean isConfirmDelete = Strings.getBoolean(request.getParameter(simpleFormParams.getParameterName(CONFIRM_DELETE)));
 		logger.info("isConfirmDelete? " + isConfirmDelete);
 		return isConfirmDelete;
 	}

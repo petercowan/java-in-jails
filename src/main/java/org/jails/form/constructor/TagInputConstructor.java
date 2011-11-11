@@ -3,10 +3,14 @@ package org.jails.form.constructor;
 import org.jails.form.input.FormInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 
 public abstract class TagInputConstructor<T extends FormInput> extends InputConstructor<T> {
+	private static Logger logger = LoggerFactory.getLogger(TagInputConstructor.class);
+
 	protected TagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
@@ -23,5 +27,4 @@ public abstract class TagInputConstructor<T extends FormInput> extends InputCons
 	public String wrapInputHtml(FormInput tag) {
 		return super.wrapInputHtml(tag, getInputHtml());
 	}
-
 }

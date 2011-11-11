@@ -20,6 +20,7 @@ public class CountrySelectTag
 	@Override
 	protected BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		SelectConstructor constructor = new SelectConstructor(this, formTag, repeatTag, request);
+		setPrompt("-- Choose a Country --");
 
 		List<Country> countries = Country.getCountries();
 		Map<String, String> options = new LinkedHashMap<String, String>();

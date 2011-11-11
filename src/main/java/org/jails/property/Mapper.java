@@ -5,7 +5,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.jails.property.handler.PropertyHandler;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +172,7 @@ public class Mapper {
 				}
 			} else {
 				try {
-					String value = (valArray != null && !StringUtil.isEmpty(valArray[0])) ? valArray[0] : null;
+					String value = (valArray != null && !Strings.isEmpty(valArray[0])) ? valArray[0] : null;
 					logger.info("Setting " + propertyName + " value to |" + value + "|");
 					if (value != null) logger.info("valueClass: " + value.getClass());
 					BeanUtils.setProperty(object, propertyName, value);

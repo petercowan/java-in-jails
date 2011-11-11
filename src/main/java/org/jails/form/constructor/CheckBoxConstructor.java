@@ -3,7 +3,7 @@ package org.jails.form.constructor;
 import org.jails.form.input.CheckboxInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 
 import javax.servlet.ServletRequest;
 
@@ -20,7 +20,7 @@ public class CheckBoxConstructor extends TagInputConstructor<CheckboxInput> {
 				getClientValidationAttr() +
 				getValueAttr(getFieldValue(0)));
 
-		if (StringUtil.getBoolean(tag.getChecked())) inputHtml.append(" CHECKED");
+		if (Strings.getBoolean(tag.getChecked())) inputHtml.append(" CHECKED");
 		inputHtml.append(" />");
 		return inputHtml.toString();
 	}

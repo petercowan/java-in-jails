@@ -4,7 +4,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.jails.form.controller.SimpleFormRouter;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 import org.jails.validation.BeanConstraints;
 import org.jails.validation.RequiredChecks;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	}
 
 	public SimpleForm<T> named(String name) {
-		this.name = StringUtil.toCamelCase(name);
+		this.name = Strings.toCamelCase(name);
 		return this;
 	}
 
@@ -138,9 +138,9 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		return  repeatCount > 0;
 	}
 
-	protected boolean isFieldRequired(T bean, String paramName) {
-		if (bean == null) return false;
-		logger.info("isFieldRequired? " + paramName + " of " + bean.getClass());
+	//todo - make this test on the object rather than just the class?
+	public boolean isFieldRequired(String paramName) {
+		logger.info("isFieldRequired? " + paramName + " of " + classType);
 
 		Set<Class<?>> constraints = BeanConstraints.getInstance()
 				.getConstraintGroups(classType, paramName);
@@ -151,10 +151,6 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 			}
 		}
 		return false;
-	}
-
-	public boolean isFieldRequired(String paramName) {
-		return isFieldRequired(getObject(0), paramName);
 	}
 
 	protected Map<String, List<String>> getErrorFieldMap(int index) {
@@ -238,13 +234,13 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	}
 
 	public String getAction() {
-		String baseAction = "/" + StringUtil.flattenCamelCase(name, "_") + "/";
+		String baseAction = "/" + Strings.flattenCamelCase(name, "_") + "/";
 		String action;
 		if (beanIdentities != null) {
 			if (beanIdentities.length == 0) {
 				action = baseAction + getIdentity(0) + "/" + SimpleFormRouter.ACTION_EDIT;
 			} else {
-				action = baseAction + StringUtil.join(",", beanIdentities)
+				action = baseAction + Strings.join(",", beanIdentities)
 											+ "/" + SimpleFormRouter.ACTION_EDIT;
 			}
 		} else {

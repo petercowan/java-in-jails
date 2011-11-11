@@ -1,7 +1,7 @@
 package org.jails.form.controller;
 
 import org.jails.form.SimpleForm;
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 import org.jails.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public BaseSimpleFormActionHandler(Class<T> classType) {
-		this(classType, StringUtil.flattenCamelCase(classType.getSimpleName(), "_"));
+		this(classType, Strings.flattenCamelCase(classType.getSimpleName(), "_"));
 	}
 
 	public String handleRequest(HttpServletRequest request, HttpServletResponse response) {

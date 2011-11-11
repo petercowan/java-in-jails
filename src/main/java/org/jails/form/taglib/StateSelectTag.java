@@ -26,6 +26,7 @@ public class StateSelectTag
 	@Override
 	protected BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		SelectConstructor constructor = new SelectConstructor(this, formTag, repeatTag, request);
+		setPrompt("-- Choose a State --");
 
 		List<State> states = ("US".equalsIgnoreCase(country))
 				? State.getUSStates()

@@ -5,4 +5,8 @@ public interface SelectInput extends FormInput {
 
 	public void setMultiple(String multiple);
 
+	public String getPrompt();
+
+	public void setPrompt(String prompt);
+
 }

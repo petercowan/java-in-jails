@@ -1,5 +1,6 @@
 package org.jails.form;
 
+import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +23,15 @@ public abstract class SimpleForm<T> {
 	}
 
 	public static <T> SimpleForm<T> fromRequest(HttpServletRequest request, Class<T> classType, String name) {
-		return (SimpleForm<T>) request.getAttribute("_" + name + "_form");
+		String simpleFormParam = "_" + name + "_form";
+		logger.info("Getting SimpleForm: " + simpleFormParam);
+		SimpleForm<T> simpleForm = (SimpleForm) request.getAttribute(simpleFormParam);
+		logger.info("Loaded form " + simpleForm);
+		return simpleForm;
 	}
 
 	public static <T> SimpleForm<T> fromRequest(HttpServletRequest request, Class<T> classType) {
-		return fromRequest(request, classType, classType.getSimpleName());
+		return fromRequest(request, classType, Strings.toCamelCase(classType.getSimpleName()));
 	}
 
 	public abstract SimpleForm<T> named(String name);

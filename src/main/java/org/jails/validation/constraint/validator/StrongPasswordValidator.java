@@ -1,6 +1,6 @@
 package org.jails.validation.constraint.validator;
 
-import org.jails.util.StringUtil;
+import org.jails.util.Strings;
 import org.jails.validation.constraint.StrongPassword;
 
 import javax.validation.ConstraintValidator;
@@ -15,7 +15,7 @@ public class StrongPasswordValidator implements ConstraintValidator<StrongPasswo
         if (password == null)
             return false;
         else
-            return StringUtil.isStrongPassword(password);
+            return Strings.isStrongPassword(password);
     }
 
 }

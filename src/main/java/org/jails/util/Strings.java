@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringUtil {
-	private static Logger logger = LoggerFactory.getLogger(StringUtil.class);
+public class Strings {
+	private static Logger logger = LoggerFactory.getLogger(Strings.class);
 
 	public static boolean isEmpty(String in) {
 		return  in != null && in.length() <= 0;
@@ -17,10 +17,10 @@ public class StringUtil {
 
 		int index = word.indexOf(wordSeparator);
 		while (index > 0) {
-			word = word.substring(0, index) + StringUtil.initCaps(word.substring(index + 1));
+			word = word.substring(0, index) + Strings.initCaps(word.substring(index + 1));
 			index = word.indexOf(wordSeparator);
 		}
-		return StringUtil.initLowercase(word);
+		return Strings.initLowercase(word);
 	}
 
 	public static String toCamelCase(String word) {
@@ -114,6 +114,33 @@ public class StringUtil {
 		sb.append(strings[strings.length - 1]);
 
 		return (sb.toString());
+	}
+
+	private String cleanNumber(String number, boolean allowDecimal) {
+		//make sure they entered SOMETHING
+		if (isEmpty(number)) {
+			return "";
+		}
+
+		char[] charsIn = number.toCharArray();
+
+		StringBuffer charsOut = new StringBuffer(number.length());
+
+		for (char currentChar : charsIn) {
+			if (Character.isDigit(currentChar) || (allowDecimal && currentChar == '.')) {
+				charsOut.append(currentChar).append("");
+			}
+		}
+		return charsOut.toString();
+
+	}
+
+	public String cleanInt(String intString) {
+		return cleanNumber(intString, false);
+	}
+
+	public String cleanDecimal(String decimalString) {
+		return cleanNumber(decimalString, true);
 	}
 
 	public static boolean isStrongPassword(String password)

@@ -1,13 +1,10 @@
 package org.jails.form.constructor;
 
 import org.jails.form.input.FormInput;
-import org.jails.form.input.FormInput;
-import org.jails.form.input.FormTag;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
-import org.jails.form.input.Repeater;
 import org.jails.property.Mapper;
 import org.jails.property.SimpleMapper;
 import org.jails.validation.client.ClientConstraintInfo;
@@ -56,10 +53,10 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected void initFormTag() {
 		simpleForm = formTag.getSimpleForm();
+		logger.info("adding element: " + tag.getName() + " to form: " + formTag);
 		formTag.addElement(tag.getName(), getIndex());
 		formTag.addLabel(tag.getName(), tag.getLabel());
 		logger.info("added element: " + tag.getName());
-
 	}
 
 	public FormTag getFormTag() {
@@ -175,7 +172,9 @@ public abstract class InputConstructor<T extends FormInput> {
 	}
 
 	public String getAttribute(String attrName) {
-		return (tag.getAttributes() != null) ? tag.getAttributes().get(attrName) : null;
+		String attr = (tag.getAttributes() != null) ? tag.getAttributes().get(attrName) : null;
+		if (attr != null) logger.info("found attribute " + attrName + " with value " + attr);
+		return attr;
 	}
 
 	public String getAttribute(String attrName, String attrValue) {

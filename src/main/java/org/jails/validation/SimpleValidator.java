@@ -25,18 +25,15 @@ public class SimpleValidator {
 	private Validator validator;
 
 	public SimpleValidator() {
-		validator = ValidatorInstance.getInstance().getValidator();
-		beanMapper = new SimpleMapper();
+		this(new XStreamCloner(),new SimpleMapper());
 	}
 
 	public SimpleValidator(Mapper beanMapper) {
-		this();
-		this.beanMapper = beanMapper;
-		cloner = new XStreamCloner();
+		this(new XStreamCloner(),beanMapper);
 	}
 
 	public SimpleValidator(Cloner cloner, Mapper beanMapper) {
-		this();
+		validator = ValidatorInstance.getInstance().getValidator();
 		this.cloner = cloner;
 		this.beanMapper = beanMapper;
 	}

@@ -122,7 +122,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		return beanIdentities[index];
 	}
 
-	public String getBeanIdentity() {
+	public String getIdentity() {
 		return getIdentity(0);
 	}
 

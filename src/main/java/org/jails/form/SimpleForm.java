@@ -51,7 +51,7 @@ public abstract class SimpleForm<T> {
 
 	public abstract String getIdentity(int index);
 
-	public abstract String getBeanIdentity();
+	public abstract String getIdentity();
 
 	public abstract String[] getIdentities();
 

@@ -16,45 +16,47 @@ public class RepeaterTag
 		implements Repeater {
 	private static Logger logger = LoggerFactory.getLogger(RepeaterTag.class);
 
-	private SimpleFormTag formTag;
-	private int times;
-	private int index;
+	private Integer times;
+	private Integer index;
 
-	public int getTimes() {
+	public Integer getTimes() {
 		return times;
 	}
 
-	public void setTimes(int times) {
+	public void setTimes(Integer times) {
 		this.times = times;
 	}
 
-	public int getIndex() {
+	public Integer getIndex() {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	public void setIndex(Integer index) {
 		this.index = index;
 	}
 
 	@Override
 	public int doStartTag() throws JspException {
-		formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+		SimpleFormTag formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
 		if (formTag == null) {
 			if (formTag == null) {
 				throw new JspTagException("A RepeatTag tag must be nested within a FormTag.");
 			}
 		}
+		if (times == null) {
+			times = (formTag.getSimpleForm() == null)
+					? 1
+					: formTag.getSimpleForm().getTimesToRepeat();
+		}
+
 		return EVAL_PAGE;
 	}
 
 	@Override
 	public int doAfterBody() throws JspException {
-		int repeatTimes = (formTag.getSimpleForm() == null)
-				? 1
-				: formTag.getSimpleForm().getTimesToRepeat();
-		logger.info("appending content for index: " + index + " of " + repeatTimes);
+		logger.info("appending content for index: " + index + " of " + index);
 
-		if (++index < repeatTimes) {
+		if (++index < times) {
 			return EVAL_BODY_AGAIN;
 		} else {
 			logger.info("ending evaluation");

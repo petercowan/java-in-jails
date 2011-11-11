@@ -1,12 +1,12 @@
 package org.jails.form.input;
 
 public interface Repeater {
-	public int getTimes();
+	public Integer getTimes();
 
-	public void setTimes(int times);
+	public void setTimes(Integer times);
 
-	public int getIndex();
+	public Integer getIndex();
 
-	public void setIndex(int index);
+	public void setIndex(Integer index);
 
 }

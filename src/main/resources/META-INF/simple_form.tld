@@ -52,7 +52,7 @@
 		</description>
 		<attribute>
 			<name>times</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>

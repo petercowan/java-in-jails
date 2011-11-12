@@ -87,15 +87,31 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 									.inRequest(request);
 				for (Map<String, List<String>> errors : e.getErrorFields().values())
 					simpleForm.addErrorFieldsMap(errors);
-				return getCreateView();
+				if (simpleFormRequest.idCount(request) > 1) {
+					return getCreateAllView();
+				} else {
+					return getCreateView();
+				}
 			} catch (Exception e) {
 				logger.warn(e.getMessage());
-				return getCreateView();
+				if (simpleFormRequest.idCount(request) > 1) {
+					return getCreateAllView();
+				} else {
+					return getCreateView();
+				}
 			}
 		} else {
-			SimpleForm.validateAs(classType)
-					.identifyBy(idField)
-					.inRequest(request);
+			int count = 0;
+			try {
+				count = Integer.parseInt(request.getParameter("count"));
+			} catch (NumberFormatException e) {
+				logger.warn(e.getMessage());
+			}
+
+			simpleForm = SimpleForm.validateAs(classType)
+						.identifyBy(idField)
+						.inRequest(request);
+			if (count > 0) simpleForm.repeat(count);
 			return getCreateView();
 		}
 	}
@@ -132,7 +148,11 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 					simpleForm.addErrorFieldsMap(errors);
 			}
 		}
-		return getEditView();
+		if (objects.size() > 1) {
+			return getEditAllView();
+		} else {
+			return getEditView();
+		}
 	}
 
 	public String delete(HttpServletRequest request, HttpServletResponse response) {
@@ -183,12 +203,16 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 		return "/view/" + path + "/create.jsp";
 	}
 
+	public String getCreateAllView() {
+		return "/view/" + path + "/create_all.jsp";
+	}
+
 	public String getEditView() {
 		return "/view/" + path + "/edit.jsp";
 	}
 
 	public String getEditAllView() {
-		return "/view/" + path + "/editAll.jsp";
+		return "/view/" + path + "/edit_all.jsp";
 	}
 
 	public String getConfirmView() {
@@ -200,7 +224,7 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 	}
 
 	public String getDeleteAllView() {
-		return "/view/" + path + "/deleteAll.jsp";
+		return "/view/" + path + "/delete_all.jsp";
 	}
 
 	protected T[] listToArray(List<T> objects) {

@@ -12,7 +12,9 @@ public class SimpleFormParams {
 	}
 
 	public String getIndexedParameterName(String property, Integer index) {
-		return propertyParser.getRootProperty(property) + "[" + index + "]" + propertyParser.getNestedProperty(property);
+		String indexedParam = propertyParser.getRootProperty(property) + "[" + index + "]";
+		if (propertyParser.hasNestedProperty(property)) return indexedParam + propertyParser.getNestedProperty(property);
+		else return indexedParam;
 		//return "_" + name + "[" + index + "]" + "." + property;
 	}
 

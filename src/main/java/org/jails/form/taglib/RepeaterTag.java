@@ -17,7 +17,7 @@ public class RepeaterTag
 	private static Logger logger = LoggerFactory.getLogger(RepeaterTag.class);
 
 	private Integer times;
-	private Integer index;
+	private Integer index = 0;
 
 	public Integer getTimes() {
 		return times;
@@ -47,8 +47,8 @@ public class RepeaterTag
 			times = (formTag.getSimpleForm() == null)
 					? 1
 					: formTag.getSimpleForm().getTimesToRepeat();
+			logger.info("set repeater times to " + times);
 		}
-
 		return EVAL_PAGE;
 	}
 

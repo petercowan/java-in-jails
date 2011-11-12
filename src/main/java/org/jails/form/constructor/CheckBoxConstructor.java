@@ -14,13 +14,15 @@ public class CheckBoxConstructor extends TagInputConstructor<CheckboxInput> {
 
 	@Override
 	public String getInputHtml() {
-		StringBuffer inputHtml = new StringBuffer("<input" + getTypeAttr("text") +
+		StringBuffer inputHtml = new StringBuffer("<input" + getTypeAttr("checkbox") +
 				getFieldNameAttr() +
 				getInputIdAttr() +
 				getClientValidationAttr() +
-				getValueAttr(getFieldValue(0)));
+				getValueAttr(tag.getValue()));
 
-		if (Strings.getBoolean(tag.getChecked())) inputHtml.append(" CHECKED");
+		String value = getFieldValue(0);
+		if ((value != null && value.equals(tag.getValue()))
+				|| (value == null && Strings.getBoolean(tag.getChecked()))) inputHtml.append(" CHECKED");
 		inputHtml.append(" />");
 		return inputHtml.toString();
 	}

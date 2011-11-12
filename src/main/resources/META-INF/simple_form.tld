@@ -97,7 +97,7 @@
 	</tag>
 
 	<tag>
-		<name>textarea_input</name>
+		<name>textarea</name>
 		<tag-class>org.jails.form.taglib.TextAreaTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
@@ -136,7 +136,7 @@
 	</tag>
 
 	<tag>
-		<name>checkbox_input</name>
+		<name>checkbox</name>
 		<tag-class>org.jails.form.taglib.CheckboxTag</tag-class>
 		<body-content>empty</body-content>
 		<description>
@@ -153,8 +153,42 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>defaultValue</name>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>checked</name>
 			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>attributes</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>radio</name>
+		<tag-class>org.jails.form.taglib.RadioButtonTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			A tag to add a radio input to a SimpleForm
+		</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>label</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
@@ -212,11 +246,6 @@
 		</description>
 		<attribute>
 			<name>name</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

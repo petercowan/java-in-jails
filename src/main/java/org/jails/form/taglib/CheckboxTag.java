@@ -1,6 +1,5 @@
 package org.jails.form.taglib;
 
-import org.jails.form.input.CheckboxInput;
 import org.jails.form.constructor.CheckBoxConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 import org.jails.form.input.CheckboxInput;
@@ -12,7 +11,17 @@ public class CheckboxTag
 		extends FormInputTagSupport
 		implements CheckboxInput {
 
+	private String value;
 	private String checked;
+	private String tabIndex;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	public void setChecked(String checked) {
 		this.checked = checked;
@@ -20,6 +29,14 @@ public class CheckboxTag
 
 	public String getChecked() {
 		return checked;
+	}
+
+	public void setTabIndex(String tabIndex) {
+		this.tabIndex = tabIndex;
+	}
+
+	public String getTabIndex() {
+		return tabIndex;
 	}
 
 	@Override

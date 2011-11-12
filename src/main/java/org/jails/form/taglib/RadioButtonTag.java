@@ -11,7 +11,25 @@ public class RadioButtonTag
 		extends FormInputTagSupport
 		implements RadioButtonInput {
 
+	private String value;
+	private String checked;
 	private String tabIndex;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public void setChecked(String checked) {
+		this.checked = checked;
+	}
+
+	public String getChecked() {
+		return checked;
+	}
 
 	public void setTabIndex(String tabIndex) {
 		this.tabIndex = tabIndex;

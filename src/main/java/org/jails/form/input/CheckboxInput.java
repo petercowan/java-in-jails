@@ -5,4 +5,12 @@ public interface CheckboxInput extends FormInput {
 
 	public String getChecked();
 
+	public void setValue(String value);
+
+	public String getValue();
+
+	public void setTabIndex(String tabIndex);
+
+	public String getTabIndex();
+
 }

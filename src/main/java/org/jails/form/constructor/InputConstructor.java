@@ -53,7 +53,8 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected void initFormTag() {
 		simpleForm = formTag.getSimpleForm();
-		logger.info("adding element: " + tag.getName() + " to form: " + formTag);
+		logger.info("adding element: " + tag.getName() + " of type "
+				+ tag.getClass().getSimpleName() + " to form: " + formTag.getClass().getSimpleName());
 		formTag.addElement(tag.getName(), getIndex());
 		formTag.addLabel(tag.getName(), tag.getLabel());
 		logger.info("added element: " + tag.getName());

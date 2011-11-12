@@ -20,7 +20,7 @@ public class TextAreaConstructor extends TagInputConstructor<TextareaInput> {
 				getAttribute("rows", tag.getRows()) +
 				getAttribute("cols", tag.getCols()) +
 				">" +
-				getValueAttr(getFieldValue(0)) +
+				getFieldValue(0) +
 				"<textarea/>";
 	}
 }

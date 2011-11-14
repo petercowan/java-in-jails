@@ -72,7 +72,7 @@ public abstract class InputConstructor<T extends FormInput> {
 					formTag.getName(), tag.getName(),
 					repeater.getIndex());
 		} else {
-			fieldName = simpleFormParams.getParameterName(tag.getName());
+			fieldName = simpleFormParams.getParameterName(formTag.getName(), tag.getName());
 		}
 		logger.info("constructing " + fieldName);
 	}

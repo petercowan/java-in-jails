@@ -64,7 +64,7 @@ public class SimpleFormRouter {
 	}
 
 	public boolean confirmDelete(HttpServletRequest request) {
-		boolean isConfirmDelete = Strings.getBoolean(request.getParameter(simpleFormParams.getParameterName(CONFIRM_DELETE)));
+		boolean isConfirmDelete = Strings.getBoolean(request.getParameter(CONFIRM_DELETE));
 		logger.info("isConfirmDelete? " + isConfirmDelete);
 		return isConfirmDelete;
 	}

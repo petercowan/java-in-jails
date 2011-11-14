@@ -147,7 +147,10 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		if (constraints != null) {
 			for (Class<?> group : constraints) {
 				logger.info("Checking group " + group);
-				if (RequiredChecks.class.equals(group)) return true;
+				if (RequiredChecks.class.equals(group)) {
+					logger.info(paramName + " isRequired");
+					return true;
+				}
 			}
 		}
 		return false;

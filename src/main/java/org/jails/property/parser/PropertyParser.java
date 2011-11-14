@@ -2,8 +2,6 @@ package org.jails.property.parser;
 
 public interface PropertyParser {
 
-	public String getType(String property);
-
 	public String getPropertyName(String property);
 	
 	public boolean hasNestedProperty(String property);

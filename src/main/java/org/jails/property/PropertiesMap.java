@@ -32,7 +32,7 @@ public class PropertiesMap extends HashMap<String, String[]> {
 	}
 
 	public void put(String key, String value) {
-		put(key, new String[] {value});
+		put(key, new String[]{value});
 	}
 
 	public void update(String key, String[] newValues) {
@@ -45,18 +45,33 @@ public class PropertiesMap extends HashMap<String, String[]> {
 
 	public PropertiesMultiMap toMultiMap(PropertyParser propertyParser) {
 		PropertiesMultiMap multiMap = new PropertiesMultiMap();
+		PropertiesMap globalParams = null;
 		int index = 0;
 		for (String param : keySet()) {
-			Integer propertyIndex = propertyParser.getPropertyIndex(param);
+			if (param != null && !param.startsWith("_")) {
+				String type = propertyParser.getRootProperty(param);
+				Integer propertyIndex = propertyParser.getPropertyIndex(type);
 
-			if (propertyIndex != null) {
-				PropertiesMap indexedMap = multiMap.get(propertyIndex);
-				if (indexedMap == null) {
-					logger.info("adding index map: " + propertyIndex);
-					indexedMap = new PropertiesMap();
-					multiMap.put(propertyIndex, indexedMap);
+				String[] vals = get(param);
+				if (propertyIndex != null) {
+					PropertiesMap indexedMap = multiMap.get(propertyIndex);
+					if (indexedMap == null) {
+						logger.info("adding index map: " + propertyIndex);
+						indexedMap = new PropertiesMap();
+						multiMap.put(propertyIndex, indexedMap);
+					}
+					indexedMap.put(param, vals);
+				} else {
+					if  (globalParams == null) globalParams = new PropertiesMap();
+					globalParams.put(param, vals);
 				}
-				indexedMap.put(propertyParser.getPropertyName(param), get(param));
+			}
+		}
+		if  (globalParams != null) {
+			for (PropertiesMap paramMap : multiMap.values()) {
+				for (String param : globalParams.keySet()) {
+					paramMap.put(param, globalParams.get(param));
+				}
 			}
 		}
 		return multiMap;

@@ -5,6 +5,8 @@ import org.jails.form.SimpleForm;
 public interface FormTag {
 	public void setName(String name);
 
+	public String getName();
+
 	public void setAction(String action);
 
 	public void setMethod(String method);

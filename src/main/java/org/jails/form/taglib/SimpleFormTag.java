@@ -38,7 +38,7 @@ public class SimpleFormTag
 	protected String style = STACKED;
 	protected String errorMessage;
 
-	protected void setFormFromRequest() {
+	protected void initFormFromRequest() {
 		String simpleFormParam = "_" + name + "_form";
 		logger.info("Getting SimpleForm: " + simpleFormParam);
 		simpleForm = (SimpleForm) pageContext.getRequest().getAttribute(simpleFormParam);
@@ -47,7 +47,11 @@ public class SimpleFormTag
 
 	public void setName(String name) {
 		this.name = name;
-		setFormFromRequest();
+		initFormFromRequest();
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setAction(String action) {

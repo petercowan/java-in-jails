@@ -59,7 +59,7 @@ public class SimpleValidator {
 	public <T> void validate(T bean, Map<String, String[]> params, Class<?>... groups)
 			throws ValidationException {
 		T copy = cloner.deepCopy(bean);
-		beanMapper.toExistingObject(params, copy);
+		beanMapper.toExistingObject(copy, params);
 
 		validate(copy, groups);
 	}
@@ -70,7 +70,7 @@ public class SimpleValidator {
 
 	public <T> T validate(Class<T> classType, Map<String, String[]> params, Class<?>... groups)
 			throws ValidationException {
-		T bean = beanMapper.toObject(params, classType);
+		T bean = beanMapper.toObject(classType, params);
 
 		validate(bean, groups);
 

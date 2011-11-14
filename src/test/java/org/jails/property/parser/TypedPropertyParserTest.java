@@ -19,18 +19,20 @@ public class TypedPropertyParserTest
 	}
 
 	public void testParseProperty() {
-		String propertyString = "_type.property";
+		String propertyString = "type.property";
 
 		TypedPropertyParser propertyParser = new TypedPropertyParser();
 
-		String type = propertyParser.getType(propertyString);
+		String type = propertyParser.getRootProperty(propertyString);
+		propertyString = propertyString.replaceAll(type, "");
+		
 		String propertyName = propertyParser.getPropertyName(propertyString);
 		boolean hasNestedProperty = propertyParser.hasNestedProperty(propertyString);
 		String nestedProperty = propertyParser.getNestedProperty(propertyString);
 		String rootProperty = propertyParser.getRootProperty(propertyString);
 		Integer propertyIndex = propertyParser.getPropertyIndex(propertyString);
 
-		assertEquals("_type", type);
+		assertEquals("type", type);
 		assertEquals("property", propertyName);
 		assertFalse("has_nested", hasNestedProperty);
 		assertNull("nested", nestedProperty);
@@ -39,18 +41,20 @@ public class TypedPropertyParserTest
 	}
 
 	public void testParseNestedProperty() {
-		String nestedPropertyString = "_type.nested.property";
+		String nestedPropertyString = "type.nested.property";
 
 		TypedPropertyParser propertyParser = new TypedPropertyParser();
 
-		String type = propertyParser.getType(nestedPropertyString);
+		String type = propertyParser.getRootProperty(nestedPropertyString);
+		nestedPropertyString = nestedPropertyString.replaceAll(type, "");
+		
 		String propertyName = propertyParser.getPropertyName(nestedPropertyString);
 		boolean hasNestedProperty = propertyParser.hasNestedProperty(nestedPropertyString);
 		String nestedProperty = propertyParser.getNestedProperty(nestedPropertyString);
 		String rootProperty = propertyParser.getRootProperty(nestedPropertyString);
 		Integer propertyIndex = propertyParser.getPropertyIndex(nestedPropertyString);
 
-		assertEquals("_type", type);
+		assertEquals("type", type);
 		assertEquals("nested.property", propertyName);
 		assertTrue("nested_has_nested", hasNestedProperty);
 		assertTrue("nested_nested", nestedProperty.equals("property"));
@@ -59,18 +63,20 @@ public class TypedPropertyParserTest
 	}
 
 	public void testParseIndexedProperty() {
-		String propertyString = "_type.property[0]";
+		String propertyString = "type.property[0]";
 
 		TypedPropertyParser propertyParser = new TypedPropertyParser();
 
-		String type = propertyParser.getType(propertyString);
+		String type = propertyParser.getRootProperty(propertyString);
+		propertyString = propertyString.replaceAll(type, "");
+		
 		String propertyName = propertyParser.getPropertyName(propertyString);
 		boolean hasNestedProperty = propertyParser.hasNestedProperty(propertyString);
 		String nestedProperty = propertyParser.getNestedProperty(propertyString);
 		String rootProperty = propertyParser.getRootProperty(propertyString);
 		int propertyIndex = propertyParser.getPropertyIndex(propertyString);
 
-		assertEquals("_type", type);
+		assertEquals("type", type);
 		assertNotNull(propertyName);
 		assertEquals("property", propertyName);
 		assertFalse("has_nested", hasNestedProperty);
@@ -81,11 +87,13 @@ public class TypedPropertyParserTest
 	}
 
 	public void testParseIndexedNestedProperty() {
-		String nestedPropertyString = "_type.nested[0].property";
+		String nestedPropertyString = "type.nested[0].property";
 
 		TypedPropertyParser propertyParser = new TypedPropertyParser();
 
-		String type = propertyParser.getType(nestedPropertyString);
+		String type = propertyParser.getRootProperty(nestedPropertyString);
+		nestedPropertyString = nestedPropertyString.replaceAll(type, "");
+		
 		String propertyName = propertyParser.getPropertyName(nestedPropertyString);
 		boolean hasNestedProperty = propertyParser.hasNestedProperty(nestedPropertyString);
 		String nestedProperty = propertyParser.getNestedProperty(nestedPropertyString);
@@ -93,7 +101,7 @@ public class TypedPropertyParserTest
 		String rootPropertyName = propertyParser.getRootProperty(propertyName);
 		Integer propertyIndex = propertyParser.getPropertyIndex(nestedPropertyString);
 
-		assertEquals("_type", type);
+		assertEquals("type", type);
 		assertNotNull(propertyName);
 		assertEquals("nested.property", propertyName);
 		assertTrue("nested_has_nested", hasNestedProperty);
@@ -104,11 +112,13 @@ public class TypedPropertyParserTest
 	}
 
 	public void testParseNestedIndexedNestedProperty() {
-		String nestedPropertyString = "_type.nested[0].property[1]";
+		String nestedPropertyString = "type.nested[0].property[1]";
 
 		TypedPropertyParser propertyParser = new TypedPropertyParser();
 
-		String type = propertyParser.getType(nestedPropertyString);
+		String type = propertyParser.getRootProperty(nestedPropertyString);
+		nestedPropertyString = nestedPropertyString.replaceAll(type, "");
+		
 		String propertyName = propertyParser.getPropertyName(nestedPropertyString);
 		boolean hasNestedProperty = propertyParser.hasNestedProperty(nestedPropertyString);
 		String nestedProperty = propertyParser.getNestedProperty(nestedPropertyString);
@@ -117,7 +127,7 @@ public class TypedPropertyParserTest
 		String rootPropertyName = propertyParser.getRootProperty(propertyName);
 		Integer propertyIndex = propertyParser.getPropertyIndex(nestedPropertyString);
 
-		assertEquals("_type", type);
+		assertEquals("type", type);
 		assertNotNull(propertyName);
 		assertEquals(propertyName, "nested.property[1]");
 		assertTrue("nested_has_nested", hasNestedProperty);

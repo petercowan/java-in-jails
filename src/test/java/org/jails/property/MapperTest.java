@@ -38,7 +38,7 @@ public class MapperTest
 		Mapper beanMapper = new Mapper(parser, handler);
 		Map<String, String[]> params = getParameters(null, null);
 		MappingBean bean = new MappingBean();
-		beanMapper.toExistingObject(params, bean);
+		beanMapper.toExistingObject(bean, params);
 
 		assertBeanValues(bean);
 	}
@@ -56,7 +56,7 @@ public class MapperTest
 		List<MappingBean> beans = new ArrayList<MappingBean>();
 		beans.add(new MappingBean());
 		beans.add(new MappingBean());
-		beanMapper.toExistingList(paramMap, beans);
+		beanMapper.toExistingList(beans, paramMap);
 
 		for (MappingBean bean : beans) {
 			assertBeanValues(bean);

@@ -68,8 +68,8 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected void initFieldName() {
 		if (repeater != null) {
-			fieldName = simpleFormParams.getIndexedParameterName(
-					tag.getName(),
+			fieldName = simpleFormParams.getFormIndexedParameterName(
+					formTag.getName(), tag.getName(),
 					repeater.getIndex());
 		} else {
 			fieldName = simpleFormParams.getParameterName(tag.getName());
@@ -120,11 +120,11 @@ public abstract class InputConstructor<T extends FormInput> {
 		} else if (simpleForm != null && simpleForm.isBound()) {
 			if (repeater != null) {
 				SimpleForm beanForm = simpleForm;
-				fieldValues = beanMapper.toValues(
-						fieldName, beanForm.getObject(repeater.getIndex()));
+				fieldValues = beanMapper.getValues(
+						beanForm.getObject(repeater.getIndex()), fieldName);
 			} else {
 				SimpleForm beanForm = (SimpleForm) simpleForm;
-				fieldValues = beanMapper.toValues(fieldName, beanForm.getObject());
+				fieldValues = beanMapper.getValues(beanForm.getObject(), fieldName);
 			}
 		} else if (tag.getDefaultValue() != null) {
 			fieldValues = new String[]{tag.getDefaultValue()};

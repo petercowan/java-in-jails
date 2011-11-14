@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Mapper {
-	private static Logger logger = LoggerFactory.getLogger(Mapper.class);
+	protected static Logger logger = LoggerFactory.getLogger(Mapper.class);
 
-	private PropertyHandler propertyHandler;
-	private PropertyParser propertyParser;
+	protected PropertyHandler propertyHandler;
+	protected PropertyParser propertyParser;
 
 	static {
 		MapBeanUtil.getInstance().initializeConverters();
@@ -38,10 +38,10 @@ public class Mapper {
 		this.propertyParser = propertyParser;
 	}
 
-	public <T> T toObject(Map<String, String[]> propertiesMap, Class<T> classType) {
+	public <T> T toObject(Class<T> classType, Map<String, String[]> propertiesMap) {
 		try {
 			T object = classType.newInstance();
-			toExistingObject(propertiesMap, object);
+			toExistingObject(object, propertiesMap);
 			return object;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -72,19 +72,19 @@ public class Mapper {
 	 * charity.address.zip -> if (charity.getAddress() == null) charity.setAddress(load(Address.class, charity.address.zip));
 	 * so it is recommended to use nested properties very carefully
 	 *
-	 * @param propertiesMap
 	 * @param object
+	 * @param propertiesMap
 	 */
-	public void toExistingObject(Map<String, String[]> propertiesMap, Object object) {
+	public void toExistingObject(Object object, Map<String, String[]> propertiesMap) {
 
 		for (String rawProperty : propertiesMap.keySet()) {
 			String[] valuesArray = propertiesMap.get(rawProperty);
 
-			setProperty(rawProperty, object, valuesArray);
+			setProperty(object, rawProperty, valuesArray);
 		}
 	}
 
-	public <T> List<T> toList(Map<String, String[]> paramMap, Class<T> classType) {
+	public <T> List<T> toList(Class<T> classType, Map<String, String[]> paramMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
 		List<T> objects = new ArrayList<T>(multiMap.size());
@@ -99,30 +99,30 @@ public class Mapper {
 			throw new IllegalArgumentException("Class must have a public constructor with no args to use this method");
 		}
 
-		setIndexedBeanProperties(multiMap, objects);
+		_toExistingList(objects, multiMap);
 
 		return objects;
 	}
 
-	public void toExistingList(Map<String, String[]> paramMap, List<?> objects) {
+	public void toExistingList(List<?> objects, Map<String, String[]> paramMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
-		setIndexedBeanProperties(multiMap, objects);
+		_toExistingList(objects, multiMap);
 	}
 
-	protected void setIndexedBeanProperties(PropertiesMultiMap multiMap, List<?> objects) {
+	protected void _toExistingList(List<?> objects, PropertiesMultiMap multiMap) {
 		for (Integer propertyIndex : multiMap.keySet()) {
 			Map<String, String[]> indexedMap = multiMap.get(propertyIndex);
 
 			if (objects.size() > propertyIndex) {
 				Object object = objects.get(propertyIndex);
 				logger.info("Got object from list: " + object.getClass());
-				toExistingObject(indexedMap, object);
+				toExistingObject(object, indexedMap);
 			}
 		}
 	}
 
-	public void setProperty(String rawProperty, Object object, String[] valArray) {
+	public void setProperty(Object object, String rawProperty, String[] valArray) {
 		if (rawProperty == null)
 			throw new IllegalArgumentException("rawProperty must not be null");
 		if (object == null)
@@ -130,11 +130,21 @@ public class Mapper {
 		if (valArray == null)
 			throw new IllegalArgumentException("valArray must not be null");
 
+		logger.info("rawProperty: " + rawProperty);
+		
+		//separate the type and property names from the param: type.propertyName -> type, propertyName
+		String type = propertyParser.getRootProperty(rawProperty);
+		rawProperty = rawProperty.replaceAll(type, "");
+		
+		_setProperty(object, rawProperty, valArray);
+
+	}
+
+	protected void _setProperty(Object object, String rawProperty, String[] valArray) {
 		logger.info("rawProperty: " + rawProperty + " of Class: "
 				+ object.getClass() + " with values: " + valArray.length);
 
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String type = propertyParser.getType(rawProperty);
 		String propertyName = propertyParser.getPropertyName(rawProperty);
 
 		if (propertyName != null) {
@@ -162,7 +172,7 @@ public class Mapper {
 							propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
 						} else {
 							logger.info("memberObject Class: " + memberObject.getClass());
-							setProperty(nestedProperty, memberObject, valArray);
+							setProperty(memberObject, nestedProperty, valArray);
 						}
 					} catch (Exception e) {
 						logger.warn(e.getMessage());
@@ -210,22 +220,35 @@ public class Mapper {
 	 * @param object
 	 */
 	public Map<String, String[]> toMap(Object object) {
+		String type = object.getClass().getSimpleName();
 		try {
-			return BeanUtils.describe(object);
+			Map<String, String[]> paramMap = BeanUtils.describe(object);
+				for (String param : paramMap.keySet()) {
+					paramMap.put(type + "." + param, paramMap.get(param));
+					paramMap.remove(param);
+				}
+			
+			return paramMap;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 			return Collections.EMPTY_MAP;
 		}
 	}
 
-	public String[] toValues(String rawProperty, Object object) {
+	public String[] getValues(Object object, String rawProperty) {
 		if (rawProperty == null) {
 			logger.info("ignoring rawProperty: " + rawProperty);
 			return new String[]{};
 		}
 
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String type = propertyParser.getType(rawProperty);
+		String type = propertyParser.getRootProperty(rawProperty);
+		rawProperty = rawProperty.replaceAll(type, "");
+
+		return _getValues(object, rawProperty);
+	}
+
+	protected String[] _getValues(Object object, String rawProperty) {
 		String property = propertyParser.getPropertyName(rawProperty);
 
 		if (property == null || property.startsWith("_")) {
@@ -252,7 +275,7 @@ public class Mapper {
 				return new String[]{};
 			} else {
 				logger.info("memberObject Class: " + memberObject.getClass());
-				return toValues(nestedProperty, memberObject);
+				return getValues(memberObject, nestedProperty);
 			}
 		} else {
 			try {
@@ -264,31 +287,34 @@ public class Mapper {
 		}
 	}
 
-	public String toValue(String rawProperty, Object object) {
-		String[] propertyValues = toValues(rawProperty, object);
+	public String getValue(Object object, String rawProperty) {
+		String[] propertyValues = getValues(object, rawProperty);
 		return (propertyValues.length > 0) ? propertyValues[0] : null;
 	}
 
-	public Class getType(String rawProperty, Object object) {
+	public Class getType(Object object, String rawProperty) {
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String type = propertyParser.getType(rawProperty);
+		String type = propertyParser.getRootProperty(rawProperty);
+		rawProperty = rawProperty.replaceAll(type, "");
+		
+		return getType(object, rawProperty);
+	}
+
+	protected Class _getType(Class classType, String rawProperty) {
 		String property = propertyParser.getPropertyName(rawProperty);
 
-		String propertyValue;
-
-		//this property contains nested properties
 		if (propertyParser.hasNestedProperty(property)) {
 			String nestedProperty = propertyParser.getNestedProperty(property);
-			property = propertyParser.getRootProperty(property);
+			String rootProperty = propertyParser.getRootProperty(property);
 
-			Class propertyType = getPropertyType(property, object.getClass());
-			return getPropertyType(nestedProperty, propertyType);
+			Class propertyType = getPropertyType(classType, rootProperty);
+			return _getType(propertyType, nestedProperty);
 		} else {
-			return getPropertyType(property, object.getClass());
+			return getPropertyType(classType, property);
 		}
 	}
 
-	private Class getPropertyType(String property, Class classType) {
+	protected Class getPropertyType(Class classType, String property) {
 		try {
 			Class propertyType = null;
 			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);

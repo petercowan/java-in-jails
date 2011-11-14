@@ -11,10 +11,6 @@ public class SimplePropertyParser implements PropertyParser {
 	protected static String CLOSE_INDEX = "]";
 
 
-	public String getType(String rawProperty) {
-		return null;
-	}
-
 	public String getPropertyName(String rawProperty) {
 		String propertyName;
 		if (rawProperty != null && rawProperty.indexOf(OPEN_INDEX) >= 0) {
@@ -46,7 +42,7 @@ public class SimplePropertyParser implements PropertyParser {
 		String parentProperty = (rawProperty.indexOf(DOT) >= 0)
 				? rawProperty.substring(0, rawProperty.indexOf(DOT))
 				: rawProperty;
-		logger.info("parentProperty: " + parentProperty);
+		logger.info("rootProperty: " + parentProperty);
 		return parentProperty;
 	}
 

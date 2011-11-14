@@ -134,18 +134,20 @@ public class Mapper {
 		
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String type = propertyParser.getRootProperty(rawProperty);
-		rawProperty = rawProperty.replaceAll(type, "");
-		
+		rawProperty = propertyParser.getNestedProperty(rawProperty);
+		logger.info("type: " + type);
+		logger.info("property: " + rawProperty);
+
 		_setProperty(object, rawProperty, valArray);
 
 	}
 
-	protected void _setProperty(Object object, String rawProperty, String[] valArray) {
-		logger.info("rawProperty: " + rawProperty + " of Class: "
+	protected void _setProperty(Object object, String property, String[] valArray) {
+		logger.info("property: " + property + " of Class: "
 				+ object.getClass() + " with values: " + valArray.length);
 
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String propertyName = propertyParser.getPropertyName(rawProperty);
+		String propertyName = propertyParser.getPropertyName(property);
 
 		if (propertyName != null) {
 			//this property contains nested properties
@@ -169,10 +171,12 @@ public class Mapper {
 
 						//memberObject is null, so attempt find an instance, using the PropertyHandler
 						if (memberObject == null && propertyHandler != null) {
-							propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
-						} else {
+							memberObject = propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
+						}
+
+						if (memberObject != null) {
 							logger.info("memberObject Class: " + memberObject.getClass());
-							setProperty(memberObject, nestedProperty, valArray);
+							_setProperty(memberObject, nestedProperty, valArray);
 						}
 					} catch (Exception e) {
 						logger.warn(e.getMessage());
@@ -243,7 +247,7 @@ public class Mapper {
 
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String type = propertyParser.getRootProperty(rawProperty);
-		rawProperty = rawProperty.replaceAll(type, "");
+		rawProperty = propertyParser.getNestedProperty(rawProperty);
 
 		return _getValues(object, rawProperty);
 	}
@@ -295,7 +299,7 @@ public class Mapper {
 	public Class getType(Object object, String rawProperty) {
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String type = propertyParser.getRootProperty(rawProperty);
-		rawProperty = rawProperty.replaceAll(type, "");
+		rawProperty = propertyParser.getNestedProperty(rawProperty);
 		
 		return getType(object, rawProperty);
 	}

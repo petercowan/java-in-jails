@@ -6,6 +6,6 @@ public interface PropertyHandler {
 
 	public  boolean acceptsNestedProperties(Object object, String property);
 
-	public void handleNullNestedProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser);
+	public Object handleNullNestedProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser);
 
 }

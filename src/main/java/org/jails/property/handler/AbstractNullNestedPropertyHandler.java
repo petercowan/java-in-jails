@@ -11,10 +11,11 @@ public abstract class AbstractNullNestedPropertyHandler implements NullNestedPro
 
 	protected AbstractNullNestedPropertyHandler() {}
 
-	public void handleProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
+	public Object handleProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
 		try {
-			logger.info("getting class type of  " + property + " from Class: " + object.getClass());
+			logger.info("getting class type of property " + property + " from Class: " + object.getClass());
 			Class memberType = PropertyUtils.getPropertyType(object, property);
+			logger.info("classType of " + property + ": " + memberType.getSimpleName());
 
 			String nestedPropertyName = propertyParser.getPropertyName(nestedProperty);
 
@@ -27,9 +28,11 @@ public abstract class AbstractNullNestedPropertyHandler implements NullNestedPro
 				logger.info(setterName + " : " + memberObject);
 				MethodUtils.invokeExactMethod(object, setterName, memberObject);
 			}
+			return memberObject;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
+		return null;
 	}
 
 	protected abstract Object getObject(Class classType, String nestedProperty, String[] valArray);

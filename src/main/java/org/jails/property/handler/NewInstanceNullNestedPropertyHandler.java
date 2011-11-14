@@ -1,6 +1,5 @@
 package org.jails.property.handler;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,8 @@ public class NewInstanceNullNestedPropertyHandler extends AbstractNullNestedProp
 	public Object getObject(Class classType, String nestedProperty, String[] valArray) {
 		try {
 			Object obj = classType.newInstance();
-			PropertyUtils.setProperty(obj, nestedProperty, valArray[0]);
+//			logger.info("Setting " + nestedProperty + " to " + valArray[0] + " on " + classType.getSimpleName());
+//			BeanUtils.setProperty(obj, nestedProperty, valArray[0]);
 			return obj;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());

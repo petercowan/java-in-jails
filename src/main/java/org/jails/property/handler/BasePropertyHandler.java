@@ -33,7 +33,7 @@ public class BasePropertyHandler
 					|| propertyAcceptsNestedAttributes;
 		}
 
-		public void handleNullNestedProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
-			nullNestedPropertyHandler.handleProperty(object, property, nestedProperty, valArray, propertyParser);
+		public Object handleNullNestedProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
+			return nullNestedPropertyHandler.handleProperty(object, property, nestedProperty, valArray, propertyParser);
 		}
 	}

@@ -32,24 +32,24 @@ public class MapperTest
 		return new TestSuite(MapperTest.class);
 	}
 
-	private void xMapToBean() {
+	public void testMapToBean() {
 		PropertyParser parser = new SimplePropertyParser();
 		PropertyHandler handler = new SimplePropertyHandler();
 		Mapper beanMapper = new Mapper(parser, handler);
-		Map<String, String[]> params = getParameters(null, null);
+		Map<String, String[]> params = getParameters(null, "mappingBean");
 		MappingBean bean = new MappingBean();
 		beanMapper.toExistingObject(bean, params);
 
 		assertBeanValues(bean);
 	}
 
-	public void testMapListToBean() {
+	public void xMapListToBean() {
 		PropertyParser parser = new SimplePropertyParser();
 		PropertyHandler handler = new SimplePropertyHandler();
 		Mapper beanMapper = new Mapper(parser, handler);
 		Map<String, String[]> paramMap = new LinkedHashMap<String, String[]>();
 		for (int i = 0; i < 2; i++) {
-			paramMap.putAll(getParameters(i, null));
+			paramMap.putAll(getParameters(i, "mappingBean"));
 			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXindex: " + i);
 		}
 
@@ -64,40 +64,39 @@ public class MapperTest
 	}
 
 	private void assertBeanValues(MappingBean bean) {
-		assertNotNull(bean.getBooleanProperty());
-		System.out.println(bean.getBooleanProperty());
 		assertTrue("bool_prop", bean.getBooleanProperty());
-		//assertTrue("date_prop", bean.getDate());
+//		assertTrue("date_prop", bean.getDate());
 		assertTrue("float_prop", new Float(2.45).equals(bean.getFloatProperty()));
 		assertTrue("int_prop", new Integer(123).equals(bean.getInteger()));
 		assertTrue("string_prop", "Hello".equals(bean.getStringProperty()));
 
 		assertNotNull(bean.getMappingBean());
 		assertNotNull(bean.getMappingBean().getBooleanProperty());
-		assertTrue("mapping_bean_bool_prop", bean.getMappingBean().getBooleanProperty());
-		//assertTrue("mapping_bean_date_prop", bean.getDate());
-		assertTrue("mapping_bean_float_prop", new Float(2.45).equals(bean.getMappingBean().getFloatProperty()));
-		assertTrue("mapping_bean_int_prop", new Integer(123).equals(bean.getMappingBean().getInteger()));
-		assertTrue("mapping_bean_string_prop", "Hello".equals(bean.getMappingBean().getStringProperty()));
+		assertFalse("mapping_bean_bool_prop", bean.getMappingBean().getBooleanProperty());
+//		assertTrue("mapping_bean_date_prop", bean.getDate());
+		assertTrue("mapping_bean_float_prop", new Float(3.56).equals(bean.getMappingBean().getFloatProperty()));
+		assertTrue("mapping_bean_int_prop", new Integer(234).equals(bean.getMappingBean().getInteger()));
+		assertTrue("mapping_bean_string_prop", "Hi".equals(bean.getMappingBean().getStringProperty()));
 	}
 
 	private Map<String, String[]> getParameters(Integer index, String type) {
 		String indexStr = (index != null) ? "[" + index + "]" : "";
-		String prefix = (type != null) ? type + "." : "";
+		String prefix = (type != null) ? type + indexStr + "." : "";
 
+		System.out.println("prefix: " + prefix);
 		Map<String, String[]> parameters = new HashMap<String, String[]>();
 
-		parameters.put(prefix + "booleanProperty" + indexStr, new String[]{"true"});
-		parameters.put(prefix + "date" + indexStr, new String[]{"10-11-2011"});
-		parameters.put(prefix + "floatProperty" + indexStr, new String[]{"2.45"});
-		parameters.put(prefix + "integer" + indexStr, new String[]{"123"});
-		parameters.put(prefix + "stringProperty" + indexStr, new String[]{"Hello"});
+		parameters.put(prefix + "booleanProperty", new String[]{"true"});
+		parameters.put(prefix + "date", new String[]{"10-11-2011"});
+		parameters.put(prefix + "floatProperty", new String[]{"2.45"});
+		parameters.put(prefix + "integer", new String[]{"123"});
+		parameters.put(prefix + "stringProperty", new String[]{"Hello"});
 
-		parameters.put(prefix + "mappingBean"  + indexStr + ".booleanProperty", new String[]{"true"});
-		parameters.put(prefix + "mappingBean"  + indexStr + ".date", new String[]{"10-11-2011"});
-		parameters.put(prefix + "mappingBean"  + indexStr + ".floatProperty", new String[]{"2.45"});
-		parameters.put(prefix + "mappingBean"  + indexStr + ".integer", new String[]{"123"});
-		parameters.put(prefix + "mappingBean"  + indexStr + ".stringProperty", new String[]{"Hello"});
+		parameters.put(prefix + "mappingBean.booleanProperty", new String[]{"false"});
+		parameters.put(prefix + "mappingBean.date", new String[]{"1-12-2011"});
+		parameters.put(prefix + "mappingBean.floatProperty", new String[]{"3.56"});
+		parameters.put(prefix + "mappingBean.integer", new String[]{"234"});
+		parameters.put(prefix + "mappingBean.stringProperty", new String[]{"Hi"});
 
 		return parameters;
 	}

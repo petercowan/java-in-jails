@@ -19,7 +19,7 @@ public class HiddenConstructor extends TagInputConstructor<HiddenInput>{
 				getFieldNameAttr() +
 				getInputIdAttr() +
 				getClientValidationAttr() +
-				getValueAttr(getFieldValue(0));
+				getValueAttr(getFieldValue(0)) + " />";
 	}
 
 	public String wrapInputHtml(FormInput tag) {

@@ -1,6 +1,7 @@
 package org.jails.validation.constraint.validator;
 
 import org.jails.util.Country;
+import org.jails.util.Strings;
 import org.jails.validation.constraint.ISOCountryCode;
 
 import javax.validation.ConstraintValidator;
@@ -12,8 +13,8 @@ public class ISOCountryCodeValidator  implements ConstraintValidator<ISOCountryC
     }
 
     public boolean isValid(final String isoCountryCode, final ConstraintValidatorContext constraintContext) {
-        if (isoCountryCode == null)
-            return false;
+        if (Strings.isEmpty(isoCountryCode))
+            return true;
         else
             return Country.isValidCountry(isoCountryCode);
     }

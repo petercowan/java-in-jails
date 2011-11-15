@@ -1,6 +1,7 @@
 package org.jails.validation.constraint.validator;
 
 import org.jails.util.State;
+import org.jails.util.Strings;
 import org.jails.validation.constraint.ISOStateCode;
 
 import javax.validation.ConstraintValidator;
@@ -12,8 +13,8 @@ public class ISOStateCodeValidator implements ConstraintValidator<ISOStateCode, 
     }
 
     public boolean isValid(final String isoStateCode, final ConstraintValidatorContext constraintContext) {
-        if (isoStateCode == null)
-            return false;
+		if (Strings.isEmpty(isoStateCode))
+			return true;
         else
             return State.isValidState(isoStateCode);
     }

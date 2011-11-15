@@ -144,7 +144,17 @@ public class Mapper {
 
 	protected void _setProperty(Object object, String property, String[] valArray) {
 		logger.info("property: " + property + " of Class: "
-				+ object.getClass() + " with values: " + valArray.length);
+				+ object.getClass() + " with values: ");
+		if (valArray.length > 1) {
+			StringBuffer values = new StringBuffer();
+			for (int i = 0; i < valArray.length; i++) {
+				if (i > 0) values.append(",");
+				values.append(valArray[i]);
+			}
+			logger.info(values.toString());
+		} else {
+			logger.info(valArray[0]);
+		}
 
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String propertyName = propertyParser.getPropertyName(property);

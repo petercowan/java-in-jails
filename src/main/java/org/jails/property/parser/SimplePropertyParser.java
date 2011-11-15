@@ -47,6 +47,8 @@ public class SimplePropertyParser implements PropertyParser {
 	}
 
 	public Integer getPropertyIndex(String rawProperty) {
+		if (!isIndexed(rawProperty)) return null;
+
 		String indexProperty;
 		if (hasNestedProperty(rawProperty)) {
 			indexProperty = getRootProperty(rawProperty);
@@ -56,17 +58,23 @@ public class SimplePropertyParser implements PropertyParser {
 
 		Integer index;
 		try {
-			index = (indexProperty.indexOf(OPEN_INDEX) >= 0)
-					? Integer.parseInt(
-							indexProperty.substring(
-									indexProperty.indexOf(OPEN_INDEX) + 1,
-									indexProperty.indexOf(CLOSE_INDEX)))
-					: null;
+			index = Integer.parseInt(indexProperty.substring(
+										indexProperty.indexOf(OPEN_INDEX) + 1,
+										indexProperty.indexOf(CLOSE_INDEX)));
 		} catch (NumberFormatException e) {
 			logger.warn(e.getMessage());
 			index = null;
 		}
 		return index;
+	}
+
+	public boolean isIndexed(String rawProperty) {
+		String indexProperty;
+		if (hasNestedProperty(rawProperty)) {
+			return getRootProperty(rawProperty).indexOf(OPEN_INDEX) >= 0;
+		} else {
+			return rawProperty.indexOf(OPEN_INDEX) >= 0;
+		}
 	}
 
 }

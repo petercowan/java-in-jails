@@ -10,5 +10,7 @@ public interface PropertyParser {
 	
 	public String getRootProperty(String property);
 
+	public boolean isIndexed(String rawProperty);
+
 	public Integer getPropertyIndex(String property);
 }

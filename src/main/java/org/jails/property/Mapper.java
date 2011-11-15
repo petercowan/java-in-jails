@@ -131,7 +131,7 @@ public class Mapper {
 			throw new IllegalArgumentException("valArray must not be null");
 
 		logger.info("rawProperty: " + rawProperty);
-		
+
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String type = propertyParser.getRootProperty(rawProperty);
 		rawProperty = propertyParser.getNestedProperty(rawProperty);
@@ -172,7 +172,7 @@ public class Mapper {
 										+ ". index: " + propertyIndex);
 						Object memberObject;
 
-						if (propertyIndex != null) {
+						if (propertyParser.isIndexed(rootPropertyName)) {
 							memberObject = PropertyUtils.getIndexedProperty(object, rootPropertyName, propertyIndex);
 						} else {
 							memberObject = PropertyUtils.getProperty(object, rootPropertyName);
@@ -204,6 +204,21 @@ public class Mapper {
 					logger.warn(e.getMessage());
 				}
 			}
+		}
+	}
+
+	protected void handleMemberObject(Object object, Object memberObject, String rootPropertyName, String nestedProperty,
+									  String[] valArray, PropertyParser propertyParser) {
+		logger.info("memberObject: " + memberObject);
+
+		//memberObject is null, so attempt find an instance, using the PropertyHandler
+		if (memberObject == null && propertyHandler != null) {
+			memberObject = propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
+		}
+
+		if (memberObject != null) {
+			logger.info("memberObject Class: " + memberObject.getClass());
+			_setProperty(memberObject, nestedProperty, valArray);
 		}
 	}
 
@@ -241,7 +256,7 @@ public class Mapper {
 					paramMap.put(type + "." + param, paramMap.get(param));
 					paramMap.remove(param);
 				}
-			
+
 			return paramMap;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -310,7 +325,7 @@ public class Mapper {
 		//separate the type and property names from the param: type.propertyName -> type, propertyName
 		String type = propertyParser.getRootProperty(rawProperty);
 		rawProperty = propertyParser.getNestedProperty(rawProperty);
-		
+
 		return getType(object, rawProperty);
 	}
 

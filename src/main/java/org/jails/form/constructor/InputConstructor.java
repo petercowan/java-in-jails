@@ -119,12 +119,10 @@ public abstract class InputConstructor<T extends FormInput> {
 			fieldValues = new String[]{request.getParameter(fieldName)};
 		} else if (simpleForm != null && simpleForm.isBound()) {
 			if (repeater != null) {
-				SimpleForm beanForm = simpleForm;
 				fieldValues = beanMapper.getValues(
-						beanForm.getObject(repeater.getIndex()), fieldName);
+						simpleForm.getObject(repeater.getIndex()), fieldName);
 			} else {
-				SimpleForm beanForm = (SimpleForm) simpleForm;
-				fieldValues = beanMapper.getValues(beanForm.getObject(), fieldName);
+				fieldValues = beanMapper.getValues(simpleForm.getObject(), fieldName);
 			}
 		} else if (tag.getDefaultValue() != null) {
 			fieldValues = new String[]{tag.getDefaultValue()};

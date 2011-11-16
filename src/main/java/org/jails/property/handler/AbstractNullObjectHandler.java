@@ -6,10 +6,10 @@ import org.jails.property.parser.PropertyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractNullNestedPropertyHandler implements NullNestedPropertyHandler {
-	private static Logger logger = LoggerFactory.getLogger(AbstractNullNestedPropertyHandler.class);
+public abstract class AbstractNullObjectHandler implements NullObjectHandler {
+	private static Logger logger = LoggerFactory.getLogger(AbstractNullObjectHandler.class);
 
-	protected AbstractNullNestedPropertyHandler() {}
+	protected AbstractNullObjectHandler() {}
 
 	public Object handleProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
 		try {

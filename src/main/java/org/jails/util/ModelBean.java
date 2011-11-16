@@ -1,6 +1,7 @@
 package org.jails.util;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.jails.property.IdentifyBy;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
+@IdentifyBy.List({@IdentifyBy(field = "id"), @IdentifyBy(field = "id")})
 public class ModelBean {
 	@NotBlank
 	@Size(min = 2, max = 25)

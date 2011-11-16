@@ -7,16 +7,10 @@ import org.jails.property.parser.PropertyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BasePropertyHandler
+public abstract class BasePropertyHandler
 		implements PropertyHandler {
 
 	private static Logger logger = LoggerFactory.getLogger(BasePropertyHandler.class);
-
-	protected NullNestedPropertyHandler nullNestedPropertyHandler;
-
-	public BasePropertyHandler(NullNestedPropertyHandler nullNestedPropertyHandler) {
-		this.nullNestedPropertyHandler = nullNestedPropertyHandler;
-	}
 
 	public boolean acceptsNestedProperties(Object object, String propertyName) {
 			boolean classAcceptsNestedAttributes = ReflectionUtil
@@ -33,7 +27,7 @@ public class BasePropertyHandler
 					|| propertyAcceptsNestedAttributes;
 		}
 
-		public Object handleNullNestedProperty(Object object, String property, String nestedProperty, String[] valArray, PropertyParser propertyParser) {
-			return nullNestedPropertyHandler.handleProperty(object, property, nestedProperty, valArray, propertyParser);
-		}
-	}
+		public abstract Object handleNullNestedProperty(Object object, String property,
+														String nestedProperty, String[] valArray,
+														PropertyParser propertyParser);
+}

@@ -1,5 +1,6 @@
 package org.jails.property;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,4 +50,27 @@ public class ReflectionUtil {
 		}
 		return null;
 	}
+
+	public static IdentifyBy[] getIdentifiers(Object object, String property, String nestedProperty) {
+		try {
+			Class nestedType = PropertyUtils.getPropertyType(object, property);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new IdentifyBy[0];
+		}
+
+		IdentifyBy.List idList = ReflectionUtil
+				.getClassAnnotation(IdentifyBy.List.class, object.getClass());
+		IdentifyBy[] ids = null;
+		if (idList != null) {
+			ids = idList.value();
+		} else {
+			IdentifyBy id = ReflectionUtil.getClassAnnotation(IdentifyBy.class, object.getClass());
+			if (id != null) {
+				ids = new IdentifyBy[]{id};
+			}
+		}
+		return ids;
+	}
+
 }

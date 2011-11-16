@@ -2,6 +2,8 @@ package org.jails.form;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.jails.form.controller.SimpleFormRouter;
+import org.jails.property.IdentifyBy;
+import org.jails.property.Identity;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
@@ -39,10 +41,17 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		if (repeatCount != null && objects.length != repeatCount)
 			throw new IllegalArgumentException("Repeat count must be the same as the number of form beans");
 		this.beanArray = objects;
-		_validateAs(objects[0].getClass());
-		if (identityField != null) identifyBy(identityField);
+		_validateAs(beanArray[0].getClass());
+		identify();
 		if (beanArray.length > 1) repeat(beanArray.length);
 		return this;
+	}
+
+	protected void identify() {
+		IdentifyBy[] ids = Identity.getIdentifiers(beanArray[0]);
+		if (ids != null && ids.length == 1) {
+			identifyBy(ids[0].field());
+		}
 	}
 
 	public SimpleForm<T> identifyBy(String identityField) {

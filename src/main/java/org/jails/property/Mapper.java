@@ -23,9 +23,6 @@ public class Mapper {
 		ConverterUtil.getInstance();
 	}
 
-	/**
-	 *
-	 */
 	private Mapper(){}
 
 	/**

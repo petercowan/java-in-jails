@@ -41,7 +41,7 @@ public class MapperTest
 		return new TestSuite(MapperTest.class);
 	}
 
-	private void xMapToBean() {
+	public void testMapToBean() {
 		Map<String, String[]> params = getParameters(null, "mappingBean");
 		MappingBean bean = new MappingBean();
 		beanMapper.toExistingObject(bean, params);
@@ -49,7 +49,7 @@ public class MapperTest
 		assertBeanValues(bean);
 	}
 
-	private void xMapListToBean() {
+	public void testMapListToBean() {
 		Map<String, String[]> paramMap = new LinkedHashMap<String, String[]>();
 		for (int i = 0; i < 2; i++) {
 			paramMap.putAll(getParameters(i, "mappingBean"));
@@ -197,7 +197,7 @@ public class MapperTest
 		assertMapValues(map, null);
 	}
 
-	private void xBeanListToMap() {
+	public void testBeanListToMap() {
 		List<MappingBean> list = new ArrayList<MappingBean>();
 		for (int i = 0; i < 2; i++) {
 			list.add(getBean());
@@ -218,8 +218,6 @@ public class MapperTest
 			if (values != null && values.length > 0) System.out.println(values[0]);
 			else System.out.println("" + null);
 		}
-		System.out.println("testing key: " + "mappingBean" + indexStr + ".booleanProperty" + ": " + map.get("mappingBean" + indexStr + ".booleanProperty"));
-		System.out.println(map.get("mappingBean" + indexStr + ".booleanProperty").getClass().getName());
 		assertEquals("bool_prop", "true", map.get("mappingBean" + indexStr + ".booleanProperty")[0]);
 		assertEquals("float_prop", "2.45", map.get("mappingBean" + indexStr + ".floatProperty")[0]);
 		assertEquals("int_prop", "123", map.get("mappingBean" + indexStr + ".integer")[0]);
@@ -238,13 +236,14 @@ public class MapperTest
 		bean.setFloatProperty(2.45f);
 		bean.setInteger(123);
 		bean.setStringProperty("Hello");
+		bean.setIntegerArray(new Integer[]{1,2,3,4,5});
 
 		bean.setMappingBean(new MappingBean());
 		bean.getMappingBean().setBooleanProperty(false);
 		bean.getMappingBean().setFloatProperty(3.56f);
 		bean.getMappingBean().setInteger(234);
 		bean.getMappingBean().setStringProperty("Hi");
-
+		bean.getMappingBean().setIntegerArray(new Integer[]{1,2,3,4,5});
 		return bean;
 	}
 

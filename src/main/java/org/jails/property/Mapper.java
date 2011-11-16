@@ -5,18 +5,13 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jails.property.handler.PropertyHandler;
 import org.jails.property.parser.PropertyParser;
-import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Mapper {
 	protected static Logger logger = LoggerFactory.getLogger(Mapper.class);
@@ -28,19 +23,36 @@ public class Mapper {
 		ConverterUtil.getInstance();
 	}
 
-	public Mapper() {
-		this.propertyParser = new SimplePropertyParser();
-	}
+	/**
+	 *
+	 */
+	private Mapper(){}
 
+	/**
+	 *
+	 * @param propertyParser
+	 */
 	public Mapper(PropertyParser propertyParser) {
 		this.propertyParser = propertyParser;
 	}
 
+	/**
+	 *
+	 * @param propertyParser
+	 * @param propertyHandler
+	 */
 	public Mapper(PropertyParser propertyParser, PropertyHandler propertyHandler) {
 		this.propertyHandler = propertyHandler;
 		this.propertyParser = propertyParser;
 	}
 
+	/**
+	 *
+	 * @param classType
+	 * @param propertiesMap
+	 * @param <T>
+	 * @return
+	 */
 	public <T> T toObject(Class<T> classType, Map<String, String[]> propertiesMap) {
 		try {
 			T object = classType.newInstance();
@@ -87,6 +99,13 @@ public class Mapper {
 		}
 	}
 
+	/**
+	 *
+	 * @param classType
+	 * @param paramMap
+	 * @param <T>
+	 * @return
+	 */
 	public <T> List<T> toList(Class<T> classType, Map<String, String[]> paramMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
@@ -107,6 +126,11 @@ public class Mapper {
 		return objects;
 	}
 
+	/**
+	 *
+	 * @param objects
+	 * @param paramMap
+	 */
 	public void toExistingList(List<?> objects, Map<String, String[]> paramMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
 
@@ -125,6 +149,12 @@ public class Mapper {
 		}
 	}
 
+	/**
+	 *
+	 * @param object
+	 * @param rawProperty
+	 * @param valArray
+	 */
 	public void setValues(Object object, String rawProperty, String[] valArray) {
 		if (rawProperty == null)
 			throw new IllegalArgumentException("rawProperty must not be null");
@@ -145,6 +175,12 @@ public class Mapper {
 
 	}
 
+	/**
+	 *
+	 * @param object
+	 * @param rawProperty
+	 * @param value
+	 */
 	public void setValue(Object object, String rawProperty, String value) {
 		setValues(object, rawProperty, new String[]{value});
 	}
@@ -260,8 +296,13 @@ public class Mapper {
 		return toMap(object, null);
 	}
 
+	/**
+	 *
+	 * @param objects
+	 * @return
+	 */
 	public Map<String, String[]> toMap(List<?> objects) {
-		Map<String, String[]> paramMap = new HashMap<String, String[]>();
+		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
 		for (int i = 0; i < objects.size(); i++) {
 			paramMap.putAll(toMap(objects.get(i), i));
 		}
@@ -271,22 +312,27 @@ public class Mapper {
 	protected Map<String, String[]> toMap(Object object, Integer index) {
 		String type = Strings.initLowercase(object.getClass().getSimpleName());
 		String indexStr = (index != null) ? "[" + index + "]" : "";
-
-		return _toMap(object, type);
+		Set cache = new HashSet();
+		return _toMap(object, type + indexStr, cache);
 	}
 
-	protected Map<String, String[]> _toMap(Object bean, String type) {
+	protected Map<String, String[]> _toMap(Object bean, String type, Set cache) {
+		if (cache.contains(bean)) return Collections.EMPTY_MAP;
+		cache.add(bean);
+
 		String prefix = (type != null) ? type + "." : "";
 
-		Map<String, String[]> paramMap = new LinkedHashMap<String, String[]>();
+		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
 		try {
 			Method[] methods = bean.getClass().getMethods();
 
 			Map<Method, String> getters = new HashMap<Method, String>();
 			for (int i = 0; i < methods.length; i++) {
 				Method method = methods[i];
-				if (method.getParameterTypes() == null || method.getParameterTypes().length == 0) {
-					if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
+				if (method.getParameterTypes() == null || method.getParameterTypes().length == 0
+						&& !method.getReturnType().equals(Void.TYPE)) {
+					if ((method.getName().startsWith("get") || method.getName().startsWith("is"))
+							&& !"getClass".equals(method.getName())) {
 						String property = (method.getName().startsWith("get"))
 								? Strings.initLowercase(method.getName().substring(3))
 								: Strings.initLowercase(method.getName().substring(2));
@@ -297,15 +343,39 @@ public class Mapper {
 
 			for (Method method : getters.keySet()) {
 				try {
-					Object value = MethodUtils.invokeMethod(bean, method.getName(), null);
-					if (value == null) {
-						//ignore for now
-					} else if (ConverterUtil.getInstance().canConvert(value)) {
-						paramMap.put(prefix + getters.get(method), new String[]{ConverterUtil.getInstance().convert(value)});
+					Collection<Object> values = new ArrayList<Object>();
+					boolean isCollection = true;
+
+					if (Collection.class.isAssignableFrom(method.getReturnType())) {
+						Collection c = (Collection) MethodUtils.invokeMethod(bean, method.getName(), null);
+						if (c != null) values.addAll(c);
+
+					} else if (method.getReturnType().isArray()) {
+						Object[] array = (Object[]) MethodUtils.invokeMethod(bean, method.getName(), null);
+
+						if (array != null) values.addAll(Arrays.asList(array));
 					} else {
-						Map<String, String[]> nestedMap = _toMap(value, prefix + getters.get(method));
-						paramMap.putAll(nestedMap);
+						isCollection = false;
+						Object value = MethodUtils.invokeMethod(bean, method.getName(), null);
+						values.add(value);
 					}
+
+					Object[] valArray = values.toArray();
+					for (int i = 0; i < valArray.length; i++) {
+						Object value = valArray[i];
+						String index = (isCollection) ? "[" + i +"]" : "";
+
+						if (value == null) {
+							//ignore for now
+							//logger.info("Null value for " + method.getName());
+						} else if (ConverterUtil.getInstance().canConvert(value)) {
+							paramMap.put(prefix + getters.get(method) + index, new String[]{ConverterUtil.getInstance().convert(value)});
+						} else {
+							Map<String, String[]> nestedMap = _toMap(value, prefix + getters.get(method) + index, cache);
+							paramMap.putAll(nestedMap);
+						}
+					}
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -316,8 +386,12 @@ public class Mapper {
 		return paramMap;
 	}
 
-
-
+	/**
+	 *
+	 * @param object
+	 * @param rawProperty
+	 * @return
+	 */
 	public String[] getValues(Object object, String rawProperty) {
 		if (rawProperty == null) {
 			logger.info("ignoring rawProperty: " + rawProperty);
@@ -370,6 +444,12 @@ public class Mapper {
 		}
 	}
 
+	/**
+	 *
+	 * @param object
+	 * @param rawProperty
+	 * @return
+	 */
 	public String getValue(Object object, String rawProperty) {
 		String[] propertyValues = getValues(object, rawProperty);
 		return (propertyValues.length > 0) ? propertyValues[0] : null;

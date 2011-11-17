@@ -36,3 +36,25 @@ function checkCreditCard(field, rules, i, options) {
 		return '* Not a valid Credit Card Number';
 	}
 }
+
+function dateHelper(dateId) {
+	var el = $('#' + dateId);
+	var input = $('input', el);
+	var output = $('.' +dateId + 'output', el);
+	input.keyup(function() {
+		var val = input.val().trim();
+		if (/^\d+$/.test(val)) {
+			val = val.toNumber();
+		}
+		var text, date = Date.create(val);
+		if (!date.isValid()) {
+			text = 'Invalid date.'
+		} else {
+			text = date.format('{Weekday} {Month} {ord}, {year} {HH}:{mm}:{ss}');
+			var hiddenField = date.format('{MM}-{dd}-{yyyy}');
+		}
+		output.text(text);
+	});
+}
+
+//$(document).ready(dateHelper('user.dateCreated'));

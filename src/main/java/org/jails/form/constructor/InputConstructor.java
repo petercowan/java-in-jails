@@ -6,9 +6,12 @@ import org.jails.form.input.Repeater;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.property.Mapper;
+import org.jails.property.ReflectionUtil;
 import org.jails.property.SimpleMapper;
 import org.jails.validation.client.ClientConstraintInfo;
 import org.jails.validation.client.ClientConstraintInfoRegistry;
+import org.jails.validation.constraint.IsDecimal;
+import org.jails.validation.constraint.IsInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,6 +154,12 @@ public abstract class InputConstructor<T extends FormInput> {
 			ClientConstraintInfoRegistry constraintInfoRegistry = ClientConstraintInfoRegistry.getInstance();
 			List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
 					.getClientConstraints(classType, property);
+			Class returnType = ReflectionUtil.getGetterMethodReturnType(classType, property);
+			if (ReflectionUtil.isDecimal(returnType)) {
+				clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
+			} else if (ReflectionUtil.isInteger(returnType)) {
+				clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
+			}
 			validation = constraintInfoRegistry.getValidationConstructor()
 					.getValidationHtml(clientConstraints, classType, property);
 			logger.info("clientValidation: " + validation);

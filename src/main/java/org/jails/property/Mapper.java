@@ -13,8 +13,55 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * <pre>
+ * <code>Mapper</code> converts a Map of Strings to an Object, and vice versa using the
+ * Object's getter/setter methods. It is intended to be used with the request
+ * parameters accessed via calling <code>HttpServletRequest.getParameterMap</code>, which
+ * is why the Map is of type <code>Map<String,String[]></code>. Converting between the two is
+ * as simple as this:
+ *
+ * <code>
+ *  MyObject myObject = mapper.toObject(MyObject.class, request.getParameterMap());
+ * 	Map<String, String[]> propertiesMap = mapper.toMap(myObject);
+ * </code>
+ *
+ * The property parsing is handled by the PropertyParser member Object, however a typical format is:
+ *
+ * <code>
+ *  MyObject myObject = //get MyObject...;
+ * 	String property = "myObject.myProperty.myNestedProperty"
+ * 	String propertyValue = mapper.getValue(myObject, property);
+ * 	// converts myObject.getMyProperty().getMyNestedProperty() to a String
+ * </code>
+ *
+ * see {@link SimpleMapper} for an example implementation)
+ *
+ * Mapper places no limits on the level of nested properties to be resolved. The default
+ * behavior for handling nested properties is if the initial property is null, ignore the
+ * nestedProperty, failing silently:
+ *
+ * <code>
+ *  MyObject myObject = new MyObject();
+ * 	String property = "myObject.myProperty.myNestedProperty"
+ * 	mapper.setValue(myObject, property,
+ * 				request.getParameterValues(property));
+ * //myObject.getMyProperty() is null, so no value is set.
+ * </code>
+ *
+ * Default behavior is overridden by creating Mapper with a custom PropertyHandler.
+ * see {@link org.jails.property.handler.SimplePropertyHandler} for the recommended implementation
+ *
+ * Conversion of property values from Objects/primitives to String is handled by ConverterUtil.
+ *
+ * </pre>
+ *
+ * @see SimpleMapper
+ * @see org.jails.property.handler.SimplePropertyHandler
+ * @see ConverterUtil
+ */
 public class Mapper {
-	protected static Logger logger = LoggerFactory.getLogger(Mapper.class);
+	private static Logger logger = LoggerFactory.getLogger(Mapper.class);
 
 	protected PropertyHandler propertyHandler;
 	protected PropertyParser propertyParser;
@@ -26,6 +73,7 @@ public class Mapper {
 	private Mapper(){}
 
 	/**
+	 * Create a new Mapper with the given PropertyParser
 	 *
 	 * @param propertyParser
 	 */
@@ -34,6 +82,7 @@ public class Mapper {
 	}
 
 	/**
+	 * Create a new Mapper with the given PropertyParser and PropertyHandler
 	 *
 	 * @param propertyParser
 	 * @param propertyHandler
@@ -44,11 +93,14 @@ public class Mapper {
 	}
 
 	/**
+	 * Creates a new instance of classType, and sets the values of its fields by calling
+	 * its setters methods based on the names of the keys of the propertiesMap, using
+	 * the corresponding values.
 	 *
-	 * @param classType
-	 * @param propertiesMap
-	 * @param <T>
-	 * @return
+	 * @param classType Class of Object to create instance of
+	 * @param propertiesMap properties to map to Object
+	 * @param <T> same type as classType
+	 * @return instance of type T
 	 */
 	public <T> T toObject(Class<T> classType, Map<String, String[]> propertiesMap) {
 		try {
@@ -62,30 +114,12 @@ public class Mapper {
 	}
 
 	/**
-	 * Populate the a bean using its setters and  a map of string values. Map
-	 * keys correspond to bean property names. Map keys may have nested properties
-	 * and/or ordered indexes appended to them:
-	 * <p/>
-	 * Charity bean: user
-	 * <p/>
-	 * Property name -> setterMethod
-	 * <p/>
-	 * charity.name -> charity.setName(charity.name);
-	 * charity.name.1 -> charity.setName(charity.name.1);
-	 * charity.address.zip -> if (charity.getAddress() != null) charity.getAddress().setZip(charity.address.zip);
-	 * <p/>
-	 * Order indexes are used for populating multiple object in a list. Nested properties are used
-	 * to populate fields of a member Object. If a nested properties member object is null, then
-	 * we attempt to load that object from the database:
-	 * <p/>
-	 * charity.address.id -> if (charity.getAddress() == null) charity.setAddress(load(Address.class, charity.address.id));
-	 * <p/>
-	 * This works for fields other than just "id":
-	 * charity.address.zip -> if (charity.getAddress() == null) charity.setAddress(load(Address.class, charity.address.zip));
-	 * so it is recommended to use nested properties very carefully
+	 * Updates an existing instance of an Object, setting the values of its fields by calling
+	 * its setters methods based on the names of the keys of the propertiesMap, using
+	 * the corresponding values.
 	 *
-	 * @param object
-	 * @param propertiesMap
+	 * @param object Object to update
+	 * @param propertiesMap properties to map to Object
 	 */
 	public void toExistingObject(Object object, Map<String, String[]> propertiesMap) {
 
@@ -97,14 +131,15 @@ public class Mapper {
 	}
 
 	/**
+	 * @see Mapper#toObject(Class, java.util.Map)
 	 *
-	 * @param classType
-	 * @param paramMap
-	 * @param <T>
-	 * @return
+	 * @param classType Class of Object to create List of instances
+	 * @param propertiesMap properties to map to Object
+	 * @param <T> same type as classType
+	 * @return List of Objects of of type T
 	 */
-	public <T> List<T> toList(Class<T> classType, Map<String, String[]> paramMap) {
-		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
+	public <T> List<T> toList(Class<T> classType, Map<String, String[]> propertiesMap) {
+		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
 
 		List<T> objects = new ArrayList<T>(multiMap.size());
 
@@ -124,12 +159,14 @@ public class Mapper {
 	}
 
 	/**
+	 * @see Mapper#toExistingObject(Object, java.util.Map)
+	 * @see Mapper#toList(Class, java.util.Map)
 	 *
-	 * @param objects
-	 * @param paramMap
+	 * @param objects List<?> of Objects to update
+	 * @param propertiesMap properties to map to Object
 	 */
-	public void toExistingList(List<?> objects, Map<String, String[]> paramMap) {
-		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(paramMap);
+	public void toExistingList(List<?> objects, Map<String, String[]> propertiesMap) {
+		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
 
 		_toExistingList(objects, multiMap);
 	}
@@ -147,10 +184,17 @@ public class Mapper {
 	}
 
 	/**
+	 * Sets the value, or values, of the corresponding Object property to
+	 * the rawPoperty String provided, and the values.
 	 *
-	 * @param object
-	 * @param rawProperty
-	 * @param valArray
+	 * <code>
+	 * 		mapper.setValue(myObject, "myObject.myProperty", new String[]{"myValue"});
+ 	 * 		//calls myObject.setMyProperty(ConverterUtils.convert("myValue"));
+	 * </code>
+	 *
+	 * @param object Object to update
+	 * @param rawProperty field to update
+	 * @param valArray String values to be converted and set in field
 	 */
 	public void setValues(Object object, String rawProperty, String[] valArray) {
 		if (rawProperty == null)
@@ -173,10 +217,12 @@ public class Mapper {
 	}
 
 	/**
+	 * Convenience method for setValues
+	 * @see Mapper#setValues(Object, String, String[])
 	 *
-	 * @param object
-	 * @param rawProperty
-	 * @param value
+	 * @param object Object to update
+	 * @param rawProperty field to update
+	 * @param value String value to be converted and set in field
 	 */
 	public void setValue(Object object, String rawProperty, String value) {
 		setValues(object, rawProperty, new String[]{value});
@@ -247,56 +293,24 @@ public class Mapper {
 		}
 	}
 
-	protected void handleMemberObject(Object object, Object memberObject, String rootPropertyName, String nestedProperty,
-									  String[] valArray, PropertyParser propertyParser) {
-		logger.info("memberObject: " + memberObject);
-
-		//memberObject is null, so attempt find an instance, using the PropertyHandler
-		if (memberObject == null && propertyHandler != null) {
-			memberObject = propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
-		}
-
-		if (memberObject != null) {
-			logger.info("memberObject Class: " + memberObject.getClass());
-			_setValues(memberObject, nestedProperty, valArray);
-		}
-	}
-
 	//To map
 
 	/**
-	 * Populate the a bean using its setters and  a map of string values. Map
-	 * keys correspond to bean property names. Map keys may have nested properties
-	 * and/or ordered indexes appended to them:
-	 * <p/>
-	 * Charity bean: user
-	 * <p/>
-	 * Property name -> setterMethod
-	 * <p/>
-	 * charity.name -> charity.setName(charity.name);
-	 * charity.name.1 -> charity.setName(charity.name.1);
-	 * charity.address.zip -> if (charity.getAddress() != null) charity.getAddress().setZip(charity.address.zip);
-	 * <p/>
-	 * Order indexes are used for populating multiple object in a list. Nested properties are used
-	 * to populate fields of a member Object. If a nested properties member object is null, then
-	 * we attempt to load that object from the database:
-	 * <p/>
-	 * charity.address.id -> if (charity.getAddress() == null) charity.setAddress(load(Address.class, charity.address.id));
-	 * <p/>
-	 * This works for fields other than just "id":
-	 * charity.address.zip -> if (charity.getAddress() == null) charity.setAddress(load(Address.class, charity.address.zip));
-	 * so it is recommended to use nested properties very carefully
+	 * Create a Map based on an Object, and it's member Objects (recursively),
+	 * getters as keys, and their values.
 	 *
-	 * @param object
+	 * @param object Object to convert to Map
+	 * @return Map<String, String[]> of corresponding properties and values
 	 */
 	public Map<String, String[]> toMap(Object object) {
 		return toMap(object, null);
 	}
 
 	/**
+	 * @see Mapper#toMap(Object)
 	 *
-	 * @param objects
-	 * @return
+	 * @param objects List<?> of Objects
+	 * @return Map<String, String[]> of corresponding properties and values
 	 */
 	public Map<String, String[]> toMap(List<?> objects) {
 		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
@@ -384,10 +398,17 @@ public class Mapper {
 	}
 
 	/**
+	 * Returns a list of String values by calling the corresponding getter method
+	 * in the given Object based on the propertyName provided.
+	 *
+	 * <code>
+	 *     String[] propertyValues = mapper.getValue(myObject, "myObject.myProperty");
+	 *     //calls ConverterUtils.convert(myObject.getMyProperty());
+	 * </code>
 	 *
 	 * @param object
 	 * @param rawProperty
-	 * @return
+	 * @return String[] of converted values
 	 */
 	public String[] getValues(Object object, String rawProperty) {
 		if (rawProperty == null) {
@@ -442,6 +463,8 @@ public class Mapper {
 	}
 
 	/**
+	 * Convenience method for Mapper.getValues()
+	 * @see Mapper#getValues(Object, String)
 	 *
 	 * @param object
 	 * @param rawProperty

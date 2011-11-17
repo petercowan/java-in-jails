@@ -116,7 +116,7 @@ public class Strings {
 		return (sb.toString());
 	}
 
-	private String cleanNumber(String number, boolean allowDecimal) {
+	private static String cleanNumber(String number, boolean allowDecimal) {
 		//make sure they entered SOMETHING
 		if (isEmpty(number)) {
 			return "";
@@ -135,11 +135,11 @@ public class Strings {
 
 	}
 
-	public String cleanInt(String intString) {
+	public static String cleanInt(String intString) {
 		return cleanNumber(intString, false);
 	}
 
-	public String cleanDecimal(String decimalString) {
+	public static String cleanDecimal(String decimalString) {
 		return cleanNumber(decimalString, true);
 	}
 

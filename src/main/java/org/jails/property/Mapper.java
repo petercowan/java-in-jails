@@ -283,9 +283,19 @@ public class Mapper {
 			} else {
 				try {
 					String value = (valArray != null && !Strings.isEmpty(valArray[0])) ? valArray[0] : null;
+					logger.info("Original " + propertyName + " value: " + BeanUtils.getProperty(object, propertyName));
 					logger.info("Setting " + propertyName + " value to |" + value + "|");
 					if (value != null) logger.info("valueClass: " + value.getClass());
+					Class<?> returnType = ReflectionUtil.getGetterMethodReturnType(object.getClass(), propertyName);
+					if (ReflectionUtil.isInteger(returnType)) {
+						logger.info("Cleaning int value");
+						value = Strings.cleanInt(value);
+					} else if (ReflectionUtil.isDecimal(returnType)) {
+						logger.info("Cleaning decimal value");
+						value = Strings.cleanDecimal(value);
+					}
 					BeanUtils.setProperty(object, propertyName, value);
+					logger.info(propertyName + " set to : " + BeanUtils.getProperty(object, propertyName));
 				} catch (Exception e) {
 					logger.warn(e.getMessage());
 				}
@@ -335,24 +345,11 @@ public class Mapper {
 
 		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
 		try {
-			Method[] methods = bean.getClass().getMethods();
 
-			Map<Method, String> getters = new HashMap<Method, String>();
-			for (int i = 0; i < methods.length; i++) {
-				Method method = methods[i];
-				if (method.getParameterTypes() == null || method.getParameterTypes().length == 0
-						&& !method.getReturnType().equals(Void.TYPE)) {
-					if ((method.getName().startsWith("get") || method.getName().startsWith("is"))
-							&& !"getClass".equals(method.getName())) {
-						String property = (method.getName().startsWith("get"))
-								? Strings.initLowercase(method.getName().substring(3))
-								: Strings.initLowercase(method.getName().substring(2));
-						getters.put(method, property);
-					}
-				}
-			}
+			Map<String, Method> getters = ReflectionUtil.getGetterMethods(bean.getClass());
 
-			for (Method method : getters.keySet()) {
+			for (String fieldName : getters.keySet()) {
+				Method method = getters.get(fieldName);
 				try {
 					Collection<Object> values = new ArrayList<Object>();
 					boolean isCollection = true;
@@ -380,9 +377,9 @@ public class Mapper {
 							//ignore for now
 							//logger.info("Null value for " + method.getName());
 						} else if (ConverterUtil.getInstance().canConvert(value)) {
-							paramMap.put(prefix + getters.get(method) + index, new String[]{ConverterUtil.getInstance().convert(value)});
+							paramMap.put(prefix + fieldName + index, new String[]{ConverterUtil.getInstance().convert(value)});
 						} else {
-							Map<String, String[]> nestedMap = _toMap(value, prefix + getters.get(method) + index, cache);
+							Map<String, String[]> nestedMap = _toMap(value, prefix + fieldName + index, cache);
 							paramMap.putAll(nestedMap);
 						}
 					}

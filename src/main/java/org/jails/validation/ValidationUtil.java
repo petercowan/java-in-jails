@@ -1,9 +1,12 @@
 package org.jails.validation;
 
+import org.jails.util.Strings;
+import org.jails.validation.constraint.FieldMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolation;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,23 +25,47 @@ public class ValidationUtil {
 			logger.info("Found " + constraintViolations.size() + " constraint violations");
 			for (ConstraintViolation<T> c : constraintViolations) {
 				String propertyName = c.getPropertyPath().toString();
-				logger.info("Error property " + propertyName);
-				List<String> fieldsErrors = errorFieldsMap.get(propertyName);
-				if (fieldsErrors == null) {
-					fieldsErrors = new ArrayList<String>();
-					errorFieldsMap.put(propertyName, fieldsErrors);
+				if (Strings.isEmpty(propertyName)) {
+					 handleClassConstraint(c, errorFieldsMap);
+				} else {
+					logger.info("Error property " + propertyName);
+					getFieldErrors(propertyName, errorFieldsMap);
+					String errorMessage = c.getMessage();
+					errorFieldsMap.get(propertyName).add(errorMessage);
 				}
-				String errorMessage = c.getMessage();
-				logger.info("Error messageTemplate: " + c.getMessageTemplate());
-
-				logger.info("Error message " + errorMessage);
-				errorFieldsMap.get(propertyName).add(errorMessage);
 			}
 		}
 		return errorFieldsMap;
 	}
 
-	public static String replaceTokens(String tokenString, Map<String,? extends Object> attributeNames) {
+	private static List<String> getFieldErrors(String propertyName, Map<String, List<String>> errorFieldsMap) {
+		List<String> fieldsErrors = errorFieldsMap.get(propertyName);
+		if (fieldsErrors == null) {
+			fieldsErrors = new ArrayList<String>();
+			errorFieldsMap.put(propertyName, fieldsErrors);
+		}
+		return fieldsErrors;
+	}
+
+	private static <T> void handleClassConstraint(ConstraintViolation<T> c, Map<String, List<String>> errorFieldsMap) {
+		Annotation a = c.getConstraintDescriptor().getAnnotation();
+		if (a instanceof FieldMatch) {
+			FieldMatch fieldMatch = (FieldMatch) a;
+			fieldMatch.field();
+			fieldMatch.matchField();
+
+			logger.info("FieldMatch Error!!! " + fieldMatch.field() + ", " + fieldMatch.matchField());
+
+			getFieldErrors(fieldMatch.field(), errorFieldsMap);
+			getFieldErrors(fieldMatch.matchField(), errorFieldsMap);
+			String errorMessage = c.getMessage();
+			errorFieldsMap.get(fieldMatch.field()).add(errorMessage);
+			errorFieldsMap.get(fieldMatch.matchField()).add("");
+		}
+
+	}
+
+	public static String replaceTokens(String tokenString, Map<String, ? extends Object> attributeNames) {
 		String content = tokenString;
 		for (String attributeName : attributeNames.keySet()) {
 			String attributeRegex = "\\$\\{" + attributeName + "\\}";

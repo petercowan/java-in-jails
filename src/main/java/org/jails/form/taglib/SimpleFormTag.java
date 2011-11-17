@@ -4,6 +4,8 @@ import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.form.controller.SimpleFormRouter;
 import org.jails.form.input.FormTag;
+import org.jails.property.ReflectionUtil;
+import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -173,7 +176,8 @@ public class SimpleFormTag
 				if (formElements != null) {
 					for (String fieldName : formElements) {
 						if (simpleForm.fieldHasError(fieldName, index)) {
-							message.append(simpleForm.getFieldError(fieldName, labelMap.get(fieldName), index));
+							String fieldError = simpleForm.getFieldError(fieldName, labelMap.get(fieldName), index);
+							if (!Strings.isEmpty(fieldError)) message.append(fieldError);
 						}
 					}
 				}
@@ -193,7 +197,11 @@ public class SimpleFormTag
 			JspWriter jspOut = pageContext.getOut();
 			jspOut.print(getBeginForm());
 			if (simpleForm.hasError()) jspOut.print(getError());
-			jspOut.print(bodyContent.getString());
+			if (Strings.isEmpty(bodyContent.getString())) {
+				jspOut.print(bodyContent.getString());
+			} else {
+				generateForm();
+			}
 			jspOut.print(getHiddenMethod());
 			jspOut.print(getSubmitValue());
 			jspOut.print(getEndForm());
@@ -201,6 +209,24 @@ public class SimpleFormTag
 			return EVAL_PAGE;
 		} catch (IOException ioe) {
 			throw new JspException(ioe.getMessage());
+		}
+	}
+
+	protected void generateForm() throws JspException {
+		if (simpleForm != null) {
+			Map<String, Method> getters = ReflectionUtil.getGetterMethods(simpleForm.getClassType());
+
+			for (String fieldName : getters.keySet()) {
+				Method method = getters.get(fieldName);
+				TextTag textTag = new TextTag();
+				textTag.setPageContext(pageContext);
+				textTag.setName(fieldName);
+				textTag.setLabel(Strings.initCaps(
+								Strings.join(" ",
+										Strings.splitCamelCase(fieldName))));
+				textTag.setSize("25");
+				textTag.doStartTag();
+			}
 		}
 	}
 }

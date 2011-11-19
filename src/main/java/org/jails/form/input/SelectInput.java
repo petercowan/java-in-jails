@@ -9,4 +9,8 @@ public interface SelectInput extends FormInput {
 
 	public void setPrompt(String prompt);
 
+	public String getOther();
+
+	public void setOther(String other);
+
 }

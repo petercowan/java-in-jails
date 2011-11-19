@@ -2,6 +2,8 @@ package org.jails.form.input;
 
 import org.jails.form.SimpleForm;
 
+import javax.servlet.ServletRequest;
+
 public interface FormTag {
 	public void setName(String name);
 
@@ -18,6 +20,8 @@ public interface FormTag {
 	public boolean isStacked();
 
 	public SimpleForm getSimpleForm();
+
+	public String[] getInputValue(ServletRequest request, String elementName, Integer repeaterIndex);
 
 	public void addElement(String fieldName, int index);
 

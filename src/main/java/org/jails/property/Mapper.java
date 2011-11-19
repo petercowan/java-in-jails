@@ -9,7 +9,6 @@ import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -70,7 +69,8 @@ public class Mapper {
 		ConverterUtil.getInstance();
 	}
 
-	private Mapper(){}
+	private Mapper() {
+	}
 
 	/**
 	 * Create a new Mapper with the given PropertyParser
@@ -97,9 +97,9 @@ public class Mapper {
 	 * its setters methods based on the names of the keys of the propertiesMap, using
 	 * the corresponding values.
 	 *
-	 * @param classType Class of Object to create instance of
+	 * @param classType	 Class of Object to create instance of
 	 * @param propertiesMap properties to map to Object
-	 * @param <T> same type as classType
+	 * @param <T>           same type as classType
 	 * @return instance of type T
 	 */
 	public <T> T toObject(Class<T> classType, Map<String, String[]> propertiesMap) {
@@ -118,25 +118,24 @@ public class Mapper {
 	 * its setters methods based on the names of the keys of the propertiesMap, using
 	 * the corresponding values.
 	 *
-	 * @param object Object to update
+	 * @param object		Object to update
 	 * @param propertiesMap properties to map to Object
 	 */
 	public void toExistingObject(Object object, Map<String, String[]> propertiesMap) {
 
+		PropertiesWrapper propertiesWrapper = new PropertiesWrapper(propertiesMap, object.getClass());
 		for (String rawProperty : propertiesMap.keySet()) {
 			String[] valuesArray = propertiesMap.get(rawProperty);
-
-			setValues(object, rawProperty, valuesArray);
+			setValues(object, rawProperty, valuesArray, propertiesWrapper);
 		}
 	}
 
 	/**
-	 * @see Mapper#toObject(Class, java.util.Map)
-	 *
-	 * @param classType Class of Object to create List of instances
+	 * @param classType	 Class of Object to create List of instances
 	 * @param propertiesMap properties to map to Object
-	 * @param <T> same type as classType
+	 * @param <T>           same type as classType
 	 * @return List of Objects of of type T
+	 * @see Mapper#toObject(Class, java.util.Map)
 	 */
 	public <T> List<T> toList(Class<T> classType, Map<String, String[]> propertiesMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
@@ -159,11 +158,10 @@ public class Mapper {
 	}
 
 	/**
+	 * @param objects	   List<?> of Objects to update
+	 * @param propertiesMap properties to map to Object
 	 * @see Mapper#toExistingObject(Object, java.util.Map)
 	 * @see Mapper#toList(Class, java.util.Map)
-	 *
-	 * @param objects List<?> of Objects to update
-	 * @param propertiesMap properties to map to Object
 	 */
 	public void toExistingList(List<?> objects, Map<String, String[]> propertiesMap) {
 		PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
@@ -186,17 +184,18 @@ public class Mapper {
 	/**
 	 * Sets the value, or values, of the corresponding Object property to
 	 * the rawPoperty String provided, and the values.
-	 *
+	 * <p/>
 	 * <code>
-	 * 		mapper.setValue(myObject, "myObject.myProperty", new String[]{"myValue"});
- 	 * 		//calls myObject.setMyProperty(ConverterUtils.convert("myValue"));
+	 * mapper.setValue(myObject, "myObject.myProperty", new String[]{"myValue"});
+	 * //calls myObject.setMyProperty(ConverterUtils.convert("myValue"));
 	 * </code>
 	 *
-	 * @param object Object to update
-	 * @param rawProperty field to update
-	 * @param valArray String values to be converted and set in field
+	 * @param object			Object to update
+	 * @param rawProperty	   field to update
+	 * @param valArray		  String values to be converted and set in field
+	 * @param propertiesWrapper
 	 */
-	public void setValues(Object object, String rawProperty, String[] valArray) {
+	protected void setValues(Object object, String rawProperty, String[] valArray, PropertiesWrapper propertiesWrapper) {
 		if (rawProperty == null)
 			throw new IllegalArgumentException("rawProperty must not be null");
 		if (object == null)
@@ -212,93 +211,86 @@ public class Mapper {
 		logger.info("type: " + type);
 		logger.info("property: " + rawProperty);
 
-		_setValues(object, rawProperty, valArray);
-
+		_setValues(object, rawProperty, type, propertiesWrapper);
 	}
 
-	/**
-	 * Convenience method for setValues
-	 * @see Mapper#setValues(Object, String, String[])
-	 *
-	 * @param object Object to update
-	 * @param rawProperty field to update
-	 * @param value String value to be converted and set in field
-	 */
-	public void setValue(Object object, String rawProperty, String value) {
-		setValues(object, rawProperty, new String[]{value});
-	}
+	protected void _setValues(Object object, String property, String propertyStem, PropertiesWrapper propertiesMap) {
+		logger.info("property: " + property + " of Class: " + object.getClass());
 
-	protected void _setValues(Object object, String property, String[] valArray) {
-		logger.info("property: " + property + " of Class: "
-				+ object.getClass() + " with values: ");
-		if (valArray.length > 1) {
-			StringBuffer values = new StringBuffer();
-			for (int i = 0; i < valArray.length; i++) {
-				if (i > 0) values.append(",");
-				values.append(valArray[i]);
-			}
-			logger.info(values.toString());
-		} else {
-			logger.info(valArray[0]);
-		}
+		//use this to retrieve value from propertiesMap
+		String propertyValueKey = propertyStem + "." + property;
 
-		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String propertyName = propertyParser.getPropertyName(property);
+		//if this property is nested (eg "nested.property"), and the object allows nested properties to be
+		//set, retrieve the memberObject and set the nested property there.
+		if (propertyParser.hasNestedProperty(property)) {
+			String nestedProperty = propertyParser.getNestedProperty(property);
+			property = propertyParser.getRootProperty(property);
 
-		if (propertyName != null) {
-			//this property contains nested properties
-			if (propertyParser.hasNestedProperty(propertyName)) {
-				String nestedProperty = propertyParser.getNestedProperty(propertyName);
-				String rootPropertyName = propertyParser.getRootProperty(propertyName);
+			//strip index from property, if it exists
+			String propertyName = propertyParser.getPropertyName(property);
 
-				if (propertyHandler.acceptsNestedProperties(object, rootPropertyName)) {
-					try {
-						Integer propertyIndex = propertyParser.getPropertyIndex(rootPropertyName);
-						logger.info("loading rootPropertyName " + rootPropertyName + " of Class: " + object.getClass()
-								+ ". index: " + propertyIndex);
-						Object memberObject;
-
-						if (propertyParser.isIndexed(rootPropertyName)) {
-							memberObject = PropertyUtils.getIndexedProperty(object, rootPropertyName, propertyIndex);
-						} else {
-							memberObject = PropertyUtils.getProperty(object, rootPropertyName);
-						}
-						logger.info("memberObject: " + memberObject);
-
-						//memberObject is null, so attempt find an instance, using the PropertyHandler
-						if (memberObject == null && propertyHandler != null) {
-							memberObject = propertyHandler.handleNullNestedProperty(object, rootPropertyName, nestedProperty, valArray, propertyParser);
-						}
-
-						if (memberObject != null) {
-							logger.info("memberObject Class: " + memberObject.getClass());
-							_setValues(memberObject, nestedProperty, valArray);
-						}
-					} catch (Exception e) {
-						logger.warn(e.getMessage());
-					}
-				} else {
-					logger.info("ignoring nested property " + nestedProperty);
-				}
-			} else {
+			if (propertyHandler.acceptsNestedProperties(object, propertyName)) {
 				try {
-					String value = (valArray != null && !Strings.isEmpty(valArray[0])) ? valArray[0] : null;
-					logger.info("Original " + propertyName + " value: " + BeanUtils.getProperty(object, propertyName));
-					logger.info("Setting " + propertyName + " value to |" + value + "|");
-					if (value != null) logger.info("valueClass: " + value.getClass());
-					Class<?> returnType = ReflectionUtil.getGetterMethodReturnType(object.getClass(), propertyName);
-					if (ReflectionUtil.isInteger(returnType)) {
-						logger.info("Cleaning int value");
-						value = Strings.cleanInt(value);
-					} else if (ReflectionUtil.isDecimal(returnType)) {
-						logger.info("Cleaning decimal value");
-						value = Strings.cleanDecimal(value);
+					//propertyIndex refers to a properties position within a Collection or Array
+					Integer propertyIndex = propertyParser.getPropertyIndex(property);
+					logger.info("loading propertyName " + propertyName + " of Class: " + object.getClass() + ". index: " + propertyIndex);
+
+					Object memberObject;
+					if (propertyParser.isIndexed(propertyName)) {//&& propertyParser.getPropertyIndex(propertyName) != null) {
+						memberObject = PropertyUtils.getIndexedProperty(object, propertyName, propertyIndex);
+					} else {
+						memberObject = PropertyUtils.getProperty(object, propertyName);
 					}
-					BeanUtils.setProperty(object, propertyName, value);
-					logger.info(propertyName + " set to : " + BeanUtils.getProperty(object, propertyName));
+					logger.info("memberObject: " + memberObject);
+
+					//memberObject is null, so attempt retrieve an instance using the PropertyHandler
+					if (memberObject == null && propertyHandler != null) {
+						String[] valArray = propertiesMap.get(propertyValueKey);
+						memberObject = propertyHandler.handleNullNestedProperty(object,
+								propertyName, nestedProperty, valArray, propertyParser);
+					}
+
+					if (memberObject != null) {
+						logger.info("memberObject Class: " + memberObject.getClass());
+						_setValues(memberObject, nestedProperty, propertyStem + "." + property, propertiesMap);
+					}
 				} catch (Exception e) {
 					logger.warn(e.getMessage());
 				}
+			} else {
+				logger.info("ignoring nested property " + nestedProperty);
+			}
+		} else {
+			//strip index from property, if it exists
+			String propertyName = propertyParser.getPropertyName(property);
+
+			try {
+				logger.info("propertyValueKey: " + propertyValueKey);
+				String value = propertiesMap.getValue(propertyValueKey);
+				logger.info("Object's " + propertyName + " value: " + BeanUtils.getProperty(object, propertyName));
+				logger.info("Setting " + propertyName + " value to |" + value + "|");
+
+				if (value == null) value = propertiesMap.getSelectOtherValue(propertyValueKey);
+
+				//process value based on underlying Object type
+				Class<?> returnType = ReflectionUtil.getGetterMethodReturnType(object.getClass(), propertyName);
+				logger.info("returnType: " + returnType);
+				if (ReflectionUtil.isInteger(returnType)) {
+					logger.info("Cleaning int value");
+					value = Strings.cleanInt(value);
+				} else if (ReflectionUtil.isDecimal(returnType)) {
+					logger.info("Cleaning decimal value");
+					value = Strings.cleanDecimal(value);
+				} else if (Date.class.equals(returnType)) {
+					if (value == null) {
+						value = propertiesMap.composeDate(propertyValueKey);
+					}
+				}
+
+				BeanUtils.setProperty(object, propertyName, value);
+				logger.info(propertyName + " set to : " + BeanUtils.getProperty(object, propertyName));
+			} catch (Exception e) {
+				logger.warn(e.getMessage());
 			}
 		}
 	}
@@ -317,10 +309,9 @@ public class Mapper {
 	}
 
 	/**
-	 * @see Mapper#toMap(Object)
-	 *
 	 * @param objects List<?> of Objects
 	 * @return Map<String, String[]> of corresponding properties and values
+	 * @see Mapper#toMap(Object)
 	 */
 	public Map<String, String[]> toMap(List<?> objects) {
 		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
@@ -334,19 +325,19 @@ public class Mapper {
 		String type = Strings.initLowercase(object.getClass().getSimpleName());
 		String indexStr = (index != null) ? "[" + index + "]" : "";
 		Set cache = new HashSet();
-		return _toMap(object, type + indexStr, cache);
+		return recursiveToMap(object, type + indexStr, cache);
 	}
 
-	protected Map<String, String[]> _toMap(Object bean, String type, Set cache) {
-		if (cache.contains(bean)) return Collections.EMPTY_MAP;
-		cache.add(bean);
+	protected Map<String, String[]> recursiveToMap(Object object, String type, Set cache) {
+		if (cache.contains(object)) return Collections.EMPTY_MAP;
+		cache.add(object);
 
 		String prefix = (type != null) ? type + "." : "";
 
 		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
 		try {
 
-			Map<String, Method> getters = ReflectionUtil.getGetterMethods(bean.getClass());
+			Map<String, Method> getters = ReflectionUtil.getGetterMethods(object.getClass());
 
 			for (String fieldName : getters.keySet()) {
 				Method method = getters.get(fieldName);
@@ -355,35 +346,48 @@ public class Mapper {
 					boolean isCollection = true;
 
 					if (Collection.class.isAssignableFrom(method.getReturnType())) {
-						Collection c = (Collection) MethodUtils.invokeMethod(bean, method.getName(), null);
+						Collection c = (Collection) MethodUtils.invokeMethod(object, method.getName(), null);
 						if (c != null) values.addAll(c);
 
 					} else if (method.getReturnType().isArray()) {
-						Object[] array = (Object[]) MethodUtils.invokeMethod(bean, method.getName(), null);
+						Object[] array = (Object[]) MethodUtils.invokeMethod(object, method.getName(), null);
 
 						if (array != null) values.addAll(Arrays.asList(array));
 					} else {
 						isCollection = false;
-						Object value = MethodUtils.invokeMethod(bean, method.getName(), null);
+						Object value = MethodUtils.invokeMethod(object, method.getName(), null);
 						values.add(value);
 					}
 
 					Object[] valArray = values.toArray();
 					for (int i = 0; i < valArray.length; i++) {
 						Object value = valArray[i];
-						String index = (isCollection) ? "[" + i +"]" : "";
+						String index = (isCollection) ? "[" + i + "]" : "";
 
 						if (value == null) {
 							//ignore for now
 							//logger.info("Null value for " + method.getName());
 						} else if (ConverterUtil.getInstance().canConvert(value)) {
-							paramMap.put(prefix + fieldName + index, new String[]{ConverterUtil.getInstance().convert(value)});
+							String stringValue = ConverterUtil.getInstance().convert(value);
+
+							/** Todo - format based on type/parameterized type
+							Class<?> returnType = method.getReturnType();
+							logger.info("returnType: " + returnType);
+							if (ReflectionUtil.isInteger(returnType)) {
+								logger.info("Cleaning int value");
+								stringValue = Formats.INT.format(value);
+							} else if (ReflectionUtil.isDecimal(returnType)) {
+								logger.info("Cleaning decimal value");
+								stringValue = Formats.DECIMAL.format(value);
+							} else {
+								stringValue = ConverterUtil.getInstance().convert(value);
+							}  **/
+							paramMap.put(prefix + fieldName + index, new String[]{stringValue});
 						} else {
-							Map<String, String[]> nestedMap = _toMap(value, prefix + fieldName + index, cache);
+							Map<String, String[]> nestedMap = recursiveToMap(value, prefix + fieldName + index, cache);
 							paramMap.putAll(nestedMap);
 						}
 					}
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -393,126 +397,4 @@ public class Mapper {
 		}
 		return paramMap;
 	}
-
-	/**
-	 * Returns a list of String values by calling the corresponding getter method
-	 * in the given Object based on the propertyName provided.
-	 *
-	 * <code>
-	 *     String[] propertyValues = mapper.getValue(myObject, "myObject.myProperty");
-	 *     //calls ConverterUtils.convert(myObject.getMyProperty());
-	 * </code>
-	 *
-	 * @param object
-	 * @param rawProperty
-	 * @return String[] of converted values
-	 */
-	public String[] getValues(Object object, String rawProperty) {
-		if (rawProperty == null) {
-			logger.info("ignoring rawProperty: " + rawProperty);
-			return new String[]{};
-		}
-
-		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String type = propertyParser.getRootProperty(rawProperty);
-		rawProperty = propertyParser.getNestedProperty(rawProperty);
-
-		return _getValues(object, rawProperty);
-	}
-
-	protected String[] _getValues(Object object, String rawProperty) {
-		String property = propertyParser.getPropertyName(rawProperty);
-
-		if (property == null || property.startsWith("_")) {
-			logger.info("ignoring property: " + property);
-			return new String[]{};
-		}
-		String propertyValue;
-
-		//this property contains nested properties
-		if (propertyParser.hasNestedProperty(property)) {
-			String nestedProperty = propertyParser.getNestedProperty(property);
-			property = propertyParser.getRootProperty(property);
-
-			Object memberObject = null;
-			try {
-				memberObject = PropertyUtils.getProperty(object, property);
-				logger.info("memberObject: " + memberObject);
-			} catch (Exception e) {
-				logger.warn(e.getMessage());
-			}
-
-			//memberObject is null, so attempt find an instance, using the NullNestedPropertyHandler
-			if (memberObject != null) {
-				return new String[]{};
-			} else {
-				logger.info("memberObject Class: " + memberObject.getClass());
-				return getValues(memberObject, nestedProperty);
-			}
-		} else {
-			try {
-				return new String[]{BeanUtils.getProperty(object, property)};
-			} catch (Exception e) {
-				logger.warn(e.getMessage());
-				return new String[]{};
-			}
-		}
-	}
-
-	/**
-	 * Convenience method for Mapper.getValues()
-	 * @see Mapper#getValues(Object, String)
-	 *
-	 * @param object
-	 * @param rawProperty
-	 * @return
-	 */
-	public String getValue(Object object, String rawProperty) {
-		String[] propertyValues = getValues(object, rawProperty);
-		return (propertyValues.length > 0) ? propertyValues[0] : null;
-	}
-
-	protected Class getType(Object object, String rawProperty) {
-		//separate the type and property names from the param: type.propertyName -> type, propertyName
-		String type = propertyParser.getRootProperty(rawProperty);
-		rawProperty = propertyParser.getNestedProperty(rawProperty);
-
-		return getType(object, rawProperty);
-	}
-
-	protected Class _getType(Class classType, String rawProperty) {
-		String property = propertyParser.getPropertyName(rawProperty);
-
-		if (propertyParser.hasNestedProperty(property)) {
-			String nestedProperty = propertyParser.getNestedProperty(property);
-			String rootProperty = propertyParser.getRootProperty(property);
-
-			Class propertyType = getPropertyType(classType, rootProperty);
-			return _getType(propertyType, nestedProperty);
-		} else {
-			return getPropertyType(classType, property);
-		}
-	}
-
-	protected Class getPropertyType(Class classType, String property) {
-		try {
-			Class propertyType = null;
-			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);
-			if (pds != null) {
-				PropertyDescriptor descriptor = null;
-				for (int i = 0; i < pds.length && descriptor != null; i++) {
-					if (property.equals(pds[i].getName())) {
-						descriptor = pds[i];
-					}
-				}
-				propertyType = descriptor.getPropertyType();
-			}
-			logger.info("Property: " + property + ". Class: " + propertyType);
-			return propertyType;
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-			return null;
-		}
-	}
-
 }

@@ -4,11 +4,15 @@ import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.form.controller.SimpleFormRouter;
 import org.jails.form.input.FormTag;
+import org.jails.property.Mapper;
+import org.jails.property.PropertiesWrapper;
 import org.jails.property.ReflectionUtil;
+import org.jails.property.SimpleMapper;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -26,6 +30,9 @@ public class SimpleFormTag
 	private static Logger logger = LoggerFactory.getLogger(SimpleFormTag.class);
 
 	private static SimpleFormParams simpleFormParams = new SimpleFormParams();
+	protected Mapper mapper = new SimpleMapper();
+	protected PropertiesWrapper propertiesWrapper;
+
 
 	public static String STACKED = "stacked";
 	public static String SIDE_BY_SIDE = "side";
@@ -46,6 +53,9 @@ public class SimpleFormTag
 		logger.info("Getting SimpleForm: " + simpleFormParam);
 		simpleForm = (SimpleForm) pageContext.getRequest().getAttribute(simpleFormParam);
 		logger.info("Loaded form " + simpleForm);
+		if (simpleForm != null && simpleForm.isBound()) {
+			propertiesWrapper = new PropertiesWrapper(mapper.toMap(simpleForm.getObject()), simpleForm.getClassType());
+		}
 	}
 
 	public void setName(String name) {
@@ -79,6 +89,15 @@ public class SimpleFormTag
 
 	public SimpleForm getSimpleForm() {
 		return simpleForm;
+	}
+
+	public String[] getInputValue(ServletRequest request, String elementName, Integer repeaterIndex) {
+		if (request.getParameter(elementName) != null) {
+			return new String[]{request.getParameter(elementName)};
+		} else if (propertiesWrapper != null) {
+			return  propertiesWrapper.get(elementName, repeaterIndex);
+		}
+		return null;
 	}
 
 	public void addElement(String fieldName, int index) {

@@ -1,13 +1,11 @@
 package org.jails.form.constructor;
 
+import org.jails.form.SimpleForm;
+import org.jails.form.SimpleFormParams;
 import org.jails.form.input.FormInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
-import org.jails.form.SimpleForm;
-import org.jails.form.SimpleFormParams;
-import org.jails.property.Mapper;
 import org.jails.property.ReflectionUtil;
-import org.jails.property.SimpleMapper;
 import org.jails.validation.client.ClientConstraintInfo;
 import org.jails.validation.client.ClientConstraintInfoRegistry;
 import org.jails.validation.constraint.IsDecimal;
@@ -39,13 +37,10 @@ public abstract class InputConstructor<T extends FormInput> {
 	protected String inputId;
 	protected String validation;
 
-	protected Mapper beanMapper;
-
 	public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		this.tag = tag;
 		this.formTag = formTag;
 		this.repeater = repeatTag;
-		this.beanMapper = new SimpleMapper();
 		initFormTag();
 		initFieldName();
 		initCssClass();
@@ -118,19 +113,11 @@ public abstract class InputConstructor<T extends FormInput> {
 	protected void initFieldValues(ServletRequest request) {
 
 		String fieldName = getFieldName();
-		if (request.getParameter(fieldName) != null) {
-			fieldValues = new String[]{request.getParameter(fieldName)};
-		} else if (simpleForm != null && simpleForm.isBound()) {
-			if (repeater != null) {
-				fieldValues = beanMapper.getValues(
-						simpleForm.getObject(repeater.getIndex()), fieldName);
-			} else {
-				fieldValues = beanMapper.getValues(simpleForm.getObject(), fieldName);
-			}
-		} else if (tag.getDefaultValue() != null) {
-			fieldValues = new String[]{tag.getDefaultValue()};
+		fieldValues = formTag.getInputValue(request, fieldName, (repeater == null) ? null : repeater.getIndex());
+		if (fieldValues == null) {
+			if (tag.getDefaultValue() != null) fieldValues = new String[]{tag.getDefaultValue()};
+			else fieldValues = new String[]{};
 		}
-		if (fieldValues == null) fieldValues = new String[]{};
 		logger.info("fieldValues initialized");
 	}
 
@@ -139,8 +126,10 @@ public abstract class InputConstructor<T extends FormInput> {
 	}
 
 	public String getFieldValue(int index) {
-		return (fieldValues != null && fieldValues.length > 0 && fieldValues[index] != null)
+		String value = (fieldValues != null && fieldValues.length > 0 && fieldValues[index] != null)
 				? fieldValues[index] : "";
+
+		return value;
 	}
 
 	protected void initClientValidation() {

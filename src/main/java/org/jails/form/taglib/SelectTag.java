@@ -16,6 +16,7 @@ public class SelectTag
 
 	private String multiple;
 	private String prompt;
+	private String other;
 
 	public String getMultiple() {
 		return multiple;
@@ -31,6 +32,14 @@ public class SelectTag
 
 	public void setPrompt(String prompt) {
 		this.prompt = prompt;
+	}
+
+	public String getOther() {
+		return other;
+	}
+
+	public void setOther(String other) {
+		this.other = other;
 	}
 
 	@Override

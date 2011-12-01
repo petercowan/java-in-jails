@@ -5,6 +5,7 @@ import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -147,4 +148,24 @@ public class ReflectionUtil {
 	}
 
 
+	public static Class getPropertyType(Class classType, String property) {
+		try {
+			Class propertyType = null;
+			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);
+			if (pds != null) {
+				PropertyDescriptor descriptor = null;
+				for (int i = 0; i < pds.length && descriptor != null; i++) {
+					if (property.equals(pds[i].getName())) {
+						descriptor = pds[i];
+					}
+				}
+				propertyType = descriptor.getPropertyType();
+			}
+			logger.info("Property: " + property + ". Class: " + propertyType);
+			return propertyType;
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			return null;
+		}
+	}
 }

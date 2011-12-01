@@ -117,7 +117,6 @@ public class Strings {
 	}
 
 	private static String cleanNumber(String number, boolean allowDecimal) {
-		//make sure they entered SOMETHING
 		if (isEmpty(number)) {
 			return "";
 		}

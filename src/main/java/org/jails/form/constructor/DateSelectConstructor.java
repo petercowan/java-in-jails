@@ -3,7 +3,6 @@ package org.jails.form.constructor;
 import org.jails.form.input.FormInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
-import org.jails.form.input.TextInput;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +15,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class SelectDateConstructor
+public class DateSelectConstructor
 		extends TagInputConstructor<FormInput> {
-	private static Logger logger = LoggerFactory.getLogger(SelectDateConstructor.class);
-	private Date date;
+	private static Logger logger = LoggerFactory.getLogger(DateSelectConstructor.class);
 	private Calendar calendar;
 
-	public SelectDateConstructor(TextInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public DateSelectConstructor(FormInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 
@@ -31,7 +29,7 @@ public class SelectDateConstructor
 		super.initFieldValues(request);
 		if (fieldValues[0] != null) {
 			try {
-				date = new SimpleDateFormat("YYYY-MM-dd").parse(fieldValues[0]);
+				Date date = new SimpleDateFormat(tag.getFormat()).parse(fieldValues[0]);
 				calendar = Calendar.getInstance();
 				calendar.setTime(date);
 			} catch (ParseException e) {

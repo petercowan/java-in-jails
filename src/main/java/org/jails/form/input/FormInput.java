@@ -14,6 +14,8 @@ public interface FormInput {
 
 	public void setCssClass(String cssClass);
 
+	public void setFormat(String format);
+
 	public void setAttributes(Map<String,String> attributes);
 
 	public String getLabel();
@@ -23,6 +25,8 @@ public interface FormInput {
 	public String getDefaultValue();
 
 	public String getCssClass();
+
+	public String getFormat();
 
 	public Map<String,String> getAttributes();
 }

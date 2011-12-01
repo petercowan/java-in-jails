@@ -21,7 +21,7 @@ public class ConverterUtil {
 	private void initializeConverters() {
 		converter = BeanUtilsBean.getInstance().getConvertUtils();
 		DateConverter dateConverter = new DateConverter();
-		dateConverter.setPatterns(new String[]{"mm-dd-yyyy","mm/dd/yyyy","mm-dd-yyyy HH:mm:ss aa","mm/dd/yyyy HH:mm:ss aa"});
+		dateConverter.setPatterns(new String[]{"MM-dd-yyyy","MM/dd/yyyy","MM-dd-yyyy HH:mm:ss aa","MM/dd/yyyy HH:mm:ss aa"});
 		converter.register(dateConverter, Date.class);
 		converter.lookup(Object[].class);
 	}
@@ -32,5 +32,9 @@ public class ConverterUtil {
 
 	public boolean canConvert(Object object) {
 		return converter.lookup(object.getClass()) != null;
+	}
+
+	public ConvertUtilsBean getConverter() {
+		return converter;
 	}
 }

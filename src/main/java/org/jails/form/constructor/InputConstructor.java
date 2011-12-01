@@ -6,6 +6,7 @@ import org.jails.form.input.FormInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
 import org.jails.property.ReflectionUtil;
+import org.jails.util.SimpleFormatter;
 import org.jails.validation.client.ClientConstraintInfo;
 import org.jails.validation.client.ClientConstraintInfoRegistry;
 import org.jails.validation.constraint.IsDecimal;
@@ -26,6 +27,7 @@ public abstract class InputConstructor<T extends FormInput> {
 	protected static Logger logger = LoggerFactory.getLogger(InputConstructor.class);
 
 	protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
+	protected static SimpleFormatter formatter = new SimpleFormatter();
 
 	protected T tag;
 	protected FormTag formTag;
@@ -117,6 +119,12 @@ public abstract class InputConstructor<T extends FormInput> {
 		if (fieldValues == null) {
 			if (tag.getDefaultValue() != null) fieldValues = new String[]{tag.getDefaultValue()};
 			else fieldValues = new String[]{};
+		}
+		if (tag.getFormat() != null) {
+			for (int i = 0; i < fieldValues.length; i++) {
+				String fieldValue = fieldValues[i];
+				fieldValues[i] = formatter.format(fieldValue, tag.getFormat());
+			}
 		}
 		logger.info("fieldValues initialized");
 	}

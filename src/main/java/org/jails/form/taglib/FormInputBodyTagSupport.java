@@ -27,6 +27,7 @@ public abstract class FormInputBodyTagSupport
 	protected String name;
 	protected String defaultValue;
 	protected String cssClass;
+	protected String format;
 	protected Map<String,String> attributes;
 	protected SimpleFormTag formTag;
 	protected RepeaterTag repeatTag;
@@ -61,6 +62,14 @@ public abstract class FormInputBodyTagSupport
 
 	public void setCssClass(String cssClass) {
 		this.cssClass = cssClass;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	public Map<String, String> getAttributes() {

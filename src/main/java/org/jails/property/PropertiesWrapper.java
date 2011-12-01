@@ -256,4 +256,35 @@ public class PropertiesWrapper extends HashMap<String, String[]> {
 	public String getSelectOtherValue(String key) {
 		return getSelectOtherValue(key, null);
 	}
+
+	public String[][] getLists(String key, Integer index) {
+		String[] values = get(key, index);
+		String[][] lists;
+		if (values != null && values.length > 0) {
+			lists = new String[values.length][];
+			for (int i = 0; i < values.length; i++) {
+				String val = values[i];
+				lists[i] = val.split(",");
+			}
+		} else {
+			lists = new String[0][0];
+		}
+		return lists;
+
+	}
+
+	public String[][] getLists(String key) {
+		return getLists(key, null);
+	}
+
+	public String[] getList(String key, Integer index) {
+		String[][] lists = getLists(key, index);
+		return (lists.length > 0) ? lists[0] : new String[0];
+	}
+
+	public String[] getList(String key) {
+		return getList(key, null);
+	}
+
+
 }

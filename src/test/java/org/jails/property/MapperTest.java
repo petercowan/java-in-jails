@@ -13,6 +13,7 @@ import org.jails.util.Strings;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -90,13 +91,13 @@ public class MapperTest
 		Map<String, String[]> parameters = new HashMap<String, String[]>();
 
 		parameters.put(prefix + "booleanProperty", new String[]{"true"});
-		parameters.put(prefix + "date", new String[]{"10-11-2011"});
+		parameters.put(prefix + "date", new String[]{"11-11-2011"});
 		parameters.put(prefix + "floatProperty", new String[]{"2.45"});
 		parameters.put(prefix + "integer", new String[]{"123"});
 		parameters.put(prefix + "stringProperty", new String[]{"Hello"});
 
 		parameters.put(prefix + "mappingBean.booleanProperty", new String[]{"false"});
-		parameters.put(prefix + "mappingBean.date", new String[]{"1-12-2011"});
+		parameters.put(prefix + "mappingBean.date", new String[]{"10-11-2012"});
 		parameters.put(prefix + "mappingBean.floatProperty", new String[]{"3.56"});
 		parameters.put(prefix + "mappingBean.integer", new String[]{"234"});
 		parameters.put(prefix + "mappingBean.stringProperty", new String[]{"Hi"});
@@ -222,11 +223,13 @@ public class MapperTest
 		assertEquals("float_prop", "2.45", map.get("mappingBean" + indexStr + ".floatProperty")[0]);
 		assertEquals("int_prop", "123", map.get("mappingBean" + indexStr + ".integer")[0]);
 		assertEquals("string_prop", "Hello", map.get("mappingBean" + indexStr + ".stringProperty")[0]);
+		assertEquals("date_prop", "Fri Nov 11 11:11:11 PST 2011", map.get("mappingBean" + indexStr + ".date")[0]);
 
 		assertEquals("bool_prop", "false", map.get("mappingBean" + indexStr + ".mappingBean.booleanProperty")[0]);
 		assertEquals("float_prop", "3.56", map.get("mappingBean" + indexStr + ".mappingBean.floatProperty")[0]);
 		assertEquals("int_prop", "234", map.get("mappingBean" + indexStr + ".mappingBean.integer")[0]);
 		assertEquals("string_prop", "Hi", map.get("mappingBean" + indexStr + ".mappingBean.stringProperty")[0]);
+		assertEquals("date_prop", "Thu Oct 11 11:11:11 PDT 2012", map.get("mappingBean" + indexStr + ".mappingBean.date")[0]);
 	}
 
 	private MappingBean getBean() {
@@ -237,6 +240,16 @@ public class MapperTest
 		bean.setInteger(123);
 		bean.setStringProperty("Hello");
 		bean.setIntegerArray(new Integer[]{1,2,3,4,5});
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, 10);
+		cal.set(Calendar.DATE, 11);
+		cal.set(Calendar.YEAR, 2011);
+		cal.set(Calendar.HOUR, 11);
+		cal.set(Calendar.MINUTE, 11);
+		cal.set(Calendar.SECOND, 11);
+		cal.set(Calendar.MILLISECOND, 11);
+		cal.set(Calendar.AM_PM, Calendar.AM);
+		bean.setDate(cal.getTime());
 
 		bean.setMappingBean(new MappingBean());
 		bean.getMappingBean().setBooleanProperty(false);
@@ -244,6 +257,15 @@ public class MapperTest
 		bean.getMappingBean().setInteger(234);
 		bean.getMappingBean().setStringProperty("Hi");
 		bean.getMappingBean().setIntegerArray(new Integer[]{1,2,3,4,5});
+		cal.set(Calendar.MONTH, 9);
+		cal.set(Calendar.DATE, 11);
+		cal.set(Calendar.YEAR, 2012);
+		cal.set(Calendar.HOUR, 11);
+		cal.set(Calendar.MINUTE, 11);
+		cal.set(Calendar.SECOND, 11);
+		cal.set(Calendar.MILLISECOND, 11);
+		cal.set(Calendar.AM_PM, Calendar.AM);
+		bean.getMappingBean().setDate(cal.getTime());
 		return bean;
 	}
 

@@ -37,6 +37,27 @@ function checkCreditCard(field, rules, i, options) {
 	}
 }
 
+function _creditCard(field) {
+    var valid = false, cardNumber = field.replace(/ +/g, '').replace(/-+/g, '');
+
+    var numDigits = cardNumber.length;
+    if (numDigits >= 14 && numDigits <= 16 && parseInt(cardNumber) > 0) {
+
+        var sum = 0, i = numDigits - 1, pos = 1, digit, luhn = new String();
+        do {
+            digit = parseInt(cardNumber.charAt(i));
+            luhn += (pos++ % 2 == 0) ? digit * 2 : digit;
+        } while (--i >= 0)
+
+        for (i = 0; i < luhn.length; i++) {
+            sum += parseInt(luhn.charAt(i));
+        }
+        valid = sum % 10 == 0;
+    }
+    if (!valid) return "Please enter a valid credit card number";
+}
+
+/*
 function dateHelper(dateId) {
 	var el = $('#' + dateId);
 	var input = $('input', el);
@@ -56,5 +77,5 @@ function dateHelper(dateId) {
 		output.text(text);
 	});
 }
-
+  */
 //$(document).ready(dateHelper('user.dateCreated'));

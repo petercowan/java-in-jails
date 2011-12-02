@@ -38,7 +38,7 @@ public class ClientConstraintInfoRegistry {
 		addClientConstraint(FieldMatch.class, "equals[${form.fieldMatch.id}]");
 		//addClientConstraint(AssertFalse.class, "");
 		//addClientConstraint(AssertTrue.class,"");
-		addClientConstraint(CreditCardNumber.class, "funcCall[checkCreditCard]");
+		addClientConstraint(CreditCardNumber.class, "creditCard");
 		addClientConstraint(Email.class, "custom[email]");
 		addClientConstraint(Length.class, "minSize[${min}],maxSize[${max}]", "min", "max");
 		addClientConstraint(Min.class,"min[${value}]","value");

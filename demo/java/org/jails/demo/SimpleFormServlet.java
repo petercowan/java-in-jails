@@ -36,6 +36,5 @@ public class SimpleFormServlet extends HttpServlet {
 			simpleForm.inRequest(request);
 			//forward to formPage
 		}
-
 	}
 }

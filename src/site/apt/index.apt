@@ -1,33 +1,49 @@
   -------
+  Using java in jails
+  -------
+
+Using java in jails
+
+  -------
   Main
   -------
 
 java in jails
 
-  java in jails? is this a java version of ruby on rails??
+  java in jails? is this just a java version of ruby on rails??
 
-  The answer is "no". java in jails is not ruby on rails for java, but it was <inspired heavily> by
+  The answer is "no". java in jails is not a java version of ruby on rails, but it was <inspired heavily> by
   parts of it.
 
-  Rails is a web application framework built around the ideas of not having to
-  write a lot of boilerplate code, and providing a set of conventions for how things are done in order
-  to avoid having to configuring every little detail.
-
-  jails is not a framework. jails is a lightweight API that provides a very simple way to display html forms,
-  populate objects with the form data, and validate that data on both the front end and the back end.
-
-  <<java in jails is meant for developers who may be stuck maintaining applications in proprietary, or legacy
-  frameworks that don't make these things simple.>>
+  rails is a framework intended to make building web applications easier, allowing you to write less code and get
+  more done. It is full of conventions about how things should be done, and provides a way to do almost anything you 
+  can imagine. java has frameworks too; some of the more well known ones are spring, wicket, tapestry, and so on, 
+  most of these frameworks can do much of what rails have to offer (in their own way). java also has a lot of older
+  frameworks that can't really do a lot of what rails has to offer. lots of java shops also have legacy proprietary 
+  frameworks that can't even do a lot of what those older java frameworks do. some projects are not big enough to 
+  justify using a framework, or use a more skeletal approach like JAX-RS.  this is where jails comes in.
+  
+  jails is not a framework. jails is a framework independent, lightweight API that provides a very simple way to: 
+  
+  1. display html forms, nicely formatted, with error highlighting
+  1. validate form data on the front end
+  1. validate form data the back end.
+  1. populate objects with the form data 
 
   jails is entirely configuration free, and provides a simple--but optional--set of conventions for you to follow
   to make certain boilerplate tasks easier.
 
-  jails is primarly built around the JSR 303 bean validation specification. On top of this I have added some
-  custom annotations to give you more control if needed, but in order to use jails all you will have to do is
-  annotate your classes with JSR 303 constraints.
+  jails, like rails, is opinionated, is used a curated set of technologies to accomplish it's objectives. 
+  
+   * For displaying forms we use a custom tag library.
+   * For populating objects we use apache-commons BeanUtils (though extending its capabilities with a custom wrapper).
+   * For server side validation we use the hibernate implementation of JSR 303 (bean validation specification).
+   * For client side validation we use a position:abosulte, a jquery-library written by Cedric Dugas. http://www.position-absolute.com/articles/jquery-form-validator-because-form-validation-is-a-mess/
+  
+  On top of this I have added some custom annotations to give you more control, if needed, but in order to use jails 
+  at minimum, all you will have to do is annotate your classes with JSR 303 constraints (which you may want to look into doing anyway).
 
   Here's how it works:
-
 
   <<Create a model class>>
 
@@ -83,28 +99,35 @@ public class ModelBean {
 </s:form>
 ---
 
-  <<Now poplate and validate it!>>
+  <<Now populate and validate it!>>
 
 ---
-//in a Servlet pointing to to model_bean
-    BeanValidator beanValidator = new SimpleBeanValidator(beanMapper);
-    SimpleBeanForm simpleForm = new SimpleBeanForm(ModelBean.class);
+public class SimpleFormServlet extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        SimpleValidator validator = new SimpleValidator();
+        SimpleForm<ModelBean> simpleForm = SimpleForm.validateAs(ModelBean.class);
 
-    ModelBean bean = new ModelBean();
-    beanValidator.getMapper().setBeanProperties(request.getParameterMap(), bean);
+        if (request.getParameter("submit") != null) {
+            try {
+                ModelBean bean = validator.validate(ModelBean.class, request.getParameterMap());
+                //do something with valid bean
 
-    try {
-        beanValidator.validate(bean);
-        //create in data store
-
-        //now display bean
-    } catch (ValidationException e) {
-        simpleForm.setInRequest(request)
-                  .setErrorFieldMap(e.getErrorFields());
-        //back to form page
-    } catch (Exception e) {
-        //handle error
+                request.setAttribute("model_bean", bean);
+                //now display bean
+            } catch (ValidationException e) {
+                simpleForm.setErrors(e.getErrorFields());
+                //back to form page
+            } catch (Exception e) {
+                //handle error
+            }
+        } else {
+            simpleForm.inRequest(request);
+            //forward to formPage
+        }
     }
+}
+
 ---
 
  For more detailed documentation, check out the <a href="/using.html">using jails page</a> or read the <a href="apidocs/index.html">javadoc</a>.

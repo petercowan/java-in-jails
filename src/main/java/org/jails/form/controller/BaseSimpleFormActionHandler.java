@@ -85,8 +85,8 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 				simpleForm = SimpleForm.validateAs(classType)
 									.identifyBy(idField)
 									.inRequest(request);
-				for (Map<String, List<String>> errors : e.getErrorFields().values())
-					simpleForm.addErrorFieldsMap(errors);
+				for (Map<String, List<String>> errors : e.getErrorFieldsMap().values())
+					simpleForm.addErrors(errors);
 				if (simpleFormRequest.idCount(request) > 1) {
 					return getCreateAllView();
 				} else {
@@ -144,8 +144,8 @@ public abstract class BaseSimpleFormActionHandler<T> implements SimpleFormAction
 					edit(objects.get(0), request.getParameterMap());
 				}
 			} catch (ValidationException e) {
-				for (Map<String, List<String>> errors : e.getErrorFields().values())
-					simpleForm.addErrorFieldsMap(errors);
+				for (Map<String, List<String>> errors : e.getErrorFieldsMap().values())
+					simpleForm.addErrors(errors);
 			}
 		}
 		if (objects.size() > 1) {

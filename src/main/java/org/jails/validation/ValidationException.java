@@ -18,10 +18,14 @@ public class ValidationException extends Exception {
 	}
 
 	public Map<String, List<String>> getErrorFields(Integer index) {
+		return errorFieldsMap.get(index);
+	}
+
+	public Map<String, List<String>> getErrorFields() {
 		return errorFieldsMap.get(0);
 	}
 
-	public Map<Integer, Map<String, List<String>>> getErrorFields() {
+	public Map<Integer, Map<String, List<String>>> getErrorFieldsMap() {
 		return errorFieldsMap;
 	}
 

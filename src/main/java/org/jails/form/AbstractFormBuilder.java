@@ -182,7 +182,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		errorFieldMaps.set(0, errorFieldMap);
 	}
 
-	public void addErrorFieldsMap(Map<String, List<String>> errorFieldMap) {
+	public void addErrors(Map<String, List<String>> errorFieldMap) {
 		errorFieldMaps.add(errorFieldMap);
 	}
 

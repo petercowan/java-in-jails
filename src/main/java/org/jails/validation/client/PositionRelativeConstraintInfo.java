@@ -50,6 +50,7 @@ public class PositionRelativeConstraintInfo
 	}
 
 	public String parseClientValidation(ConstraintDescriptor constraint) {
+		if (constraint == null) return "";
 		String validation;
 		Map<String, Object> attributes = constraint.getAttributes();
 		if (hasAttributes() && attributes != null

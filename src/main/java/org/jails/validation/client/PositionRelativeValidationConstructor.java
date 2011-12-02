@@ -6,7 +6,7 @@ import javax.validation.metadata.ConstraintDescriptor;
 import java.util.List;
 
 public class PositionRelativeValidationConstructor
-	implements ClientValidationConstructor {
+		implements ClientValidationConstructor {
 	public String getValidationHtml(List<ClientConstraintInfo> clientConstraints,
 									Class classType, String property) {
 		StringBuffer validationBuffer = null;
@@ -14,7 +14,13 @@ public class PositionRelativeValidationConstructor
 		for (ClientConstraintInfo info : clientConstraints) {
 			ConstraintDescriptor<?> descriptor = BeanConstraints.getInstance()
 					.getConstraint(classType, property, info.getConstraint());
-			String validation = info.parseClientValidation(descriptor);
+			String validation;
+			if (descriptor == null) {
+				validation = info.getClientValidation();
+
+			} else {
+				validation = info.parseClientValidation(descriptor);
+			}
 
 			if (validationBuffer == null) {
 				validationBuffer = new StringBuffer();

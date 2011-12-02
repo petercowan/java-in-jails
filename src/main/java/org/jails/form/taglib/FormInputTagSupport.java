@@ -93,6 +93,7 @@ public abstract class FormInputTagSupport
 		JspWriter out = pageContext.getOut();
 
 		try {
+			logger.info("outputting HTML for " + name);
 			out.print(getHtml(request));
 		} catch (Exception ex) {
 			logger.error(ex.toString());
@@ -103,6 +104,8 @@ public abstract class FormInputTagSupport
 
 	public String getHtml(ServletRequest request) throws JspTagException {
 		TagInputConstructor constructor = getInputConstructor(formTag, repeatTag, request);
+
+		logger.info("wrapping input html" + name);
 
 		return constructor.wrapInputHtml(this);
 

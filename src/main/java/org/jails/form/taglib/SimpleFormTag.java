@@ -216,7 +216,7 @@ public class SimpleFormTag
 			JspWriter jspOut = pageContext.getOut();
 			jspOut.print(getBeginForm());
 			if (simpleForm.hasError()) jspOut.print(getError());
-			if (Strings.isEmpty(bodyContent.getString())) {
+			if (bodyContent != null && !Strings.isEmpty(bodyContent.getString())) {
 				jspOut.print(bodyContent.getString());
 			} else {
 				generateForm();
@@ -231,13 +231,14 @@ public class SimpleFormTag
 		}
 	}
 
-	protected void generateForm() throws JspException {
+	protected void generateForm() throws JspException, IOException {
 		if (simpleForm != null) {
 			Map<String, Method> getters = ReflectionUtil.getGetterMethods(simpleForm.getClassType());
 
 			for (String fieldName : getters.keySet()) {
 				Method method = getters.get(fieldName);
 				TextTag textTag = new TextTag();
+				textTag.setParent(this);
 				textTag.setPageContext(pageContext);
 				textTag.setName(fieldName);
 				textTag.setLabel(Strings.initCaps(
@@ -245,7 +246,13 @@ public class SimpleFormTag
 										Strings.splitCamelCase(fieldName))));
 				textTag.setSize("25");
 				textTag.doStartTag();
+				pageContext.getOut().print("\n");
 			}
+			SubmitButtonTag submitTag = new SubmitButtonTag();
+			submitTag.setParent(this);
+			submitTag.setPageContext(pageContext);
+			submitTag.setLabel("Submit");
+			submitTag.doStartTag();
 		}
 	}
 }

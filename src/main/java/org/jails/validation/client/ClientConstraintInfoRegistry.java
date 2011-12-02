@@ -10,7 +10,6 @@ import org.jails.validation.BeanConstraints;
 import org.jails.validation.constraint.FieldMatch;
 import org.jails.validation.constraint.IsDecimal;
 import org.jails.validation.constraint.IsInteger;
-import org.jails.validation.constraint.StrongPassword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +46,15 @@ public class ClientConstraintInfoRegistry {
 		addClientConstraint(DecimalMax.class,"max[${value}]","value");
 		addClientConstraint(Min.class,"min[${value}]","value");
 		addClientConstraint(DecimalMin.class,"min[${value}]","value");
-		addClientConstraint(Pattern.class,"custom[${regex}]","regex");
+		//addClientConstraint(Pattern.class,"custom[${regexp}]","regex");
 		addClientConstraint(Past.class,"past[now]");
 		addClientConstraint(Future.class,"future[now]");
 		addClientConstraint(Size.class, "minSize[${min}],maxSize[${max}]", "min", "max");
 		//addClientConstraint(Digits.class,"future[now]","maxIntegerDigits","maxFractionDigits");
 		addClientConstraint(Range.class,"min[${min}],max[${max}]", "min","max");
-		addClientConstraint(StrongPassword.class,"custom[]");
+		//addClientConstraint(StrongPassword.class,"custom[]");
 		addClientConstraint(IsInteger.class,"custom[integer]");
-		addClientConstraint(IsDecimal.class,"custom[decimal]");
+		addClientConstraint(IsDecimal.class,"custom[number]");
 		/**
 		.??[a-zA-Z]
 		.??[0-9]

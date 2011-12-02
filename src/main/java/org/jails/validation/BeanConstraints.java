@@ -55,12 +55,13 @@ public class BeanConstraints {
 		Set<ConstraintDescriptor<?>> constraints = getConstraints(classType, propertyName);
 		if (constraints != null) {
 			for (ConstraintDescriptor constraint : constraints) {
-				logger.info("Displaying Constraint: " + constraint.getAnnotation().annotationType());
 				if (constraint.getAnnotation().annotationType().equals(constraintType)) {
+					logger.info("Found Constraint: " + constraint.getAnnotation().annotationType());
 					return constraint;
 				}
 			}
 		}
+		logger.info("Constraint " + constraintType.getSimpleName() + " for " + classType.getSimpleName() + ", " + propertyName + " not found");
 		return null;
 	}
 

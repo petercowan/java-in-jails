@@ -17,7 +17,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-@IdentifyBy.List({@IdentifyBy(field = "id"), @IdentifyBy(field = "id")})
+@IdentifyBy(field = "id")
 @FieldMatch(field = "password", matchField = "confirmPassword", message = "Passwords must match.")
 public class TestForm {
 	@NotBlank(groups = RequiredChecks.class)

@@ -157,6 +157,7 @@ public abstract class InputConstructor<T extends FormInput> {
 			} else if (ReflectionUtil.isInteger(returnType)) {
 				clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
 			}
+			logger.info("Getting Validation script");
 			validation = constraintInfoRegistry.getValidationConstructor()
 					.getValidationHtml(clientConstraints, classType, property);
 			logger.info("clientValidation: " + validation);
@@ -216,21 +217,26 @@ public abstract class InputConstructor<T extends FormInput> {
 	public String wrapInputHtml(FormInput tag, String inputTagHtml) {
 		StringBuffer tagHtml = new StringBuffer();
 
+		logger.info("wrapInputHtml");
 		tagHtml.append("<p" +
 				getLabelCssAttr() + "><label" +
 				getAttribute("forName", tag.getName()) + ">");
 
+		logger.info("getLabel");
 		tagHtml.append(tag.getLabel());
+		logger.info("isStacked");
 		if (getFormTag().isStacked()) tagHtml.append("<br />");
 		else tagHtml.append(": ");
 
 		tagHtml.append(inputTagHtml);
 
+		logger.info("getFormTag");
 		if (getFormTag().getSimpleForm() != null
 				&& getFormTag().getSimpleForm().isFieldRequired(tag.getName())) {
 			tagHtml.append(" *");
 		}
 
+		logger.info("end wrapInputHtml");
 		tagHtml.append("</label></p>");
 
 		return tagHtml.toString();

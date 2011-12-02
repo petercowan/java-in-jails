@@ -1,4 +1,4 @@
-package org.jails.demo;
+package demo;
 
 import org.hibernate.validator.constraints.NotBlank;
 

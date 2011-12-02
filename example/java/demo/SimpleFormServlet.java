@@ -1,7 +1,8 @@
-package org.jails.demo;
+package demo;
 
 import org.jails.form.SimpleForm;
 import org.jails.form.controller.SimpleFormRouter;
+import org.jails.util.TestForm;
 import org.jails.validation.SimpleValidator;
 import org.jails.validation.ValidationException;
 
@@ -16,15 +17,15 @@ public class SimpleFormServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		SimpleValidator validator = new SimpleValidator();
 
-		SimpleForm<ModelBean> simpleForm = SimpleForm.validateAs(ModelBean.class);
-		SimpleFormRouter simpleFormRequest = new SimpleFormRouter("model_bean");
+		SimpleForm<TestForm> simpleForm = SimpleForm.validateAs(TestForm.class);
+		SimpleFormRouter simpleFormRequest = new SimpleFormRouter("test_form");
 
 		if (simpleFormRequest.isSubmitted(request)) {
 			try {
-				ModelBean bean = validator.validate(ModelBean.class, request.getParameterMap());
+				TestForm bean = validator.validate(TestForm.class, request.getParameterMap());
 				//do something with valid bean
 
-				request.setAttribute("model_bean", bean);
+				request.setAttribute("test_form", bean);
 				//now display bean
 			} catch (ValidationException e) {
 				simpleForm.setErrors(e.getErrorFields());

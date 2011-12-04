@@ -29,7 +29,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	protected T[] beanArray;
 	protected String[] beanIdentities;
 	protected List<Map<String, List<String>>> errorFieldMaps = new ArrayList<Map<String, List<String>>>();
-	protected Integer repeatCount;
+	protected int repeatCount = 0;
 
 	protected PropertyParser propertyParser = new SimplePropertyParser();
 
@@ -38,7 +38,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 			throw new IllegalArgumentException("beanArray may not be null or empty.");
 		if (classType != null && objects.length > 0 && objects[0].getClass() != classType)
 			throw new IllegalArgumentException("Binding object must be the same type as the class used to validate this form");
-		if (repeatCount != null && objects.length != repeatCount)
+		if (repeatCount > 0 && objects.length != repeatCount)
 			throw new IllegalArgumentException("Repeat count must be the same as the number of form beans");
 		this.beanArray = objects;
 		_validateAs(beanArray[0].getClass());
@@ -167,12 +167,15 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	}
 
 	protected Map<String, List<String>> getErrorFieldMap(int index) {
+		logger.info("Getting error map " + index + " of " + repeatCount);
 		if (index <= repeatCount && errorFieldMaps != null) {
 			Map<String, List<String>> errorFieldMap = errorFieldMaps.get(index);
 			if (errorFieldMap == null) {
+				logger.info("New error map");
 				errorFieldMap = new HashMap<String, List<String>>();
 				errorFieldMaps.add(errorFieldMap);
 			}
+			logger.info("Got error map");
 			return errorFieldMap;
 		}
 		return null;
@@ -195,9 +198,11 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	}
 
 	public boolean hasError() {
-		return errorFieldMaps != null
+		boolean hasError = errorFieldMaps != null
 				&& errorFieldMaps.size() > 0
 				&& !errorFieldMaps.get(0).isEmpty();
+		logger.info("Form has error");
+		return hasError;
 	}
 
 	public boolean fieldHasError(String paramName) {
@@ -206,11 +211,14 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 
 	public boolean fieldHasError(String paramName, int index) {
 		if (hasError()) {
+			logger.info("Getting error map");
 			Map<String, List<String>> errorFieldMap = getErrorFieldMap(index);
+			logger.info("Got error map");
 			boolean fieldHasError = errorFieldMap != null && errorFieldMap.get(paramName) != null;
 			logger.info(paramName + " hasError? " + fieldHasError);
 			return fieldHasError;
 		} else {
+			logger.info("Field error not found");
 			return false;
 		}
 	}

@@ -128,8 +128,9 @@ public class SimpleFormTag
 
 		String formAction = (simpleForm != null) ? simpleForm.getAction() : null;
 
-		if (action != null) beginForm.append(" action=\"" + action + "\"");
+		if (action != null) beginForm.append(" action=\"" + action + "\">");
 		else if (formAction != null) beginForm.append(" action=\"" + formAction + "\">");
+		else beginForm.append(">");
 		logger.info("action: " + formAction);
 		beginForm.append("<fieldset>").append("\n");
 
@@ -215,7 +216,7 @@ public class SimpleFormTag
 			//wrap with form content
 			JspWriter jspOut = pageContext.getOut();
 			jspOut.print(getBeginForm());
-			if (simpleForm.hasError()) jspOut.print(getError());
+			if (simpleForm != null && simpleForm.hasError()) jspOut.print(getError());
 			if (bodyContent != null && !Strings.isEmpty(bodyContent.getString())) {
 				jspOut.print(bodyContent.getString());
 			} else {

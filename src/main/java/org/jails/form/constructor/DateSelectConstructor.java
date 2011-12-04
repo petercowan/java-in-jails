@@ -27,7 +27,7 @@ public class DateSelectConstructor
 	@Override
 	protected void initFieldValues(ServletRequest request) {
 		super.initFieldValues(request);
-		if (fieldValues[0] != null) {
+		if (fieldValues.length > 0) {
 			try {
 				Date date = new SimpleDateFormat(tag.getFormat()).parse(fieldValues[0]);
 				calendar = Calendar.getInstance();
@@ -42,10 +42,14 @@ public class DateSelectConstructor
 	@Override
 	public String getInputHtml() {
 		StringBuffer dateSelect = new StringBuffer();
+		logger.info("Creating DateSelectList");
+		String day = (calendar == null) ? "" : calendar.get(Calendar.DATE) + "";
+		String month = (calendar == null) ? "" : calendar.get(Calendar.MONTH) + "";
+		String year = (calendar == null) ? "" : calendar.get(Calendar.YEAR) + "";
 
-		dateSelect.append(getDaySelectList(tag.getName() + "_date_day", calendar.get(Calendar.DATE) + ""));
-		dateSelect.append(getMonthSelectList(tag.getName() + "_date_month", calendar.get(Calendar.MONTH) + ""));
-		dateSelect.append(getYearSelectList(tag.getName() + "_date_year", calendar.get(Calendar.YEAR) + ""));
+		dateSelect.append(getMonthSelectList(tag.getName() + "_date_month", month));
+		dateSelect.append(getDaySelectList(tag.getName() + "_date_day", day));
+		dateSelect.append(getYearSelectList(tag.getName() + "_date_year", year));
 
 		return dateSelect.toString();
 	}
@@ -78,11 +82,12 @@ public class DateSelectConstructor
 		List<String> dayNames = new ArrayList<String>();
 
 		dayValues.add("");
-		dayNames.add("DAY");
+		dayNames.add("Day");
 		for (int i = 1; i <= 31; i++) {
 			dayValues.add(i + "");
 			dayNames.add(i + "");
 		}
+		logger.info("Creating Day Select List");
 		return getSelectList(name, value, dayValues, dayNames);
 	}
 
@@ -109,6 +114,7 @@ public class DateSelectConstructor
 		monthNames.add("Nov");
 		monthNames.add("Dec");
 
+		logger.info("Creating Month Select List");
 		return getSelectList(name, value, monthValues, monthNames);
 	}
 
@@ -118,7 +124,7 @@ public class DateSelectConstructor
 		List<String> yearNames = new ArrayList<String>();
 
 		yearValues.add("");
-		yearNames.add("YEAR");
+		yearNames.add("Year");
 
 		Date now = new Date();
 		Calendar nowCal = Calendar.getInstance();
@@ -132,6 +138,7 @@ public class DateSelectConstructor
 			yearValues.add(i + "");
 			yearNames.add(i + "");
 		}
+		logger.info("Creating Year Select List");
 		return getSelectList(name, value, yearValues, yearNames);
 	}
 }

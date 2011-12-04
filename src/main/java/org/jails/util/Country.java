@@ -1,5 +1,7 @@
 package org.jails.util;
 
+import org.jails.validation.constraint.ISOCountryCode;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -10,7 +12,9 @@ import java.util.Map;
 public class Country {
 	@NotNull
 	@Size(max = 2)
+	@ISOCountryCode
 	private String isoCode;
+
 	@NotNull
 	@Size(max = 50)
 	private String name;

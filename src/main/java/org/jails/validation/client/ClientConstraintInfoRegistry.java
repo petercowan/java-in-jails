@@ -3,6 +3,7 @@ package org.jails.validation.client;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
@@ -33,7 +34,7 @@ public class ClientConstraintInfoRegistry {
 		registry = new HashMap<Class<? extends Annotation>, ClientConstraintInfo>();
 		addClientConstraint(NotNull.class, "required");
 		addClientConstraint(NotEmpty.class, "required");
-		addClientConstraint(NotNull.class, "required");
+		addClientConstraint(NotBlank.class, "required");
 		addClientConstraint(FieldMatch.class, "equals[${form.fieldMatch.id}]");
 		//addClientConstraint(AssertFalse.class, "");
 		//addClientConstraint(AssertTrue.class,"");

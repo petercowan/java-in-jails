@@ -28,7 +28,7 @@ public class RepeaterTag
 	}
 
 	public Integer getIndex() {
-		return index;
+		return (index == null) ? 0 : index;
 	}
 
 	public void setIndex(Integer index) {

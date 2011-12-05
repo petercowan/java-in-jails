@@ -1,6 +1,8 @@
 package org.jails.property;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.jails.property.parser.PropertyParser;
+import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 public class ReflectionUtil {
 	private static Logger logger = LoggerFactory.getLogger(ReflectionUtil.class);
+	private static PropertyParser propertyParser = new SimplePropertyParser();
 
 	public static <A extends Annotation> A getMethodAnnotation(Class<A> annotationType,
 															   Class classType,
@@ -148,7 +151,7 @@ public class ReflectionUtil {
 	}
 
 
-	public static Class getPropertyType(Class classType, String property) {
+	private static Class _getPropertyType(Class classType, String property) {
 		logger.warn("classType: " + classType + ", property: " + property);
 
 		try {
@@ -156,13 +159,11 @@ public class ReflectionUtil {
 			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);
 			if (pds != null) {
 				logger.warn("looping through descriptors: " + pds.length);
-				PropertyDescriptor descriptor = null;
+				PropertyDescriptor descriptor;
 				for (int i = 0; i < pds.length; i++) {
-					logger.warn("descriptor name: " + pds[i].getName());
 					if (property.equals(pds[i].getName())) {
 						descriptor = pds[i];
 						propertyType = descriptor.getPropertyType();
-						logger.warn("Found tye: " + propertyType);
 						break;
 					}
 				}
@@ -172,6 +173,23 @@ public class ReflectionUtil {
 		} catch (Exception e) {
 			logger.warn(Strings.getStackTrace(e));
 			return null;
+		}
+	}
+
+	public static Class getPropertyType(Class classType, String property) {
+		if (propertyParser.hasNestedProperty(property)) {
+			Class nestedClass = classType;
+			String nestedParam = property;
+			while (propertyParser.hasNestedProperty(nestedParam)) {
+				String rootParam = propertyParser.getRootProperty(nestedParam);
+				logger.debug("rootParam: " + rootParam);
+				nestedClass = _getPropertyType(nestedClass, rootParam);
+				nestedParam = propertyParser.getNestedProperty(nestedParam);
+				logger.debug("nestedClass: " + nestedClass + ", nestedParam: " + nestedParam);
+			}
+			return nestedClass;
+		} else {
+			return _getPropertyType(classType, property);
 		}
 	}
 }

@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.jails.property.AcceptsNestedAttributes;
 import org.jails.validation.RequiredChecks;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -20,18 +19,16 @@ public class AddressForm {
 	private String city;
 
 	@NotNull
-	@Valid
-	private State state;
+	private String state;
 
 	@NotBlank(groups = RequiredChecks.class)
 	@Size(min = 5, max = 15)
 	private String zip;
 
 	@NotNull
-	@Valid
-	private Country country;
+	private String country;
 
-	public AddressForm(String street, String city, State state, String zip, Country country) {
+	public AddressForm(String street, String city, String state, String zip, String country) {
 		this.street = street;
 		this.city = city;
 		this.state = state;
@@ -63,11 +60,11 @@ public class AddressForm {
 		this.city = city;
 	}
 
-	public State getState() {
+	public String getState() {
 		return state;
 	}
 
-	public void setState(State state) {
+	public void setState(String state) {
 		this.state = state;
 	}
 
@@ -79,11 +76,11 @@ public class AddressForm {
 		this.zip = zip;
 	}
 
-	public Country getCountry() {
+	public String getCountry() {
 		return country;
 	}
 
-	public void setCountry(Country country) {
+	public void setCountry(String country) {
 		this.country = country;
 	}
 }

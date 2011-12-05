@@ -145,21 +145,17 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	}
 
 	public boolean isRepeatable() {
-		return  repeatCount > 0;
+		return repeatCount > 0;
 	}
 
 	//todo - should paramName take full parameter, or just attribute name? (formName.field vs field)
 	public boolean isFieldRequired(String paramName) {
 		if (propertyParser.hasNestedProperty(paramName)) {
-			Class nestedClass = classType;
-			String nestedParam = paramName;
-			while (propertyParser.hasNestedProperty(nestedParam)) {
-				String rootParam = propertyParser.getRootProperty(nestedParam);
-				logger.debug("rootParam: " + rootParam);
-				nestedClass = ReflectionUtil.getPropertyType(nestedClass, rootParam);
-				nestedParam = propertyParser.getNestedProperty(nestedParam);
-				logger.debug("nestedClass: " + nestedClass + ", nestedParam: " + nestedParam);
-			}
+
+			Class nestedClass = ReflectionUtil.getPropertyType(classType, paramName);
+			String nestedParam = (paramName.lastIndexOf(".") > 0)
+					? paramName.substring(paramName.lastIndexOf(".") + 1)
+					: paramName;
 
 			return isFieldRequired(nestedClass, nestedParam);
 		} else {
@@ -183,7 +179,6 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 			}
 		}
 		return false;
-
 	}
 
 	protected Map<String, List<String>> getErrorFieldMap(int index) {
@@ -280,7 +275,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 				action = baseAction + getIdentity(0) + "/" + SimpleFormRouter.ACTION_EDIT;
 			} else {
 				action = baseAction + Strings.join(",", beanIdentities)
-											+ "/" + SimpleFormRouter.ACTION_EDIT;
+						+ "/" + SimpleFormRouter.ACTION_EDIT;
 			}
 		} else {
 			action = baseAction + SimpleFormRouter.ACTION_NEW;

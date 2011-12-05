@@ -163,9 +163,9 @@ public abstract class SimpleForm<T> {
 
 	public abstract void addErrors(Map<String, List<String>> errorFieldMap);
 
-	public abstract void addError(String fieldName, String errorMessage);
+	public abstract void addError(String paramName, String errorMessage);
 
-	public abstract void addError(String fieldName, String errorMessage, int index);
+	public abstract void addError(String paramName, String errorMessage, int index);
 
 	public abstract boolean hasError();
 

@@ -128,7 +128,7 @@ public class ReflectionUtil {
 	}
 
 	public static boolean isDecimal(Class<?> type) {
-		logger.info("isDecimal type: " + type.getName());
+		logger.trace("isDecimal type: " + type.getName());
 		boolean isDecimal = type.equals(Float.class) || type.equals(float.class)
 				|| type.equals(Double.class) || type.equals(double.class)
 				|| type.equals(BigDecimal.class)
@@ -138,7 +138,7 @@ public class ReflectionUtil {
 	}
 
 	public static boolean isInteger(Class<?> type) {
-		logger.info("isInteger type: " + type.getName());
+		logger.trace("isInteger type: " + type.getName());
 		boolean isInteger = type.equals(Integer.class) || type.equals(int.class)
 				|| type.equals(Short.class) || type.equals(short.class)
 				|| type.equals(Long.class) || type.equals(long.class)
@@ -149,22 +149,28 @@ public class ReflectionUtil {
 
 
 	public static Class getPropertyType(Class classType, String property) {
+		logger.warn("classType: " + classType + ", property: " + property);
+
 		try {
 			Class propertyType = null;
 			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);
 			if (pds != null) {
+				logger.warn("looping through descriptors: " + pds.length);
 				PropertyDescriptor descriptor = null;
-				for (int i = 0; i < pds.length && descriptor != null; i++) {
+				for (int i = 0; i < pds.length; i++) {
+					logger.warn("descriptor name: " + pds[i].getName());
 					if (property.equals(pds[i].getName())) {
 						descriptor = pds[i];
+						propertyType = descriptor.getPropertyType();
+						logger.warn("Found tye: " + propertyType);
+						break;
 					}
 				}
-				propertyType = descriptor.getPropertyType();
 			}
-			logger.info("Property: " + property + ". Class: " + propertyType);
+			logger.warn("Property: " + property + ". Class: " + propertyType);
 			return propertyType;
 		} catch (Exception e) {
-			logger.warn(e.getMessage());
+			logger.warn(Strings.getStackTrace(e));
 			return null;
 		}
 	}

@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.jails.form.controller.SimpleFormRouter;
 import org.jails.property.IdentifyBy;
 import org.jails.property.Identity;
+import org.jails.property.ReflectionUtil;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
@@ -147,23 +148,42 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		return  repeatCount > 0;
 	}
 
-	//todo - make this test on the object rather than just the class?
+	//todo - should paramName take full parameter, or just attribute name? (formName.field vs field)
 	public boolean isFieldRequired(String paramName) {
-		logger.info("isFieldRequired? " + paramName + " of " + classType);
+		if (propertyParser.hasNestedProperty(paramName)) {
+			Class nestedClass = classType;
+			String nestedParam = paramName;
+			while (propertyParser.hasNestedProperty(nestedParam)) {
+				String rootParam = propertyParser.getRootProperty(nestedParam);
+				logger.debug("rootParam: " + rootParam);
+				nestedClass = ReflectionUtil.getPropertyType(nestedClass, rootParam);
+				nestedParam = propertyParser.getNestedProperty(nestedParam);
+				logger.debug("nestedClass: " + nestedClass + ", nestedParam: " + nestedParam);
+			}
+
+			return isFieldRequired(nestedClass, nestedParam);
+		} else {
+			return isFieldRequired(classType, paramName);
+		}
+	}
+
+	protected boolean isFieldRequired(Class type, String paramName) {
+		logger.info("isFieldRequired? " + paramName + " of " + type);
 
 		Set<Class<?>> constraints = BeanConstraints.getInstance()
-				.getConstraintGroups(classType, paramName);
+				.getConstraintGroups(type, paramName);
 		if (constraints != null) {
 			for (Class<?> group : constraints) {
-				logger.info("Checking group " + group);
-				logger.info("Required group " + RequiredChecks.class);
+				logger.trace("Checking group " + group);
+				logger.trace("Required group " + RequiredChecks.class);
 				if (RequiredChecks.class.equals(group)) {
-					logger.info(paramName + " isRequired");
+					logger.debug(paramName + " isRequired");
 					return true;
 				}
 			}
 		}
 		return false;
+
 	}
 
 	protected Map<String, List<String>> getErrorFieldMap(int index) {
@@ -189,19 +209,19 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		errorFieldMaps.add(errorFieldMap);
 	}
 
-	public void addError(String fieldName, String errorMessage) {
-		addError(fieldName, errorMessage, 0);
+	public void addError(String paramName, String errorMessage) {
+		addError(paramName, errorMessage, 0);
 	}
 
-	public void addError(String fieldName, String errorMessage, int index) {
-		addError(getErrorFieldMap(index), fieldName, errorMessage);
+	public void addError(String paramName, String errorMessage, int index) {
+		addError(getErrorFieldMap(index), paramName, errorMessage);
 	}
 
 	public boolean hasError() {
 		boolean hasError = errorFieldMaps != null
 				&& errorFieldMaps.size() > 0
 				&& !errorFieldMaps.get(0).isEmpty();
-		logger.info("Form has error");
+		if (hasError) logger.info("Form has error");
 		return hasError;
 	}
 
@@ -211,9 +231,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 
 	public boolean fieldHasError(String paramName, int index) {
 		if (hasError()) {
-			logger.info("Getting error map");
 			Map<String, List<String>> errorFieldMap = getErrorFieldMap(index);
-			logger.info("Got error map");
 			boolean fieldHasError = errorFieldMap != null && errorFieldMap.get(paramName) != null;
 			logger.info(paramName + " hasError? " + fieldHasError);
 			return fieldHasError;

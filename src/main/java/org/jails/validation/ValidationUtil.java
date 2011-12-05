@@ -54,7 +54,7 @@ public class ValidationUtil {
 			fieldMatch.field();
 			fieldMatch.matchField();
 
-			logger.info("FieldMatch Error!!! " + fieldMatch.field() + ", " + fieldMatch.matchField());
+			logger.warn("FieldMatch Error!!! " + fieldMatch.field() + ", " + fieldMatch.matchField());
 
 			getFieldErrors(fieldMatch.field(), errorFieldsMap);
 			getFieldErrors(fieldMatch.matchField(), errorFieldsMap);
@@ -75,15 +75,15 @@ public class ValidationUtil {
 			Matcher formFieldMatcher = formFieldPattern.matcher(tokenString);
 			Matcher attributeMatcher = attributePattern.matcher(tokenString);
 			if (formFieldMatcher.find()) {
-				logger.info("Matched " + formFieldRegex);
+				logger.debug("Matched " + formFieldRegex);
 				Object attributeValue = attributeNames.get(attributeName);
 				logger.info("attributeValue " + attributeValue);
 				if (attributeValue != null)
 					content = content.replaceFirst(formFieldRegex, attributeValue.toString() + ".id");
 			} else if (attributeMatcher.find()) {
-				logger.info("Matched " + attributeRegex);
+				logger.debug("Matched " + attributeRegex);
 				Object attributeValue = attributeNames.get(attributeName);
-				logger.info("attributeValue " + attributeValue);
+				logger.debug("attributeValue " + attributeValue);
 				if (attributeValue != null)
 					content = content.replaceFirst(attributeRegex, attributeValue.toString());
 			}

@@ -97,7 +97,7 @@ public class ClientConstraintInfoRegistry {
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
 				.getInstance().getConstraints(classType, property);
 		for (ConstraintDescriptor descriptor : constraints) {
-			logger.warn("Searching ClientConstraintInfo for "
+			logger.debug("Searching ClientConstraintInfo for "
 					+ descriptor.getAnnotation().annotationType());
 
 			Class<? extends Annotation> constraint = descriptor.getAnnotation().annotationType();
@@ -115,7 +115,7 @@ public class ClientConstraintInfoRegistry {
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
 				.getInstance().getConstraints(classType, property);
 		for (ConstraintDescriptor descriptor : constraints) {
-			logger.warn("Searching ClientConstraintInfo for "
+			logger.debug("Searching ClientConstraintInfo for "
 					+ descriptor.getAnnotation().annotationType());
 
 			Class<? extends Annotation> constraint = descriptor.getAnnotation().annotationType();

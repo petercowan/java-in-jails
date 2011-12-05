@@ -87,12 +87,12 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected void initCssClass() {
 		if (simpleForm != null && simpleForm.hasError()
-				&& simpleForm.fieldHasError(fieldName, getIndex())) {
+				&& simpleForm.fieldHasError(tag.getName(), getIndex())) {
 			labelCss = "error";
 		} else {
 			labelCss = "formField";
 		}
-		logger.info("set css class" + labelCss);
+		logger.info("set css class " + labelCss);
 	}
 
 	public String getLabelCss() {
@@ -114,7 +114,6 @@ public abstract class InputConstructor<T extends FormInput> {
 	 */
 	protected void initFieldValues(ServletRequest request) {
 
-		String fieldName = getFieldName();
 		fieldValues = formTag.getInputValue(request, fieldName, (repeater == null) ? null : repeater.getIndex());
 		if (fieldValues == null) {
 			if (tag.getDefaultValue() != null) fieldValues = new String[]{tag.getDefaultValue()};

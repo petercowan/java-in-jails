@@ -73,11 +73,11 @@ public class PropertiesWrapper extends HashMap<String, String[]> {
 		index = (index == null && isIndexed(key)) ? getIndex(key) : index;
 		key = chopKeyName(key);
 		if (index == null) {
-			System.out.println("formatted key: " + prefix + key);
+			logger.trace("formatted key: " + prefix + key);
 
 			return prefix + key;
 		} else {
-			System.out.println("formatted key: " + getIndexedPrefix(index) + key);
+			logger.trace("formatted key: " + getIndexedPrefix(index) + key);
 			return getIndexedPrefix(index) + key;
 		}
 	}
@@ -102,12 +102,12 @@ public class PropertiesWrapper extends HashMap<String, String[]> {
 
 	private String getValue(String[] values) {
 		String value = (values == null || values.length == 0) ? null : values[0];
-		System.out.println("Got value: " + value);
+		logger.trace("Got value: " + value);
 		return value;
 	}
 
 	public String getValue(String key) {
-		System.out.println("Getting key: " + key);
+		logger.trace("Getting key: " + key);
 		String[] values = get(key);
 		return getValue(values);
 	}
@@ -137,7 +137,7 @@ public class PropertiesWrapper extends HashMap<String, String[]> {
 	@Override
 	public void putAll(Map<? extends String, ? extends String[]> m) {
 		for (String key : m.keySet()) {
-			System.out.println("Adding key: " + key + ": " + getValue(m.get(key)));
+			logger.trace("Adding key: " + key + ": " + getValue(m.get(key)));
 			if (key != null) put(key, m.get(key));
 		}
 	}

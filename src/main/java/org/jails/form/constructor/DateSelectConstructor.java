@@ -42,7 +42,7 @@ public class DateSelectConstructor
 	@Override
 	public String getInputHtml() {
 		StringBuffer dateSelect = new StringBuffer();
-		logger.info("Creating DateSelectList");
+		logger.debug("Creating DateSelectList");
 		String day = (calendar == null) ? "" : calendar.get(Calendar.DATE) + "";
 		String month = (calendar == null) ? "" : calendar.get(Calendar.MONTH) + "";
 		String year = (calendar == null) ? "" : calendar.get(Calendar.YEAR) + "";
@@ -87,7 +87,7 @@ public class DateSelectConstructor
 			dayValues.add(i + "");
 			dayNames.add(i + "");
 		}
-		logger.info("Creating Day Select List");
+		logger.debug("Creating Day Select List");
 		return getSelectList(name, value, dayValues, dayNames);
 	}
 
@@ -114,7 +114,7 @@ public class DateSelectConstructor
 		monthNames.add("Nov");
 		monthNames.add("Dec");
 
-		logger.info("Creating Month Select List");
+		logger.debug("Creating Month Select List");
 		return getSelectList(name, value, monthValues, monthNames);
 	}
 
@@ -138,7 +138,7 @@ public class DateSelectConstructor
 			yearValues.add(i + "");
 			yearNames.add(i + "");
 		}
-		logger.info("Creating Year Select List");
+		logger.debug("Creating Year Select List");
 		return getSelectList(name, value, yearValues, yearNames);
 	}
 }

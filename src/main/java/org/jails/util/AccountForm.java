@@ -39,7 +39,7 @@ public class AccountForm {
 	@StrongPassword
 	private String confirmPassword;
 
-	@NotNull
+//	@NotNull
 	@Valid
 	private AddressForm address;
 

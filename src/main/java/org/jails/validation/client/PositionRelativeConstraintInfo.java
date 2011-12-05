@@ -67,7 +67,7 @@ public class PositionRelativeConstraintInfo
 			throw new IllegalArgumentException("attributeValues must be the same length as attributeNames");
 		}
 		for (String key : attributeValues.keySet()) {
-			logger.info(key + ": " + attributeValues.get(key));
+			logger.trace(key + ": " + attributeValues.get(key));
 		}
 		String parsedValidation = ValidationUtil.replaceTokens(clientValidation, attributeValues);
 		logger.info("parsedValidation: " + parsedValidation);

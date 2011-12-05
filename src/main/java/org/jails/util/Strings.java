@@ -3,6 +3,8 @@ package org.jails.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -202,4 +204,10 @@ public class Strings {
 				(booleanValue.equals("1") || booleanValue.equalsIgnoreCase("t") || booleanValue.equalsIgnoreCase("true"));
 	}
 
+	public static String getStackTrace(Throwable t) {
+		StringWriter w = new StringWriter();
+
+		t.printStackTrace(new PrintWriter(w));
+		return w.toString();
+	}
 }

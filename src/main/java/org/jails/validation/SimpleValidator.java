@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,12 +47,11 @@ public class SimpleValidator {
 	 * and exception is thrown and the reast are not validated.
 	 *
 	 * </pre>
+	 *
 	 * @param object Object to validate
 	 * @param groups Constraint groups to validate
-	 * @param <T> Type of Object
-	 * @throws ValidationException containing error messages, if Object is invalid
 	 */
-	public <T> void validate(T object, Class<?>... groups) throws ValidationException {
+	public <T> Map<String, List<String>> validate(T object, Class<?>... groups) {
 		logger.info("Validating " + object.getClass() + ": " + object.toString());
 
 		for (Class group : groups) {
@@ -59,10 +59,10 @@ public class SimpleValidator {
 					validator.validate(object, group);
 
 			if (constraintViolations.size() > 0) {
-				throw new ValidationException("Validation error",
-						ValidationUtil.getErrorFieldsMap(constraintViolations));
+				return ValidationUtil.getErrorFieldsMap(constraintViolations);
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -75,11 +75,10 @@ public class SimpleValidator {
 	 * </pre>
 	 *
 	 * @param object Object to validate
-	 * @param <T> Type of Object
-	 * @throws ValidationException containing error messages, if Object is invalid
+	 *
 	 */
-	public <T> void validate(T object) throws ValidationException {
-		validate(object, RequiredChecks.class, Default.class);
+	public <T> Map<String, List<String>> validate(T object) {
+		return validate(object, RequiredChecks.class, Default.class);
 	}
 
 	/**
@@ -93,18 +92,17 @@ public class SimpleValidator {
 	 * The object passed to this method is never modified.
 	 * </pre>
 	 *
+	 *
 	 * @param object Object to validate
 	 * @param params properties in the format of the Mapper associated with this class
 	 * @param groups Constraint groups to validate
-	 * @param <T> Type of Object
 	 * @throws ValidationException containing error messages, if Object is invalid
 	 */
-	public <T> void validate(T object, Map<String, String[]> params, Class<?>... groups)
-			throws ValidationException {
+	public <T> Map<String, List<String>> validate(T object, Map<String, String[]> params, Class<?>... groups) {
 		T copy = cloner.deepCopy(object);
 		beanMapper.toExistingObject(copy, params);
 
-		validate(copy, groups);
+		return validate(copy, groups);
 	}
 
 	/**
@@ -119,13 +117,12 @@ public class SimpleValidator {
 	 * The object passed to this method is never modified.
 	 * </pre>
 	 *
+	 *
 	 * @param object Object to validate
 	 * @param params properties in the format of the Mapper associated with this class
-	 * @param <T> Type of Object
-	 * @throws ValidationException containing error messages, if Object is invalid
 	 */
-	public <T> void validate(T object, Map<String, String[]> params) throws ValidationException {
-		validate(object, params, RequiredChecks.class, Default.class);
+	public <T> Map<String, List<String>> validate(T object, Map<String, String[]> params) {
+		return validate(object, params, RequiredChecks.class, Default.class);
 	}
 
 	/**
@@ -139,20 +136,16 @@ public class SimpleValidator {
 	 * The object passed to this method is never modified.
 	 * </pre>
 	 *
+	 *
 	 * @param classType type of object to validate
 	 * @param params properties in the format of the Mapper associated with this class
 	 * @param groups Constraint groups to validate
-	 * @param <T> Type of Object
 	 * @return new T instance of classType
-	 * @throws ValidationException containing error messages, if Object is invalid
 	 */
-	public <T> T validate(Class<T> classType, Map<String, String[]> params, Class<?>... groups)
-			throws ValidationException {
+	public <T> Map<String, List<String>> validate(Class<T> classType, Map<String, String[]> params, Class<?>... groups) {
 		T bean = beanMapper.toObject(classType, params);
 
-		validate(bean, groups);
-
-		return bean;
+		return validate(bean, groups);
 	}
 
 	/**
@@ -167,13 +160,12 @@ public class SimpleValidator {
 	 * The object passed to this method is never modified.
 	 * </pre>
 	 *
+	 *
 	 * @param classType type of object to validate
 	 * @param params properties in the format of the Mapper associated with this class
-	 * @param <T> Type of Object
 	 * @return new T instance of classType
-	 * @throws ValidationException containing error messages, if Object is invalid
 	 */
-	public <T> T validate(Class<T> classType, Map<String, String[]> params) throws ValidationException {
+	public <T> Map<String, List<String>> validate(Class<T> classType, Map<String, String[]> params) {
 		return validate(classType, params, RequiredChecks.class, Default.class);
 	}
 

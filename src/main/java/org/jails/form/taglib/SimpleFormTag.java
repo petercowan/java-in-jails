@@ -43,6 +43,7 @@ public class SimpleFormTag
 	protected SimpleForm simpleForm;
 	protected RepeaterTag repeatTag;
 	protected String name;
+	protected String label;
 	protected String action;
 	protected String method;
 	protected String style = STACKED;
@@ -65,6 +66,10 @@ public class SimpleFormTag
 
 	public String getName() {
 		return name;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public void setAction(String action) {
@@ -132,7 +137,7 @@ public class SimpleFormTag
 		else if (formAction != null) beginForm.append(" action=\"" + formAction + "\">");
 		else beginForm.append(">");
 		logger.info("action: " + formAction);
-		beginForm.append("<fieldset>").append("\n");
+		beginForm.append("<fieldset>").append("\n").append("<legend>").append(label).append("</legend>");
 
 		return beginForm.toString();
 	}

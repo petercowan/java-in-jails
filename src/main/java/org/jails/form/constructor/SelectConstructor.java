@@ -36,7 +36,7 @@ public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
 		if (options != null && options.size() > 0) {
 			StringBuffer optionHtml = new StringBuffer();
 			if (tag.getPrompt() != null) {
-				optionHtml.append("<option>" + tag.getPrompt() + "</option>");
+				optionHtml.append("<option value=\"\">" + tag.getPrompt() + "</option>");
 			}
 			for (String optionValue : options.keySet()) {
 				String optionLabel = options.get(optionValue);

@@ -5,6 +5,10 @@ import org.jails.form.SimpleFormParams;
 import org.jails.form.input.FormInput;
 import org.jails.form.input.FormTag;
 import org.jails.form.input.Repeater;
+import org.jails.form.taglib.HiddenTag;
+import org.jails.form.taglib.PasswordTag;
+import org.jails.form.taglib.TextAreaTag;
+import org.jails.form.taglib.TextTag;
 import org.jails.property.ReflectionUtil;
 import org.jails.util.SimpleFormatter;
 import org.jails.validation.client.ClientConstraintInfo;
@@ -143,23 +147,31 @@ public abstract class InputConstructor<T extends FormInput> {
 		if (simpleForm != null && simpleForm.getClassType() != null) {
 			StringBuffer validationBuffer = null;
 
-			Class classType = simpleForm.getClassType();
-			String property = tag.getName();
-			logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
+			if (tag instanceof TextTag || tag instanceof PasswordTag || tag instanceof TextAreaTag
+					|| tag instanceof HiddenTag) {
+				Class classType = simpleForm.getClassType();
+				String property = tag.getName();
+				logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
 
-			ClientConstraintInfoRegistry constraintInfoRegistry = ClientConstraintInfoRegistry.getInstance();
-			List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
-					.getClientConstraints(classType, property);
-			Class returnType = ReflectionUtil.getGetterMethodReturnType(classType, property);
-			if (ReflectionUtil.isDecimal(returnType)) {
-				clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
-			} else if (ReflectionUtil.isInteger(returnType)) {
-				clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
+				ClientConstraintInfoRegistry constraintInfoRegistry = ClientConstraintInfoRegistry.getInstance();
+				List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
+						.getClientConstraints(classType, property);
+				Class returnType = ReflectionUtil.getGetterMethodReturnType(classType, property);
+				if (ReflectionUtil.isDecimal(returnType)) {
+					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
+				} else if (ReflectionUtil.isInteger(returnType)) {
+					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
+				}
+				logger.info("Getting Validation script");
+				validation = constraintInfoRegistry.getValidationConstructor()
+						.getValidationHtml(clientConstraints, classType, property);
+				logger.info("clientValidation: " + validation);
+			} else {
+				//todo - this is a hack to only validate required for non text based fields
+				if (formTag.getSimpleForm().isFieldRequired(tag.getName())) {
+					validation = " class=\"validate[required]\"";
+				}
 			}
-			logger.info("Getting Validation script");
-			validation = constraintInfoRegistry.getValidationConstructor()
-					.getValidationHtml(clientConstraints, classType, property);
-			logger.info("clientValidation: " + validation);
 		}
 	}
 
@@ -216,27 +228,22 @@ public abstract class InputConstructor<T extends FormInput> {
 	public String wrapInputHtml(FormInput tag, String inputTagHtml) {
 		StringBuffer tagHtml = new StringBuffer();
 
-		logger.info("wrapInputHtml");
-		tagHtml.append("<p" +
-				getLabelCssAttr() + "><label" +
-				getAttribute("forName", tag.getName()) + ">");
+		tagHtml.append("<div" + getLabelCssAttr() + ">\n\t");
 
-		logger.info("getLabel");
-		tagHtml.append(tag.getLabel());
-		logger.info("isStacked");
+		tagHtml.append("<label" + getAttribute("for", tag.getName()) + ">");
+		tagHtml.append(tag.getLabel()).append(":");
+		tagHtml.append("</label>\n\t");
+
 		if (getFormTag().isStacked()) tagHtml.append("<br />");
-		else tagHtml.append(": ");
 
-		tagHtml.append(inputTagHtml);
+		tagHtml.append(inputTagHtml).append("\n");
 
-		logger.info("getFormTag");
-		if (getFormTag().getSimpleForm() != null
-				&& getFormTag().getSimpleForm().isFieldRequired(tag.getName())) {
+		if (formTag.getSimpleForm() != null
+				&& formTag.getSimpleForm().isFieldRequired(tag.getName())) {
 			tagHtml.append(" *");
 		}
-
-		logger.info("end wrapInputHtml");
-		tagHtml.append("</label></p>");
+		tagHtml.append("<br />").append("\n");
+		tagHtml.append("</div>\n");
 
 		return tagHtml.toString();
 	}

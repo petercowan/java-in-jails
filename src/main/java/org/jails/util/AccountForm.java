@@ -56,7 +56,6 @@ public class AccountForm {
 	@Min(value = 18)
 	private Integer age;
 
-	@NotNull(groups = RequiredChecks.class)
 	@Past
 	private Date birthday;
 

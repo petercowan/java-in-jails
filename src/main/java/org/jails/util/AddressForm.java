@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.jails.property.AcceptsNestedAttributes;
 import org.jails.validation.RequiredChecks;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @AcceptsNestedAttributes
@@ -18,14 +17,16 @@ public class AddressForm {
 	@Size(min = 2, max = 75)
 	private String city;
 
-	@NotNull
+	@NotBlank(groups = RequiredChecks.class)
+	@Size(min = 2, max = 2)
 	private String state;
 
 	@NotBlank(groups = RequiredChecks.class)
 	@Size(min = 5, max = 15)
 	private String zip;
 
-	@NotNull
+	@NotBlank(groups = RequiredChecks.class)
+	@Size(min = 2, max = 2)
 	private String country;
 
 	public AddressForm(String street, String city, String state, String zip, String country) {

@@ -2,124 +2,105 @@
   Using java in jails
   -------
 
-Using java in jails
+Beyond the basic features outlined on the main page, jails has several more nuanced capabilities. 
 
   -------
-  Main
+  SimpleForm
   -------
 
-java in jails
+SimpleForm can be binded to an object to preload a form with values from that object. it can also be assigned an
+identity field that can be used to update the object. Or the identity field can be marked in the Object itself using
+the IdentifyBy annotation.
 
-  java in jails? is this just a java version of ruby on rails??
+SimpleForm also has the ability to be repeatable, and bound to more than one object.
 
-  The answer is "no". java in jails is not a java versino of ruby on rails, but it was <inspired heavily> by
-  parts of it.
+  -------
+  SimpleValidator
+  -------
 
-  Rails is a web application framework built around the ideas of not having to
-  write a lot of boilerplate code, and providing a set of conventions for how things are done in order
-  to avoid having to configuring every little detail.
+SimpleValidator by default validates constraints first assigned to the group "RequiredConstraints.class" (Found in org.jails.form), 
+and then "Default.class" (any constraint not assigned to a group), it does so iteratively in order to not overwhelm the user with 
+validation errors. However, group checks can be explicitly passed in to the validation methods.
 
-  jails is not a framework. jails is a lightweight API that provides a very simple way to display html forms,
-  populate objects with the form data, and validate that data on both the front end and the back end.
+SimpleValidator also provides the ability to validating params against an existing Object, not changing the state of that 
+object unless the validation is successful.
 
-  <<java in jails is meant for developers who may be stuck maintaining applications in proporietary, or legacy
-  frameworks that don't make these things simple.>>
+SimpleValidator uses SimpleMapper to map properties to an Objects/Getters and setters, this can be changed by calling the constructor 
+with a custom Mapper object.
 
-  jails is entirely configuration free, and provides a simple--but optional--set of conventions for you to follow
-  to make certain boilerplate tasks easier.
+  -------
+  SimpleMapper
+  -------
 
-  jails is primarly built around the JSR 303 bean validation specification. On top of this I have added some
-  custom annotations to give you more control if needed, but in order to use jails all you will have to do is
-  annotate your classes with JSR 303 constraints.
+SimpleMapper is the default implementation of the Mapper that recursively converts a Map<String, String[]> to an Object and vice versa. It also provides
+the ability to map to an from a List of Objects (returning a map with indexed keys, in the latter case).
 
-  Here's how it works:
+SimpleMapper is composed of a PropertyParser, and several handler objects that handle situations that may arise, for example, when properties exist for an 
+Object's member class that is null.
 
-
-  <<Create a model class>>
-
----
-public class ModelBean {
-	@NotBlank
-	@Size(min = 2, max = 25)
-	private String name;
-
-	@Max(value = 12345)
-	@Min(value = 0)
-	private Integer size;
-
-	@NotBlank
-	@Past
-	private Date dateCreated;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Integer getSize() {
-		return size;
-	}
-
-	public void setSize(Integer size) {
-		this.size = size;
-	}
-
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-}
----
-
-  <<Create a form>>
+The default parser handles properties named in the following convention (based on our ModelBean from the main page):
 
 ---
-<%@ taglib uri="http://org.jails.org/form/taglib" prefix="s" %>
-<s:form name="model_bean">
-	<s:text name="name" label="Name" />
-	<s:text name="age" label="Size" />
-	<s:text name="dateCreated" label="Date Created" />
-	<s:submit label="Save Model Bean" />
-</s:form>
+modelBean.name
+modelBean.size
+modelBean.dateCreated
+
+//now indexed
+modelBean[0].name
+modelBean[0].size
+modelBean[0].dateCreated
 ---
 
-  <<Now poplate and validate it!>>
+nestedProperties are allowed to any depth desired, for example:.
 
 ---
-//in a Servlet pointing to to model_bean
-    BeanValidator beanValidator = new SimpleBeanValidator(beanMapper);
-    MapToBean beanMapper = beanValidator.getMapper();
+myObject.person.address.country.code.id
+---
 
-    SimpleBeanForm simpleForm = new SimpleBeanForm(ModelBean.class);
-    SimpleFormRequest<SimpleBeanForm> simpleFormRequest
-    		= new SimpleFormRequest<SimpleBeanForm>(request, simpleForm, "model_bean");
+First it checks to see if nested properties are allowed on a given property (you can set this in your fields using the 
+AcceptsNestedProperties annotation, or annotation your class with AcceptsNestedProperties, and annotating fields with 
+RejectNestedProperties). If a field does not accept nested properties, it is just silently ignored, otherwise, if the 
+member object is not null, the nested property will be set.. 
 
-    if (simpleFormRequest.isSubmitted()) {
-        ModelBean bean = new ModelBean();
-        beanMapper.setBeanProperties(request.getParameterMap(), bean);
+If a nested property maps to a member object that is null, it attempts to create a new instance, and populate it. If
+it is unsuccessful it fails silently. 
 
-        try {
-            beanValidator.validate(bean);
-            //create in data store
+If the Object is annotated with IdentifyBy, and a property matches that field, it will be  ignored by the mapper, unless a 
+LoadObjectHandler has been set, in which case, it will attempt to load that object using the id value supplied.
 
-            simpleFormRequest.setAttribute("model_bean", bean);
-            //now display bean
-        } catch (ValidationException e) {
-            simpleForm.setErrorFieldMap(e.getErrorFields());
-            //back to form page
-        } catch (Exception e) {
-            //handle error
-        }
-    } else {
-        simpleForm.setInRequest(request);
-        //forward to formPage
-    }
+All of these cases are handled by the PropertyHandler assigned to the Mapper. In SimpleMapper the default PropertyHandler is
+SimplePropertyHandler, which is composed of two NullObjectHandlers, which conditional handle null member objects as described above.
+Custom Mapper implementations can provided their own handlers as needed.
+
+
+  -------
+  SimpleForm Taglib and Controllers
+  -------
+
+The form taglib is designed so that it can can be tied into existing applications without having to adhere to any naming
+or routing conventions. However, additional capabilities are providing if you are interested in updating other parts of your 
+application.
+
+The SimpleForm taglib sets hidden properties that contain information about the state of the form.
+
+There are the action hidden parameters in the form of:
 
 ---
+//action params
+_formName_method
+//action param values
+(new|edit|delete|show)
+
+//submit param
+_formName_action_submit
+//submit param values
+action_(new|edit|delete|show)
+
+//if identifyBy is provided
+formName.{idenityFieldName}
+---
+
+
+These parameters are used to determined whether a form is submitted, where to route the form, and how to uniquely idenitify the object
+the data being submitted is associated with. All this can be done with SimpleFormRouter.
 

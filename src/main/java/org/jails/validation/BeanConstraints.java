@@ -1,6 +1,7 @@
 package org.jails.validation;
 
 
+import org.jails.validation.constraint.FieldMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +40,70 @@ public class BeanConstraints {
 		return Collections.EMPTY_SET;
 	}
 
+	/**
+	 * Find class constraints that contain this property
+	 *
+	 * @param classType
+	 * @param propertyName
+	 * @return
+	 */
+	public ConstraintDescriptor<?> findConstraint(Class classType, String propertyName,
+														 Class<? extends Annotation> constraintType) {
+		try {
+			Set<ConstraintDescriptor<?>> constraints = findConstraints(classType, propertyName);
+			for (ConstraintDescriptor<?> constraint : constraints) {
+				if (constraint.getAnnotation().annotationType().equals(constraintType)) {
+					logger.info("Found Class constriant " + constraintType + " for " + propertyName);
+					return constraint;
+				}
+			}
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * Find class constraints that contain this property
+	 *
+	 * @param classType
+	 * @param propertyName
+	 * @return
+	 */
+	public Set<ConstraintDescriptor<?>> findConstraints(Class classType, String propertyName) {
+		try {
+			Set<ConstraintDescriptor<?>> classConstraints = validator
+					.getConstraintsForClass(classType).getConstraintDescriptors();
+			return handleClassConstraints(classConstraints, propertyName);
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		return Collections.EMPTY_SET;
+	}
+
+	private Set<ConstraintDescriptor<?>> handleClassConstraints(Set<ConstraintDescriptor<?>> classConstraints,
+																String propertyName) {
+		Set<ConstraintDescriptor<?>> constraints = new HashSet();
+		for (ConstraintDescriptor<?> constraint : classConstraints) {
+			logger.info("Handling " + constraint.getAnnotation().annotationType());
+			if (constraint.getAnnotation().annotationType().equals(FieldMatch.class)) {
+				String matchField = (String) constraint.getAttributes().get("matchField");
+				logger.info("matchField: " + matchField);
+				if (matchField != null && matchField.equals(propertyName)) {
+					logger.info("Added FieldMatch constraint to " + propertyName);
+					constraints.add(constraint);
+				}
+			}
+		}
+		return constraints;
+	}
+
 	public Set<ConstraintDescriptor<?>> getConstraints(Class classType, String propertyName) {
 		try {
 			BeanDescriptor beanDescriptor = validator.getConstraintsForClass(classType);
-			return beanDescriptor.getConstraintsForProperty(propertyName)
+			Set<ConstraintDescriptor<?>> propertyConstraints = beanDescriptor.getConstraintsForProperty(propertyName)
 					.getConstraintDescriptors();
+			return propertyConstraints;
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 		}
@@ -80,6 +140,7 @@ public class BeanConstraints {
 		return groups;
 	}
 
+	//todo - delete
 	public Map<String, Object> getConstraintAttributes(Class classType, String propertyName) {
 		Set<ConstraintDescriptor<?>> constraints = getConstraints(classType, propertyName);
 		if (constraints != null) {

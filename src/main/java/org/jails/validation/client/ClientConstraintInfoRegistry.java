@@ -46,7 +46,7 @@ public class ClientConstraintInfoRegistry {
 		addClientConstraint(NotNull.class, "required");
 		addClientConstraint(NotEmpty.class, "required");
 		addClientConstraint(NotBlank.class, "required");
-		addClientConstraint(FieldMatch.class, "equals[${form.fieldMatch.id}]");
+//		addClientConstraint(FieldMatch.class, "equals[${form.fieldMatch.id}]");
 		//addClientConstraint(AssertFalse.class, "");
 		//addClientConstraint(AssertTrue.class,"");
 		addClientConstraint(CreditCardNumber.class, "creditCard");
@@ -64,6 +64,8 @@ public class ClientConstraintInfoRegistry {
 		addClientConstraint(Size.class, "minSize[${min}],maxSize[${max}]", "min", "max");
 		//addClientConstraint(Digits.class,"future[now]","maxIntegerDigits","maxFractionDigits");
 		addClientConstraint(Range.class, "min[${min}],max[${max}]", "min", "max");
+		//include both attributes, even if only using one in the validation field
+		addClientConstraint(FieldMatch.class, "equals[${field}]", "field", "matchField");
 		//addClientConstraint(StrongPassword.class,"custom[]");
 		addClientConstraint(IsInteger.class, "custom[integer]");
 		addClientConstraint(IsDecimal.class, "custom[number]");
@@ -152,6 +154,16 @@ public class ClientConstraintInfoRegistry {
 		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
 				.getInstance().getConstraints(classType, property);
+		Set<ConstraintDescriptor<?>> classConstraints = BeanConstraints
+				.getInstance().findConstraints(classType, property);
+
+		clientConstriants.addAll(getClientConstraints(constraints));
+		clientConstriants.addAll(getClientConstraints(classConstraints));
+		return clientConstriants;
+	}
+
+	protected List<ClientConstraintInfo> getClientConstraints(Set<ConstraintDescriptor<?>> constraints) {
+		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
 		for (ConstraintDescriptor descriptor : constraints) {
 			logger.debug("Searching ClientConstraintInfo for "
 					+ descriptor.getAnnotation().annotationType());

@@ -51,9 +51,6 @@ public class ValidationUtil {
 		Annotation a = c.getConstraintDescriptor().getAnnotation();
 		if (a instanceof FieldMatch) {
 			FieldMatch fieldMatch = (FieldMatch) a;
-			fieldMatch.field();
-			fieldMatch.matchField();
-
 			logger.warn("FieldMatch Error!!! " + fieldMatch.field() + ", " + fieldMatch.matchField());
 
 			getFieldErrors(fieldMatch.field(), errorFieldsMap);
@@ -62,7 +59,6 @@ public class ValidationUtil {
 			errorFieldsMap.get(fieldMatch.field()).add(errorMessage);
 			errorFieldsMap.get(fieldMatch.matchField()).add("");
 		}
-
 	}
 
 	public static String replaceTokens(String tokenString, Map<String, ? extends Object> attributeNames) {

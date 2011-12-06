@@ -247,7 +247,10 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 			if (errorFieldMap != null) {
 				for (String error : errorFieldMap.get(paramName)) {
 					logger.info(label + ": " + error);
-					errorMessage.append(label).append(" ").append(error).append("<br />");
+					if (!Strings.isEmpty(error)) {
+						if (error.charAt(0) == ' ' || Character.isLowerCase(error.charAt(0))) errorMessage.append(label).append(" ");
+						errorMessage.append(error).append("<br />");
+					}
 				}
 			}
 			return errorMessage.toString();

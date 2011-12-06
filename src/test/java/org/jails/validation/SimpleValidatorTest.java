@@ -57,6 +57,11 @@ public class SimpleValidatorTest
 				error.equals("There is a problem with your password, your password must be at least 7 characters, contain at least one letter, one number and one of the following special symbols (:,!,@,#,$,%,^,&,*,?,_,-,=,+,~,`,[,]).  Blank spaces and other symbols are not allowed."));
 			}
 			assertEquals(errorFields.get("age").get(0), "must be greater than or equal to 18");
+			assertEquals(errorFields.get("address.street").get(0), "size must be between 2 and 125");
+			assertEquals(errorFields.get("address.city").get(0), "size must be between 2 and 75");
+			assertEquals(errorFields.get("address.state").get(0), "size must be between 2 and 2");
+			assertEquals(errorFields.get("address.zip").get(0), "size must be between 5 and 15");
+			assertEquals(errorFields.get("address.country").get(0), "size must be between 2 and 2");
 		}
     }
 
@@ -71,6 +76,11 @@ public class SimpleValidatorTest
 		params.put("accountForm.balance",new String[]{"0"});
 		params.put("accountForm.age",new String[]{"0"});
 		params.put("accountForm.birthday",new String[]{"11/12/2013"});
+		params.put("accountForm.address.street",new String[]{"1"});
+		params.put("accountForm.address.city",new String[]{"P"});
+		params.put("accountForm.address.state",new String[]{"Oregon"});
+		params.put("accountForm.address.zip",new String[]{"12345-54321-67890"});
+		params.put("accountForm.address.country",new String[]{"USA"});
 
 		return params;
 	}
@@ -86,6 +96,27 @@ public class SimpleValidatorTest
 		}
 	}
 
+	public void testValidParameters()
+	{
+		SimpleValidator validator = new SimpleValidator();
+		AccountForm account = validator.getMapper().toObject(AccountForm.class, getValidParameterMap());
+		assertEquals(account.getName(), "Peter Cowan");
+		assertEquals(account.getAccountName(), "petercowan");
+		assertEquals(account.getPassword(), "123ABC$%^");
+		assertEquals(account.getConfirmPassword(), "123ABC$%^");
+		assertEquals(account.getCreditCardNumber(), "4111 1111 1111 1111");
+		assertEquals(account.getBalance(), 5000.0);
+		assertEquals(new Integer(account.getAge()), new Integer(19));
+//		assertEquals(account.getBirthday(), );
+		assertNotNull(account.getAddress());
+		assertEquals(account.getAddress().getStreet(), "123 Main St");
+		assertEquals(account.getAddress().getCity(), "Portland");
+		assertEquals(account.getAddress().getState(), "OR");
+		assertEquals(account.getAddress().getZip(), "12345");
+		assertEquals(account.getAddress().getCountry(), "US");
+
+	}
+
 	private Map<String, String[]> getValidParameterMap() {
 		Map<String, String[]> params = new HashMap<String, String[]>();
 
@@ -97,6 +128,11 @@ public class SimpleValidatorTest
 		params.put("accountForm.balance",new String[]{"5000"});
 		params.put("accountForm.age",new String[]{"19"});
 		params.put("accountForm.birthday",new String[]{"11/12/2010"});
+		params.put("accountForm.address.street",new String[]{"123 Main St"});
+		params.put("accountForm.address.city",new String[]{"Portland"});
+		params.put("accountForm.address.state",new String[]{"OR"});
+		params.put("accountForm.address.zip",new String[]{"12345"});
+		params.put("accountForm.address.country",new String[]{"US"});
 
 		return params;
 	}
@@ -138,6 +174,11 @@ public class SimpleValidatorTest
 		params.put("accountForm.balance",new String[]{"acb5000abc"});
 		params.put("accountForm.age",new String[]{"19acba"});
 		params.put("accountForm.birthday",new String[]{"11/12/2010acbca"});
+		params.put("accountForm.address.street",new String[]{"123 Main St"});
+		params.put("accountForm.address.city",new String[]{"Portland"});
+		params.put("accountForm.address.state",new String[]{"OR"});
+		params.put("accountForm.address.zip",new String[]{"12345"});
+		params.put("accountForm.address.country",new String[]{"US"});
 
 		return params;
 	}

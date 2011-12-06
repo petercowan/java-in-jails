@@ -39,7 +39,7 @@ public class AccountForm {
 	@StrongPassword
 	private String confirmPassword;
 
-//	@NotNull
+	@NotNull
 	@Valid
 	private AddressForm address;
 
@@ -59,8 +59,7 @@ public class AccountForm {
 	@Past
 	private Date birthday;
 
-	public AccountForm() {
-	}
+	public AccountForm() {}
 
 	public AccountForm(String name, String accountName, String password,
 					   String creditCardNumber, Double balance, Integer age, Date birthday) {

@@ -29,6 +29,8 @@ public class AddressForm {
 	@Size(min = 2, max = 2)
 	private String country;
 
+	public AddressForm() {}
+
 	public AddressForm(String street, String city, String state, String zip, String country) {
 		this.street = street;
 		this.city = city;

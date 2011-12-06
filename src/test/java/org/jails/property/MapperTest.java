@@ -5,10 +5,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.apache.commons.beanutils.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jails.property.handler.PropertyHandler;
-import org.jails.property.handler.SimplePropertyHandler;
-import org.jails.property.parser.PropertyParser;
-import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
 
 import java.lang.reflect.Method;
@@ -30,9 +26,7 @@ public class MapperTest
 	 */
 	public MapperTest(String testName) {
 		super(testName);
-		PropertyParser parser = new SimplePropertyParser();
-		PropertyHandler handler = new SimplePropertyHandler();
-		beanMapper = new Mapper(parser, handler);
+		beanMapper = new SimpleMapper();
 	}
 
 	/**

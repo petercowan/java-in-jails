@@ -1,7 +1,6 @@
 package org.jails.property;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jails.property.handler.PropertyHandler;
 import org.jails.property.parser.PropertyParser;
@@ -9,7 +8,6 @@ import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -328,73 +326,65 @@ public class Mapper {
 		return recursiveToMap(object, type + indexStr, cache);
 	}
 
-	protected Map<String, String[]> recursiveToMap(Object object, String type, Set cache) {
+	protected static Map<String, String[]> recursiveToMap(Object object, String prefix, Set cache) {
 		if (cache.contains(object)) return Collections.EMPTY_MAP;
 		cache.add(object);
+		prefix = (prefix != null) ? prefix + "." : "";
 
-		String prefix = (type != null) ? type + "." : "";
+		Map<String, String[]> beanMap = new TreeMap<String, String[]>();
 
-		Map<String, String[]> paramMap = new TreeMap<String, String[]>();
-		try {
-
-			Map<String, Method> getters = ReflectionUtil.getGetterMethods(object.getClass());
-
-			for (String fieldName : getters.keySet()) {
-				Method method = getters.get(fieldName);
-				try {
-					Collection<Object> values = new ArrayList<Object>();
-					boolean isCollection = true;
-
-					if (Collection.class.isAssignableFrom(method.getReturnType())) {
-						Collection c = (Collection) MethodUtils.invokeMethod(object, method.getName(), null);
-						if (c != null) values.addAll(c);
-
-					} else if (method.getReturnType().isArray()) {
-						Object[] array = (Object[]) MethodUtils.invokeMethod(object, method.getName(), null);
-
-						if (array != null) values.addAll(Arrays.asList(array));
-					} else {
-						isCollection = false;
-						Object value = MethodUtils.invokeMethod(object, method.getName(), null);
-						values.add(value);
-					}
-
-					Object[] valArray = values.toArray();
-					for (int i = 0; i < valArray.length; i++) {
-						Object value = valArray[i];
-						String index = (isCollection) ? "[" + i + "]" : "";
-
-						if (value == null) {
-							//ignore for now
-							//logger.info("Null value for " + method.getName());
-						} else if (ConverterUtil.getInstance().canConvert(value)) {
-							String stringValue = ConverterUtil.getInstance().convert(value);
-
-							/** Todo - format based on type/parameterized type
-							Class<?> returnType = method.getReturnType();
-							logger.info("returnType: " + returnType);
-							if (ReflectionUtil.isInteger(returnType)) {
-								logger.info("Cleaning int value");
-								stringValue = Formats.INT.format(value);
-							} else if (ReflectionUtil.isDecimal(returnType)) {
-								logger.info("Cleaning decimal value");
-								stringValue = Formats.DECIMAL.format(value);
-							} else {
-								stringValue = ConverterUtil.getInstance().convert(value);
-							}  **/
-							paramMap.put(prefix + fieldName + index, new String[]{stringValue});
-						} else {
-							Map<String, String[]> nestedMap = recursiveToMap(value, prefix + fieldName + index, cache);
-							paramMap.putAll(nestedMap);
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		Map<String, Object> properties = ReflectionUtil.getProperties(object);
+		for (String property : properties.keySet()) {
+			Object value = properties.get(property);
+			try {
+				if (value == null) {
+					//ignore nulls
+				} else if (Collection.class.isAssignableFrom(value.getClass())) {
+					beanMap.putAll(convertAll((Collection) value, prefix + property, cache));
+				} else if (value.getClass().isArray()) {
+					beanMap.putAll(convertAll(Arrays.asList((Object[]) value), prefix + property, cache));
+				} else if (Map.class.isAssignableFrom(value.getClass())) {
+					beanMap.putAll(convertMap((Map) value, prefix + property, cache));
+				} else {
+					beanMap.putAll(convertObject(value, prefix + property, cache));
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		return paramMap;
+		return beanMap;
 	}
+
+	protected static Map<String, String[]> convertAll(Collection<Object> values, String key, Set cache) {
+		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
+		Object[] valArray = values.toArray();
+		for (int i = 0; i < valArray.length; i++) {
+			Object value = valArray[i];
+			if (value != null) valuesMap.putAll(convertObject(value, key + "[" + i + "]", cache));
+		}
+		return valuesMap;
+	}
+
+	protected static Map<String, String[]> convertMap(Map<Object, Object> values, String key, Set cache) {
+		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
+		for (Object thisKey : values.keySet()) {
+			Object value = values.get(thisKey);
+			if (value != null) valuesMap.putAll(convertObject(value, key + "[" + thisKey + "]", cache));
+		}
+		return valuesMap;
+	}
+
+	protected static Map<String, String[]> convertObject(Object value, String key, Set cache) {
+		//if this type has a registered converted, then get the string and return
+		if (ConverterUtil.getInstance().canConvert(value)) {
+			String stringValue = ConverterUtil.getInstance().convert(value);
+			Map<String, String[]> valueMap = new HashMap<String, String[]>();
+			valueMap.put(key, new String[]{stringValue});
+			return valueMap;
+		} else {
+			//otherwise, treat it as a nested bean that needs to be mapped itself
+			return recursiveToMap(value, key, cache);
+		}
+	}
+
 }

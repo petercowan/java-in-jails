@@ -6,9 +6,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 @AcceptsNestedAttributes
-public class MappingBean {
+public class MappingBean extends SuperMappingBean {
 	String[] array;
 	BigDecimal bigDecimal;
 	BigInteger bigInteger;
@@ -30,6 +31,8 @@ public class MappingBean {
 	Short[] shortArray;
 	Short shortProperty;
 	String stringProperty;
+
+	Map<Object,Object> map;
 
 	@NotNull
 	@Valid
@@ -202,6 +205,14 @@ public class MappingBean {
 
 	public void setMappingBean(MappingBean mappingBean) {
 		this.mappingBean = mappingBean;
+	}
+
+	public Map<Object, Object> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<Object, Object> map) {
+		this.map = map;
 	}
 }
 

@@ -3,17 +3,14 @@ package org.jails.property;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.MethodUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jails.util.Strings;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MapperTest
 		extends TestCase {
@@ -233,7 +230,7 @@ public class MapperTest
 		bean.setFloatProperty(2.45f);
 		bean.setInteger(123);
 		bean.setStringProperty("Hello");
-		bean.setIntegerArray(new Integer[]{1,2,3,4,5});
+		bean.setIntegerArray(new Integer[]{1, 2, 3, 4, 5});
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MONTH, 10);
 		cal.set(Calendar.DATE, 11);
@@ -250,7 +247,7 @@ public class MapperTest
 		bean.getMappingBean().setFloatProperty(3.56f);
 		bean.getMappingBean().setInteger(234);
 		bean.getMappingBean().setStringProperty("Hi");
-		bean.getMappingBean().setIntegerArray(new Integer[]{1,2,3,4,5});
+		bean.getMappingBean().setIntegerArray(new Integer[]{1, 2, 3, 4, 5});
 		cal.set(Calendar.MONTH, 9);
 		cal.set(Calendar.DATE, 11);
 		cal.set(Calendar.YEAR, 2012);
@@ -263,4 +260,113 @@ public class MapperTest
 		return bean;
 	}
 
+	public void testDescribe() {
+		MappingBean bean = new MappingBean();
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		map.put(1, "one");
+		map.put("now", new Date());
+		map.put(3.1415, "hahah");
+		map.put("me", new String[]{"myself", "i"});
+		bean.setMap(map);
+
+		bean.setShortArray(new Short[]{1, 2, 3, 4, 5, 6, 7});
+		MappingBean bean2 = new MappingBean();
+		bean2.setDate(new Date());
+		bean.setMappingBean(bean2);
+
+		System.out.println("\n\nTest describe");
+		try {
+			Map properties = BeanUtils.recursiveDescribe(bean);//beanMapper.toMap(bean);//org.apache.commons.beanutils.BeanUtils.describe(bean);
+			for (Object key : properties.keySet()) {
+				System.out.println(key + ": " + properties.get(key));
+			}
+		} catch (Exception e) {
+		}
+	}
+
+}
+
+class BeanUtils {
+	public static Map<String, String[]> recursiveDescribe(Object object) {
+		String type = initLowercase(object.getClass().getSimpleName());
+		Set cache = new HashSet();
+		return recursiveDescribe(object, type, cache);
+	}
+
+	protected static Map<String, String[]> recursiveDescribe(Object object, String prefix, Set cache) {
+		if (cache.contains(object)) return Collections.EMPTY_MAP;
+		cache.add(object);
+		prefix = (prefix != null) ? prefix + "." : "";
+
+		Map<String, String[]> beanMap = new TreeMap<String, String[]>();
+
+		Map<String, Object> properties = ReflectionUtil.getProperties(object);
+		for (String property : properties.keySet()) {
+			Object value = properties.get(property);
+//				System.out.println("Found property: " + property + ", val: " + value);
+			try {
+				if (value == null) {
+					//ignore nulls
+				} else if (Collection.class.isAssignableFrom(value.getClass())) {
+					beanMap.putAll(convertAll((Collection) value, prefix + property, cache));
+				} else if (value.getClass().isArray()) {
+					beanMap.putAll(convertAll(Arrays.asList((Object[]) value), prefix + property, cache));
+				} else if (Map.class.isAssignableFrom(value.getClass())) {
+					beanMap.putAll(convertMap((Map) value, prefix + property, cache));
+				} else {
+					beanMap.putAll(convertObject(value, prefix + property, cache));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return beanMap;
+	}
+
+	protected static Map<String, String[]> convertAll(Collection<Object> values, String key, Set cache) {
+		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
+		Object[] valArray = values.toArray();
+		for (int i = 0; i < valArray.length; i++) {
+			Object value = valArray[i];
+			if (value != null) valuesMap.putAll(convertObject(value, key + "[" + i + "]", cache));
+		}
+		return valuesMap;
+	}
+
+	protected static Map<String, String[]> convertMap(Map<Object, Object> values, String key, Set cache) {
+		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
+		for (Object thisKey : values.keySet()) {
+			Object value = values.get(thisKey);
+			if (value != null) valuesMap.putAll(convertObject(value, key + "[" + thisKey + "]", cache));
+		}
+		return valuesMap;
+	}
+
+	protected static ConvertUtilsBean converter = BeanUtilsBean.getInstance().getConvertUtils();
+
+	protected static Map<String, String[]> convertObject(Object value, String key, Set cache) {
+		//if this type has a registered converted, then get the string and return
+		if (converter.lookup(value.getClass()) != null) {
+			String stringValue = converter.convert(value);
+			Map<String, String[]> valueMap = new HashMap<String, String[]>();
+			valueMap.put(key, new String[]{stringValue});
+			return valueMap;
+		} else {
+			//otherwise, treat it as a nested bean that needs to be described itself
+			return recursiveDescribe(value, key, cache);
+		}
+	}
+
+	/**
+	 * Capitalize the first letter of the String
+	 */
+	private static String initLowercase(String str) {
+		if (str == null) return null;
+		String lower = str.substring(0, 1).toLowerCase();
+		if (str.length() > 1) {
+			return lower + str.substring(1);
+		} else {
+			return lower;
+		}
+	}
 }

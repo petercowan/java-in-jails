@@ -7,6 +7,9 @@ import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -128,6 +131,65 @@ public class ReflectionUtil {
 			logger.warn(e.getMessage());
 			return Void.TYPE;
 		}
+	}
+
+	public static Map<String, Object> getProperties(Object object) {
+		Map<String, Object> propertyMap = getFields(object);
+		//getters take precedence in case of any name collisions
+		propertyMap.putAll(getGetters(object));
+		return propertyMap;
+	}
+
+	public static Map<String, Object> getGetters(Object object) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		BeanInfo info;
+		try {
+			info = Introspector.getBeanInfo(object.getClass());
+			for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+				Method reader = pd.getReadMethod();
+				if (reader != null) {
+					String name = pd.getName();
+					if (!"class".equals(name)) {
+						try {
+							Object value = reader.invoke(object);
+							result.put(name, value);
+						} catch (Exception e) {
+							//you can choose to do something here
+						}
+					}
+				}
+			}
+		} catch (IntrospectionException e) {
+			//you can choose to do something here
+		} finally {
+			return result;
+		}
+	}
+
+	public static Map<String, Object> getPublicFields(Object object) {
+		return getFields(object, object.getClass(), true);
+	}
+
+	public static Map<String, Object> getFields(Object object) {
+		return getFields(object, object.getClass(), false);
+	}
+
+	private static Map<String, Object> getFields(Object object, Class<?> classType, boolean onlyPublic) {
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		Class superClass = classType.getSuperclass();
+		if (superClass != null) result.putAll(getFields(object, superClass, onlyPublic));
+
+		//get public fields only
+		Field[] fields = (onlyPublic) ? classType.getFields() : classType.getDeclaredFields();
+		for (Field field : fields) {
+			try {
+				result.put(field.getName(), field.get(object));
+			} catch (IllegalAccessException e) {
+				//you can choose to do something here
+			}
+		}
+		return result;
 	}
 
 	public static boolean isDecimal(Class<?> type) {

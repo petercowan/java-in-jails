@@ -1,7 +1,5 @@
 package org.jails.property;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.jails.property.handler.PropertyHandler;
 import org.jails.property.parser.PropertyParser;
 import org.jails.util.Strings;
@@ -62,12 +60,14 @@ public class Mapper {
 
 	protected PropertyHandler propertyHandler;
 	protected PropertyParser propertyParser;
+	protected PropertyUtils propertyUtils;
 
 	static {
 		ConverterUtil.getInstance();
 	}
 
 	private Mapper() {
+		propertyUtils = new CommonsPropertyUtils();
 	}
 
 	/**
@@ -76,6 +76,7 @@ public class Mapper {
 	 * @param propertyParser
 	 */
 	public Mapper(PropertyParser propertyParser) {
+		this();
 		this.propertyParser = propertyParser;
 	}
 
@@ -86,6 +87,7 @@ public class Mapper {
 	 * @param propertyHandler
 	 */
 	public Mapper(PropertyParser propertyParser, PropertyHandler propertyHandler) {
+		this();
 		this.propertyHandler = propertyHandler;
 		this.propertyParser = propertyParser;
 	}
@@ -235,9 +237,9 @@ public class Mapper {
 
 					Object memberObject;
 					if (propertyParser.isIndexed(propertyName)) {//&& propertyParser.getPropertyIndex(propertyName) != null) {
-						memberObject = PropertyUtils.getIndexedProperty(object, propertyName, propertyIndex);
+						memberObject = propertyUtils.getIndexedProperty(object, propertyName, propertyIndex);
 					} else {
-						memberObject = PropertyUtils.getProperty(object, propertyName);
+						memberObject = propertyUtils.getProperty(object, propertyName);
 					}
 					logger.info("memberObject: " + memberObject);
 
@@ -265,7 +267,7 @@ public class Mapper {
 			try {
 				logger.info("propertyValueKey: " + propertyValueKey);
 				String value = propertiesMap.getValue(propertyValueKey);
-				logger.info("Object's " + propertyName + " value: " + BeanUtils.getProperty(object, propertyName));
+				logger.info("Object's " + propertyName + " value: " + propertyUtils.getProperty(object, propertyName));
 				logger.info("Setting " + propertyName + " value to |" + value + "|");
 
 				if (value == null) value = propertiesMap.getSelectOtherValue(propertyValueKey);
@@ -285,8 +287,8 @@ public class Mapper {
 					}
 				}
 
-				BeanUtils.setProperty(object, propertyName, value);
-				logger.info(propertyName + " set to : " + BeanUtils.getProperty(object, propertyName));
+				propertyUtils.setProperty(object, propertyName, value);
+				logger.info(propertyName + " set to : " + propertyUtils.getProperty(object, propertyName));
 			} catch (Exception e) {
 				logger.warn(e.getMessage());
 			}

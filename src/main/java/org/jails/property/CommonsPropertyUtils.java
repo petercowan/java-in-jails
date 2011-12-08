@@ -26,4 +26,9 @@ public class CommonsPropertyUtils implements PropertyUtils {
 			throw new PropertyException(e);
 		}
 	}
+
+	public Class<?> getPropertyType(Class<?> classType, String propertyName) {
+		//todo - check field type instead of getter
+		return ReflectionUtil.getGetterMethodReturnType(classType, propertyName);
+	}
 }

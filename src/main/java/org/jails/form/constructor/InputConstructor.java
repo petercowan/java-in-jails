@@ -9,10 +9,12 @@ import org.jails.form.taglib.HiddenTag;
 import org.jails.form.taglib.PasswordTag;
 import org.jails.form.taglib.TextAreaTag;
 import org.jails.form.taglib.TextTag;
+import org.jails.property.CommonsPropertyUtils;
+import org.jails.property.PropertyUtils;
 import org.jails.property.ReflectionUtil;
 import org.jails.util.SimpleFormatter;
 import org.jails.validation.client.ClientConstraintInfo;
-import org.jails.validation.client.ClientConstraintInfoRegistry;
+import org.jails.validation.client.BeanValidationConstraintInfoRegistry;
 import org.jails.validation.constraint.IsDecimal;
 import org.jails.validation.constraint.IsInteger;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ public abstract class InputConstructor<T extends FormInput> {
 
 	protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
 	protected static SimpleFormatter formatter = new SimpleFormatter();
+	protected static PropertyUtils propertyUtils = new CommonsPropertyUtils();
 
 	protected T tag;
 	protected FormTag formTag;
@@ -147,19 +150,20 @@ public abstract class InputConstructor<T extends FormInput> {
 		if (simpleForm != null && simpleForm.getClassType() != null) {
 			StringBuffer validationBuffer = null;
 
+			BeanValidationConstraintInfoRegistry constraintInfoRegistry = BeanValidationConstraintInfoRegistry.getInstance();
+			Class classType = simpleForm.getClassType();
+			String property = tag.getName();
+			logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
 			if (tag instanceof TextTag || tag instanceof PasswordTag || tag instanceof TextAreaTag
 					|| tag instanceof HiddenTag) {
-				Class classType = simpleForm.getClassType();
-				String property = tag.getName();
-				logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
 
-				ClientConstraintInfoRegistry constraintInfoRegistry = ClientConstraintInfoRegistry.getInstance();
 				List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
 						.getClientConstraints(classType, property);
-				Class returnType = ReflectionUtil.getGetterMethodReturnType(classType, property);
-				if (ReflectionUtil.isDecimal(returnType)) {
+
+				Class propertyType = propertyUtils.getPropertyType(classType, property);
+				if (ReflectionUtil.isDecimal(propertyType)) {
 					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
-				} else if (ReflectionUtil.isInteger(returnType)) {
+				} else if (ReflectionUtil.isInteger(propertyType)) {
 					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
 				}
 				logger.info("Getting Validation script");
@@ -167,9 +171,9 @@ public abstract class InputConstructor<T extends FormInput> {
 						.getValidationHtml(clientConstraints, classType, property);
 				logger.info("clientValidation: " + validation);
 			} else {
-				//todo - this is a hack to only validate required for non text based fields
 				if (formTag.getSimpleForm().isFieldRequired(tag.getName())) {
-					validation = " class=\"validate[required]\"";
+					validation = constraintInfoRegistry
+							.getValidationConstructor().getRequiredHtml(classType, property);//" class=\"validate[required]\"";
 				}
 			}
 		}

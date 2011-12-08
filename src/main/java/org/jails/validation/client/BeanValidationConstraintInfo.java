@@ -8,15 +8,15 @@ import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class PositionRelativeConstraintInfo
-		implements ClientConstraintInfo {
-	private static Logger logger = LoggerFactory.getLogger(PositionRelativeConstraintInfo.class);
+public class BeanValidationConstraintInfo
+		implements ClientConstraintInfo<Class<? extends Annotation>> {
+	private static Logger logger = LoggerFactory.getLogger(BeanValidationConstraintInfo.class);
 
 	private Class<? extends Annotation> constraint;
 	private String clientValidation;
 	private String[] attributeNames;
 
-	public PositionRelativeConstraintInfo(Class<? extends Annotation> constraint, String clientValidation, String... attributeNames) {
+	public BeanValidationConstraintInfo(Class<? extends Annotation> constraint, String clientValidation, String... attributeNames) {
 		if (constraint == null) {
 			throw new IllegalArgumentException("constraint must not be null");
 		}

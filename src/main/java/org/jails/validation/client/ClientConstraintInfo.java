@@ -1,10 +1,9 @@
 package org.jails.validation.client;
 
 import javax.validation.metadata.ConstraintDescriptor;
-import java.lang.annotation.Annotation;
 
-public interface ClientConstraintInfo {
-	public Class<? extends Annotation> getConstraint();
+public interface ClientConstraintInfo<T> {
+	public T getConstraint();
 
 	public String getClientValidation();
 

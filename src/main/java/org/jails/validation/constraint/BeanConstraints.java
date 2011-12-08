@@ -1,7 +1,7 @@
-package org.jails.validation;
+package org.jails.validation.constraint;
 
 
-import org.jails.validation.constraint.FieldMatch;
+import org.jails.validation.ValidatorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

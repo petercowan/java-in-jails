@@ -8,7 +8,7 @@ import org.jails.property.ReflectionUtil;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
-import org.jails.validation.BeanConstraints;
+import org.jails.validation.constraint.BeanConstraints;
 import org.jails.validation.constraint.RequiredChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

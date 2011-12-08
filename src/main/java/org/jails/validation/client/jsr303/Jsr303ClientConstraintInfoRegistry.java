@@ -1,4 +1,4 @@
-package org.jails.validation.client;
+package org.jails.validation.client.jsr303;
 
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.hibernate.validator.constraints.Email;
@@ -7,6 +7,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
+import org.jails.validation.client.ClientConstraintInfo;
+import org.jails.validation.client.ClientConstraintInfoRegistry;
+import org.jails.validation.client.posabsolute.PositionAbsolute;
 import org.jails.validation.constraint.BeanConstraints;
 import org.jails.validation.constraint.FieldMatch;
 import org.jails.validation.constraint.IsDecimal;
@@ -29,60 +32,58 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class BeanValidationConstraintInfoRegistry
-		extends ClientConstraintInfoRegistry<Class<? extends Annotation>> {
-	private static Logger logger = LoggerFactory.getLogger(BeanValidationConstraintInfoRegistry.class);
+public class Jsr303ClientConstraintInfoRegistry
+		extends ClientConstraintInfoRegistry<Class<? extends Annotation>,Jsr303ClientConstraintInfo> {
+	private static Logger logger = LoggerFactory.getLogger(Jsr303ClientConstraintInfoRegistry.class);
 
-	private static BeanValidationConstraintInfoRegistry instance;
+	private static Jsr303ClientConstraintInfoRegistry instance;
 
-	private BeanValidationConstraintInfoRegistry() {
-		registry = new HashMap<Class<? extends Annotation>, ClientConstraintInfo>();
-		addClientConstraint(NotNull.class, "required");
-		addClientConstraint(NotEmpty.class, "required");
-		addClientConstraint(NotBlank.class, "required");
+	private Jsr303ClientConstraintInfoRegistry() {
+		registry = new HashMap<Class<? extends Annotation>, Jsr303ClientConstraintInfo>();
+		addClientConstraint(NotNull.class, PositionAbsolute.REQUIRED);
+		addClientConstraint(NotEmpty.class, PositionAbsolute.REQUIRED);
+		addClientConstraint(NotBlank.class, PositionAbsolute.REQUIRED);
+		addClientConstraint(CreditCardNumber.class, PositionAbsolute.CREDIT_CARD);
+		addClientConstraint(Email.class, PositionAbsolute.EMAIL);
+		addClientConstraint(Length.class, PositionAbsolute.MIN_SIZE + "," + PositionAbsolute.MAX_SIZE, "min", "max");
+		addClientConstraint(Min.class, PositionAbsolute.MIN_VALUE, "value");
+		addClientConstraint(DecimalMin.class, PositionAbsolute.MIN_VALUE, "value");
+		addClientConstraint(Max.class, PositionAbsolute.MAX_VALUE, "value");
+		addClientConstraint(DecimalMax.class, PositionAbsolute.MAX_VALUE, "value");
+		addClientConstraint(Past.class, PositionAbsolute.PAST);
+		addClientConstraint(Future.class, PositionAbsolute.FUTURE);
+		addClientConstraint(Size.class, PositionAbsolute.MIN_SIZE + "," + PositionAbsolute.MAX_SIZE, "min", "max");
+		addClientConstraint(Range.class, PositionAbsolute.MIN_VALUE + "," + PositionAbsolute.MAX_VALUE, "min", "max");
+		addClientConstraint(FieldMatch.class, PositionAbsolute.EQUALS, "field", "matchField");
+		addClientConstraint(IsInteger.class, PositionAbsolute.INTEGER);
+		addClientConstraint(IsDecimal.class, PositionAbsolute.INTEGER);
+		addClientConstraint(URL.class, PositionAbsolute.URL);
 //		addClientConstraint(FieldMatch.class, "equals[${form.fieldMatch.id}]");
-		//addClientConstraint(AssertFalse.class, "");
-		//addClientConstraint(AssertTrue.class,"");
-		addClientConstraint(CreditCardNumber.class, "creditCard");
-		addClientConstraint(Email.class, "custom[email]");
-		addClientConstraint(Length.class, "minSize[${min}],maxSize[${max}]", "min", "max");
-		addClientConstraint(Min.class, "min[${value}]", "value");
-		addClientConstraint(DecimalMin.class, "min[${value}]", "value");
-		addClientConstraint(Max.class, "max[${value}]", "value");
-		addClientConstraint(DecimalMax.class, "max[${value}]", "value");
-		addClientConstraint(Min.class, "min[${value}]", "value");
-		addClientConstraint(DecimalMin.class, "min[${value}]", "value");
-		//addClientConstraint(Pattern.class,"custom[${regexp}]","regex");
-		addClientConstraint(Past.class, "past[now]");
-		addClientConstraint(Future.class, "future[now]");
-		addClientConstraint(Size.class, "minSize[${min}],maxSize[${max}]", "min", "max");
-		//addClientConstraint(Digits.class,"future[now]","maxIntegerDigits","maxFractionDigits");
-		addClientConstraint(Range.class, "min[${min}],max[${max}]", "min", "max");
-		//include both attributes, even if only using one in the validation field
-		addClientConstraint(FieldMatch.class, "equals[${field}]", "field", "matchField");
-		//addClientConstraint(StrongPassword.class,"custom[]");
-		addClientConstraint(IsInteger.class, "custom[integer]");
-		addClientConstraint(IsDecimal.class, "custom[number]");
+//		addClientConstraint(AssertFalse.class, "");
+//		addClientConstraint(AssertTrue.class,"");
+//		addClientConstraint(Pattern.class,"custom[${regexp}]","regex");
+//		addClientConstraint(Digits.class,"future[now]","maxIntegerDigits","maxFractionDigits");
+//		include both attributes, even if only using one in the validation field
+//		addClientConstraint(StrongPassword.class,"custom[]");
 		/**
 		 .??[a-zA-Z]
 		 .??[0-9]
 		 .??[:,!,@,#,$,%,^,&,*,?,_,-,=,+,~]
 		 **/
-		addClientConstraint(URL.class, "custom[url]");
-		validationConstructor = new BeanValidationValidationConstructor();
+		validationConstructor = new Jsr303ClientValidationConstructor();
 	}
 
-	public static BeanValidationConstraintInfoRegistry getInstance() {
+	public static Jsr303ClientConstraintInfoRegistry getInstance() {
 		if (instance == null) {
-			synchronized (BeanValidationConstraintInfoRegistry.class) {
-				instance = new BeanValidationConstraintInfoRegistry();
+			synchronized (Jsr303ClientConstraintInfoRegistry.class) {
+				instance = new Jsr303ClientConstraintInfoRegistry();
 			}
 		}
 		return instance;
 	}
 
-	protected ClientConstraintInfo newClientConstraint(Class<? extends Annotation> constraint, String clientFunction, String... attributeNames) {
-		return new BeanValidationConstraintInfo(constraint, clientFunction, attributeNames);
+	protected Jsr303ClientConstraintInfo newClientConstraint(Class<? extends Annotation> constraint, String clientFunction, String... attributeNames) {
+		return new Jsr303ClientConstraintInfo(constraint, clientFunction, attributeNames);
 	}
 
 	protected List<String> _getClientValidations(Class classType, String property) {

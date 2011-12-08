@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ClientConstraintInfoRegistry<T> {
+public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintInfo> {
 	private static Logger logger = LoggerFactory.getLogger(ClientConstraintInfoRegistry.class);
 
 	private static ClientConstraintInfoRegistry instance;
-	protected Map<T, ClientConstraintInfo> registry;
+	protected Map<T, U> registry;
 	protected ClientValidationConstructor validationConstructor;
 	protected PropertyParser propertyParser;
 
@@ -21,21 +21,21 @@ public abstract class ClientConstraintInfoRegistry<T> {
 
 	public void addClientConstraint(T constraint,
 									String clientFunction, String... attributeNames) {
-		ClientConstraintInfo constriaintInfo = registry.get(constraint);
+		U constriaintInfo = registry.get(constraint);
 		if (constriaintInfo == null) {
 			constriaintInfo = newClientConstraint(constraint, clientFunction, attributeNames);
 			registry.put(constraint, constriaintInfo);
 		}
 	}
 
-	protected abstract ClientConstraintInfo newClientConstraint(T constraint, String clientFunction, String... attributeNames);
+	protected abstract U newClientConstraint(T constraint, String clientFunction, String... attributeNames);
 
 	public void addClientConstraint(T constraint,
 									String clientFunction) {
 		addClientConstraint(constraint, clientFunction, null);
 	}
 
-	public ClientConstraintInfo getClientConstraint(T constraint) {
+	public U getClientConstraint(T constraint) {
 		return registry.get(constraint);
 	}
 
@@ -54,7 +54,7 @@ public abstract class ClientConstraintInfoRegistry<T> {
 
 	protected abstract List<String> _getClientValidations(Class classType, String property);
 
-	public List<ClientConstraintInfo> getClientConstraints(Class classType, String property) {
+	public List<U> getClientConstraints(Class classType, String property) {
 		if (propertyParser.hasNestedProperty(property)) {
 			Class nestedClass = ReflectionUtil.getPropertyType(classType, property);
 			String nestedProperty = (property.lastIndexOf(".") > 0)

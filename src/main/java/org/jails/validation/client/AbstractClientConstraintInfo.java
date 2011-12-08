@@ -1,22 +1,21 @@
 package org.jails.validation.client;
 
+import org.jails.validation.ValidationUtil;
+import org.jails.validation.client.jsr303.Jsr303ClientConstraintInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.jails.validation.ValidationUtil;
 
-import javax.validation.metadata.ConstraintDescriptor;
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class BeanValidationConstraintInfo
-		implements ClientConstraintInfo<Class<? extends Annotation>> {
-	private static Logger logger = LoggerFactory.getLogger(BeanValidationConstraintInfo.class);
+public abstract class AbstractClientConstraintInfo<T,U>
+		implements ClientConstraintInfo<T,U> {
+	private static Logger logger = LoggerFactory.getLogger(Jsr303ClientConstraintInfo.class);
 
-	private Class<? extends Annotation> constraint;
-	private String clientValidation;
-	private String[] attributeNames;
+	protected T constraint;
+	protected String clientValidation;
+	protected String[] attributeNames;
 
-	public BeanValidationConstraintInfo(Class<? extends Annotation> constraint, String clientValidation, String... attributeNames) {
+	public AbstractClientConstraintInfo(T constraint, String clientValidation, String... attributeNames) {
 		if (constraint == null) {
 			throw new IllegalArgumentException("constraint must not be null");
 		}
@@ -28,7 +27,7 @@ public class BeanValidationConstraintInfo
 		this.attributeNames = attributeNames;
 	}
 
-	public Class<? extends Annotation> getConstraint() {
+	public T getConstraint() {
 		return constraint;
 	}
 
@@ -49,19 +48,6 @@ public class BeanValidationConstraintInfo
 		return (attributeNames != null) ? attributeNames.length : 0;
 	}
 
-	public String parseClientValidation(ConstraintDescriptor constraint) {
-		if (constraint == null) return "";
-		String validation;
-		Map<String, Object> attributes = constraint.getAttributes();
-		if (hasAttributes() && attributes != null
-					&& attributeCount() <= attributes.size()) {
-				validation = parseClientValidation(attributes);
-		} else {
-			 validation = getClientValidation();
-		}
-		return validation;
-	}
-
 	protected String parseClientValidation(Map<String, Object> attributeValues) {
 		if (attributeValues == null || attributeNames == null || attributeValues.size() < attributeNames.length) {
 			throw new IllegalArgumentException("attributeValues must be the same length as attributeNames");
@@ -74,6 +60,5 @@ public class BeanValidationConstraintInfo
 
 		return parsedValidation;
 	}
+
 }
-
-

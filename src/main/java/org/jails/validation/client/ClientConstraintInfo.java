@@ -1,8 +1,6 @@
 package org.jails.validation.client;
 
-import javax.validation.metadata.ConstraintDescriptor;
-
-public interface ClientConstraintInfo<T> {
+public interface ClientConstraintInfo<T,U> {
 	public T getConstraint();
 
 	public String getClientValidation();
@@ -13,5 +11,5 @@ public interface ClientConstraintInfo<T> {
 
 	public int attributeCount();
 
-	public String parseClientValidation(ConstraintDescriptor constraint);
+	public String parseClientValidation(U constraint);
 }

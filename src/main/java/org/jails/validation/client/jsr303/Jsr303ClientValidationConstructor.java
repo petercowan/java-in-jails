@@ -1,44 +1,38 @@
-package org.jails.validation.client;
+package org.jails.validation.client.jsr303;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.jails.property.ReflectionUtil;
+import org.jails.property.CommonsPropertyUtils;
+import org.jails.property.PropertyUtils;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
+import org.jails.validation.client.AbstractClientValidationConstructor;
+import org.jails.validation.client.posabsolute.PositionAbsolute;
 import org.jails.validation.constraint.BeanConstraints;
 import org.jails.validation.constraint.FieldMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.metadata.ConstraintDescriptor;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeanValidationValidationConstructor
-		implements ClientValidationConstructor<Class<? extends Annotation>> {
-	private static Logger logger = LoggerFactory.getLogger(BeanValidationValidationConstructor.class);
+public class Jsr303ClientValidationConstructor
+		extends AbstractClientValidationConstructor<Jsr303ClientConstraintInfo> {
+	private static Logger logger = LoggerFactory.getLogger(Jsr303ClientValidationConstructor.class);
 
-	protected PropertyParser propertyParser = new SimplePropertyParser();
-
-	public String getValidationHtml(List<ClientConstraintInfo<Class<? extends Annotation>>> clientConstraints,
-									Class classType, String property) {
-		if (propertyParser.hasNestedProperty(property)) {
-			Class nestedClass = ReflectionUtil.getPropertyType(classType, property);
-			String nestedProperty = (property.lastIndexOf(".") > 0)
-					? property.substring(property.lastIndexOf(".") + 1)
-					: property;
-
-			return _getValidationHtml(clientConstraints, nestedClass, nestedProperty);
-		} else {
-			return _getValidationHtml(clientConstraints, classType, property);
-		}
+	public Jsr303ClientValidationConstructor() {
+		this(new SimplePropertyParser(), new CommonsPropertyUtils());
 	}
 
-	protected String _getValidationHtml(List<ClientConstraintInfo<Class<? extends Annotation>>> clientConstraints,
+	public Jsr303ClientValidationConstructor(PropertyParser propertyParser, PropertyUtils propertyUtils) {
+		super(propertyParser, propertyUtils);
+	}
+
+	protected String _getValidationHtml(List<Jsr303ClientConstraintInfo> clientConstraints,
 										Class classType, String property) {
 		StringBuffer validationBuffer = null;
 
-		for (ClientConstraintInfo<Class<? extends Annotation>> info : clientConstraints) {
+		for (Jsr303ClientConstraintInfo info : clientConstraints) {
 			ConstraintDescriptor<?> descriptor = BeanConstraints.getInstance()
 					.getConstraint(classType, property, info.getConstraint());
 			if (descriptor == null) descriptor = BeanConstraints.getInstance()
@@ -70,16 +64,17 @@ public class BeanValidationValidationConstructor
 			}
 		}
 		return (validationBuffer != null)
-				? " class=\"validate[" + validationBuffer.toString() + "]\""
+				? " " + PositionAbsolute.INPUT_ATTRIBUTE + "=\""
+					+ PositionAbsolute.VALIDATION_FUNCTION + "[" + validationBuffer.toString() + "]\""
 				: null;
 	}
 
 	public String getRequiredHtml(Class classType, String propertyName) {
-		ClientConstraintInfo<Class<?extends Annotation>> constraintInfo =
-				BeanValidationConstraintInfoRegistry.getInstance().getClientConstraint(NotBlank.class);
+		Jsr303ClientConstraintInfo constraintInfo =
+				Jsr303ClientConstraintInfoRegistry.getInstance().getClientConstraint(NotBlank.class);
 
-		List<ClientConstraintInfo<Class<? extends Annotation>>>
-				clientConstraints = new ArrayList<ClientConstraintInfo<Class<? extends Annotation>>>();
+		List<Jsr303ClientConstraintInfo>
+				clientConstraints = new ArrayList<Jsr303ClientConstraintInfo>();
 		clientConstraints.add(constraintInfo);
 		return getValidationHtml(clientConstraints, classType, propertyName);
 	}

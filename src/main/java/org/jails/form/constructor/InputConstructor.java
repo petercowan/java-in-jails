@@ -14,7 +14,8 @@ import org.jails.property.PropertyUtils;
 import org.jails.property.ReflectionUtil;
 import org.jails.util.SimpleFormatter;
 import org.jails.validation.client.ClientConstraintInfo;
-import org.jails.validation.client.BeanValidationConstraintInfoRegistry;
+import org.jails.validation.client.ClientConstraintInfoRegistry;
+import org.jails.validation.client.jsr303.Jsr303ClientConstraintInfoRegistry;
 import org.jails.validation.constraint.IsDecimal;
 import org.jails.validation.constraint.IsInteger;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public abstract class InputConstructor<T extends FormInput> {
 		if (simpleForm != null && simpleForm.getClassType() != null) {
 			StringBuffer validationBuffer = null;
 
-			BeanValidationConstraintInfoRegistry constraintInfoRegistry = BeanValidationConstraintInfoRegistry.getInstance();
+			ClientConstraintInfoRegistry constraintInfoRegistry = Jsr303ClientConstraintInfoRegistry.getInstance();
 			Class classType = simpleForm.getClassType();
 			String property = tag.getName();
 			logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);

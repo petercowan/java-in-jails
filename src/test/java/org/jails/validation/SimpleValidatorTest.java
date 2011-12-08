@@ -3,8 +3,8 @@ package org.jails.validation;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jails.demo.AccountForm;
 import org.jails.property.SimpleMapper;
-import org.jails.util.AccountForm;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.jails.form;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.jails.form.controller.SimpleFormRouter;
+import org.jails.demo.controller.SimpleFormRouter;
 import org.jails.property.IdentifyBy;
 import org.jails.property.Identity;
 import org.jails.property.ReflectionUtil;
@@ -9,7 +9,7 @@ import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
 import org.jails.validation.BeanConstraints;
-import org.jails.validation.RequiredChecks;
+import org.jails.validation.constraint.RequiredChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

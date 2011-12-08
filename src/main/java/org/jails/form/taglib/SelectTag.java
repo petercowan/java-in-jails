@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
+import org.jails.form.SelectInput;
 import org.jails.form.constructor.BodyTagInputConstructor;
 import org.jails.form.constructor.SelectConstructor;
-import org.jails.form.input.SelectInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

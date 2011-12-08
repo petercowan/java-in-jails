@@ -1,4 +1,4 @@
-package org.jails.util;
+package org.jails.validation.constraint.data;
 
 import org.jails.validation.constraint.ISOCountryCode;
 import org.jails.validation.constraint.ISOStateCode;

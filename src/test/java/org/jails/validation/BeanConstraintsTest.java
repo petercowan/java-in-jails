@@ -3,7 +3,7 @@ package org.jails.validation;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jails.util.AccountForm;
+import org.jails.demo.AccountForm;
 import org.jails.validation.constraint.FieldMatch;
 
 import javax.validation.metadata.ConstraintDescriptor;

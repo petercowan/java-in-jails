@@ -1,4 +1,4 @@
-package org.jails.form.controller;
+package org.jails.demo.controller;
 
 import org.jails.form.SimpleFormParams;
 import org.jails.util.Strings;

@@ -2,7 +2,7 @@ package org.jails.form.taglib;
 
 import org.jails.form.constructor.BodyTagInputConstructor;
 import org.jails.form.constructor.SelectConstructor;
-import org.jails.util.Country;
+import org.jails.validation.constraint.data.Country;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

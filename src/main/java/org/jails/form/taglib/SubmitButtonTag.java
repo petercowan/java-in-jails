@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
+import org.jails.form.SubmitButtonInput;
 import org.jails.form.constructor.SubmitConstructor;
 import org.jails.form.constructor.TagInputConstructor;
-import org.jails.form.input.SubmitButtonInput;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;

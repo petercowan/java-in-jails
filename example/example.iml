@@ -24,6 +24,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Main" />
     <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="validation" level="project" />
   </component>
 </module>
 

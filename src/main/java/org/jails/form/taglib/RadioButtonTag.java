@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.input.RadioButtonInput;
+import org.jails.form.RadioButtonInput;
 import org.jails.form.constructor.RadioButtonConstructor;
 import org.jails.form.constructor.TagInputConstructor;
 

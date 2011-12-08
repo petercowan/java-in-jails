@@ -1,8 +1,8 @@
 package org.jails.form.constructor;
 
-import org.jails.form.input.FormTag;
-import org.jails.form.input.Repeater;
-import org.jails.form.input.TextareaInput;
+import org.jails.form.FormTag;
+import org.jails.form.Repeater;
+import org.jails.form.TextareaInput;
 
 import javax.servlet.ServletRequest;
 

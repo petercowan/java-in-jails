@@ -1,10 +1,10 @@
-package org.jails.util;
+package org.jails.demo;
 
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.hibernate.validator.constraints.NotBlank;
 import org.jails.property.AcceptsNestedAttributes;
 import org.jails.property.IdentifyBy;
-import org.jails.validation.RequiredChecks;
+import org.jails.validation.constraint.RequiredChecks;
 import org.jails.validation.constraint.FieldMatch;
 import org.jails.validation.constraint.StrongPassword;
 

@@ -11,7 +11,6 @@ import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class BeanConstraints {
@@ -140,17 +139,4 @@ public class BeanConstraints {
 		return groups;
 	}
 
-	//todo - delete
-	public Map<String, Object> getConstraintAttributes(Class classType, String propertyName) {
-		Set<ConstraintDescriptor<?>> constraints = getConstraints(classType, propertyName);
-		if (constraints != null) {
-			for (ConstraintDescriptor constraint : constraints) {
-				logger.info("Displaying Constraint: " + constraint.getAnnotation().annotationType());
-				if (constraint.getAttributes() != null) {
-					return constraint.getAttributes();
-				}
-			}
-		}
-		return  Collections.EMPTY_MAP;
-	}
 }

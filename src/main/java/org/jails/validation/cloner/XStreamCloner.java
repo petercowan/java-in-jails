@@ -1,4 +1,4 @@
-package org.jails.cloner;
+package org.jails.validation.cloner;
 
 import com.thoughtworks.xstream.XStream;
 

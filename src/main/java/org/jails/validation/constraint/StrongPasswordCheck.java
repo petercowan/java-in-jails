@@ -1,4 +1,4 @@
-package org.jails.validation;
+package org.jails.validation.constraint;
 
 public interface StrongPasswordCheck {
 }

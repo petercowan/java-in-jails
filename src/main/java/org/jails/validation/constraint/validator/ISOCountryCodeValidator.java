@@ -1,6 +1,6 @@
 package org.jails.validation.constraint.validator;
 
-import org.jails.util.Country;
+import org.jails.validation.constraint.data.Country;
 import org.jails.util.Strings;
 import org.jails.validation.constraint.ISOCountryCode;
 

@@ -1,9 +1,10 @@
 package org.jails.validation;
 
-import org.jails.cloner.Cloner;
-import org.jails.cloner.XStreamCloner;
+import org.jails.validation.cloner.Cloner;
+import org.jails.validation.cloner.XStreamCloner;
 import org.jails.property.Mapper;
 import org.jails.property.SimpleMapper;
+import org.jails.validation.constraint.RequiredChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

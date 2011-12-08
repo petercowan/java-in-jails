@@ -1,6 +1,6 @@
 package org.jails.validation.constraint.validator;
 
-import org.jails.util.State;
+import org.jails.validation.constraint.data.State;
 import org.jails.util.Strings;
 import org.jails.validation.constraint.ISOStateCode;
 

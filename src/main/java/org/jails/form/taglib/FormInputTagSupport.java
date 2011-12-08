@@ -1,7 +1,7 @@
 package org.jails.form.taglib;
 
+import org.jails.form.FormInput;
 import org.jails.form.constructor.TagInputConstructor;
-import org.jails.form.input.FormInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

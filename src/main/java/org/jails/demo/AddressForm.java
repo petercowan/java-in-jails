@@ -1,8 +1,8 @@
-package org.jails.util;
+package org.jails.demo;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.jails.property.AcceptsNestedAttributes;
-import org.jails.validation.RequiredChecks;
+import org.jails.validation.constraint.RequiredChecks;
 
 import javax.validation.constraints.Size;
 

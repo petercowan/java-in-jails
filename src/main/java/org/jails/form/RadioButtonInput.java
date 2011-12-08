@@ -1,4 +1,4 @@
-package org.jails.form.input;
+package org.jails.form;
 
 public interface RadioButtonInput extends FormInput {
 	public String getValue();

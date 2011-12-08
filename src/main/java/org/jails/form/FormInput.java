@@ -1,4 +1,4 @@
-package org.jails.form.input;
+package org.jails.form;
 
 import java.util.Map;
 

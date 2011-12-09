@@ -2,7 +2,7 @@ package org.jails.property;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-public class CommonsPropertyUtils implements PropertyUtils {
+public class CommonsPropertyUtils implements PropertyUtils<Object> {
 	public Object getProperty(Object object, String propertyName) throws PropertyException {
 		try {
 			return org.apache.commons.beanutils.PropertyUtils.getProperty(object, propertyName);

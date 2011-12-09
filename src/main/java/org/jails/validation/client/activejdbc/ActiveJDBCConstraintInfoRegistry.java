@@ -1,6 +1,5 @@
 package org.jails.validation.client.activejdbc;
 
-import org.jails.validation.client.jsr303.Jsr303ClientValidationConstructor;
 import org.jails.validation.client.ClientConstraintInfo;
 import org.jails.validation.client.ClientConstraintInfoRegistry;
 import org.jails.validation.client.posabsolute.PositionAbsolute;
@@ -55,7 +54,7 @@ public class ActiveJDBCConstraintInfoRegistry
 		 .??[:,!,@,#,$,%,^,&,*,?,_,-,=,+,~]
 		 **/
 //		addClientConstraint(URL.class, "custom[url]");
-		validationConstructor = new Jsr303ClientValidationConstructor();
+		validationConstructor = new ActiveJDBCValidationConstructor();
 	}
 
 	public static ActiveJDBCConstraintInfoRegistry getInstance() {
@@ -91,20 +90,20 @@ public class ActiveJDBCConstraintInfoRegistry
 		return clientValidations;
 	}
 
-	protected List<ClientConstraintInfo> _getClientConstraints(Class classType, String property) {
-		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
+	protected List<ActiveJDBCConstraintInfo> _getClientConstraints(Class classType, String property) {
+		List<ActiveJDBCConstraintInfo> clientConstriants = new ArrayList<ActiveJDBCConstraintInfo>();
 		List<Validator> validators = ActiveJDBCValidatorUtil.getValidators(classType, property);
 		clientConstriants.addAll(getClientConstraints(validators));
 		return clientConstriants;
 	}
 
-	protected List<ClientConstraintInfo> getClientConstraints(List<Validator> validators) {
-		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
+	protected List<ActiveJDBCConstraintInfo> getClientConstraints(List<Validator> validators) {
+		List<ActiveJDBCConstraintInfo> clientConstriants = new ArrayList<ActiveJDBCConstraintInfo>();
 		for (Validator validator : validators) {
 			logger.debug("Searching ClientConstraintInfo for " + validator.getClass());
 
 			Class<? extends Validator> constraint = validator.getClass();
-			ClientConstraintInfo clientConstraint = getClientConstraint(constraint);
+			ActiveJDBCConstraintInfo clientConstraint = getClientConstraint(constraint);
 			if (clientConstraint != null) {
 				clientConstriants.add(clientConstraint);
 			}

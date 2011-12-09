@@ -104,5 +104,14 @@
 			<version>1.9.1</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.javalite</groupId>
+			<artifactId>activejdbc</artifactId>
+			<version>1.2-20111113.002616-96</version>
+			<systemPath>
+				C:/Users/peter/IdeaProjects/git/jails/lib/activejdbc-1.2-20111113.002616-96.jar
+			</systemPath>
+			<scope>system</scope>
+		</dependency>
 	</dependencies>
 </project>

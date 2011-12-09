@@ -105,8 +105,8 @@ public class Jsr303ClientConstraintInfoRegistry
 		return clientValidations;
 	}
 
-	protected List<ClientConstraintInfo> _getClientConstraints(Class classType, String property) {
-		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
+	protected List<Jsr303ClientConstraintInfo> _getClientConstraints(Class classType, String property) {
+		List<Jsr303ClientConstraintInfo> clientConstriants = new ArrayList<Jsr303ClientConstraintInfo>();
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
 				.getInstance().getConstraints(classType, property);
 		Set<ConstraintDescriptor<?>> classConstraints = BeanConstraints
@@ -117,14 +117,14 @@ public class Jsr303ClientConstraintInfoRegistry
 		return clientConstriants;
 	}
 
-	protected List<ClientConstraintInfo> getClientConstraints(Set<ConstraintDescriptor<?>> constraints) {
-		List<ClientConstraintInfo> clientConstriants = new ArrayList<ClientConstraintInfo>();
+	protected List<Jsr303ClientConstraintInfo> getClientConstraints(Set<ConstraintDescriptor<?>> constraints) {
+		List<Jsr303ClientConstraintInfo> clientConstriants = new ArrayList<Jsr303ClientConstraintInfo>();
 		for (ConstraintDescriptor descriptor : constraints) {
 			logger.debug("Searching ClientConstraintInfo for "
 					+ descriptor.getAnnotation().annotationType());
 
 			Class<? extends Annotation> constraint = descriptor.getAnnotation().annotationType();
-			ClientConstraintInfo clientConstraint = getClientConstraint(constraint);
+			Jsr303ClientConstraintInfo clientConstraint = getClientConstraint(constraint);
 			if (clientConstraint != null) {
 				clientConstriants.add(clientConstraint);
 			}

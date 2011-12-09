@@ -1,7 +1,9 @@
 package org.jails.validation.client.activejdbc;
 
+import org.jails.property.ActiveJDBCPropertyUtils;
 import org.jails.property.PropertyUtils;
 import org.jails.property.parser.PropertyParser;
+import org.jails.property.parser.SimplePropertyParser;
 import org.jails.validation.client.AbstractClientValidationConstructor;
 import org.jails.validation.client.posabsolute.PositionAbsolute;
 import org.javalite.activejdbc.validation.AttributePresenceValidator;
@@ -15,6 +17,10 @@ import java.util.List;
 public class ActiveJDBCValidationConstructor
 	extends AbstractClientValidationConstructor<ActiveJDBCConstraintInfo> {
 	private static Logger logger = LoggerFactory.getLogger(ActiveJDBCValidationConstructor.class);
+
+	public ActiveJDBCValidationConstructor() {
+		super(new SimplePropertyParser(), new ActiveJDBCPropertyUtils());
+	}
 
 	protected ActiveJDBCValidationConstructor(PropertyParser propertyParser, PropertyUtils propertyUtils) {
 		super(propertyParser, propertyUtils);
@@ -52,4 +58,6 @@ public class ActiveJDBCValidationConstructor
 		clientConstraints.add(constraintInfo);
 		return getValidationHtml(clientConstraints, classType, propertyName);
 	}
+
+
 }

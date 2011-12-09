@@ -67,7 +67,7 @@ public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintI
 		}
 	}
 
-	protected abstract List<ClientConstraintInfo> _getClientConstraints(Class classType, String property);
+	protected abstract List<U> _getClientConstraints(Class classType, String property);
 
 	public ClientValidationConstructor getValidationConstructor() {
 		return validationConstructor;

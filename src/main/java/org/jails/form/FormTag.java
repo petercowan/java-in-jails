@@ -6,6 +6,9 @@ import java.util.Map;
 
 public interface FormTag {
 
+    public static String STACKED = "stacked";
+    public static String SIDE_BY_SIDE = "side";
+
 	public void setName(String name);
 
 	public String getName();
@@ -24,10 +27,6 @@ public interface FormTag {
 
 	public boolean isStacked();
 
-	public void setLegend(String label);
-
-	public String getLegend();
-
 	public void setErrorMessage(String errorMessage);
 
 	public String getErrorMessage();
@@ -43,4 +42,8 @@ public interface FormTag {
 	public void addLabel(String inputName, String label);
 
 	public Map<String, String> getLabels();
+
+    public String getLabelMarker();
+
+    public void setLabelMarker(String labelMarker);
 }

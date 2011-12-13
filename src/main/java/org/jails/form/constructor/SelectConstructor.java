@@ -40,6 +40,7 @@ public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
 			}
 			for (String optionValue : options.keySet()) {
 				String optionLabel = options.get(optionValue);
+                if (optionLabel == null) optionLabel = optionValue;
 				optionHtml.append("<option" + getAttribute("value", optionValue));
 				for (String fieldValue : fieldValues) {
 					if (optionValue.equals(fieldValue)) {

@@ -16,8 +16,8 @@ public abstract class BodyTagInputConstructor<T extends FormInput> extends Input
 	public abstract String getClosingHtml();
 
 	@Override
-	public String wrapInputHtml(FormInput tag, String inputTagHtml) {
-		return super.wrapInputHtml(tag, getOpeningHtml()
+	public String wrapInputHtml(String inputTagHtml) {
+		return super.wrapInputHtml(getOpeningHtml()
 										+ inputTagHtml
 										+ getClosingHtml());
 	}

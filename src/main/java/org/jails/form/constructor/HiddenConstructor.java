@@ -13,7 +13,22 @@ public class HiddenConstructor extends TagInputConstructor<HiddenInput>{
 		super(tag, formTag, repeatTag, request);
 	}
 
-	@Override
+    @Override
+    public String getOpeningCss() {
+        return "";
+    }
+
+    @Override
+    public String getClosingCss() {
+        return "";
+    }
+
+    @Override
+    public String getLabelHtml() {
+        return "";
+    }
+
+    @Override
 	public String getInputHtml() {
 		return "<input" + getTypeAttr("hidden") +
 				getFieldNameAttr() +

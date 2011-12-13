@@ -166,6 +166,7 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	protected boolean isFieldRequired(Class type, String paramName) {
 		logger.info("isFieldRequired? " + paramName + " of " + type);
 
+        //todo - use ClientConstraint registry to determine if required by annotation type
 		Set<Class<?>> constraints = BeanConstraints.getInstance()
 				.getConstraintGroups(type, paramName);
 		if (constraints != null) {
@@ -196,12 +197,13 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		return null;
 	}
 
-	public void setErrors(Map<String, List<String>> errorFieldMap) {
-		errorFieldMaps.set(0, errorFieldMap);
+	public void setErrors(Map<String, List<String>> errors) {
+		errorFieldMaps = new ArrayList<Map<String, List<String>>>();
+        addErrors(errors);
 	}
 
-	public void addErrors(Map<String, List<String>> errorFieldMap) {
-		errorFieldMaps.add(errorFieldMap);
+	public void addErrors(Map<String, List<String>> errors) {
+		errorFieldMaps.add(errors);
 	}
 
 	public void addError(String paramName, String errorMessage) {

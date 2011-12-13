@@ -39,14 +39,12 @@ public class FormConstructor {
 		if (formTag.getAction() != null) beginForm.append(" action=\"" + formTag.getAction() + "\">");
 		else if (formAction != null) beginForm.append(" action=\"" + formAction + "\">");
 		else beginForm.append(">");
-		logger.info("action: " + formAction);
-		beginForm.append("<fieldset>").append("\n").append("<legend>").append(formTag.getLegend()).append("</legend>");
 
 		return beginForm.toString();
 	}
 
-	protected String getEndForm() {
-		return "</fieldset></form>\n</div>";
+    protected String getEndForm() {
+		return "</form>\n</div>";
 	}
 
 	protected String getHiddenMethod() {
@@ -120,6 +118,7 @@ public class FormConstructor {
 
 		StringBuffer formHtml = new StringBuffer();
 		if (simpleForm != null && simpleForm.hasError()) formHtml.append(getError());
+        formHtml.append(getBeginForm());
 		formHtml.append(formContent);
 		formHtml.append(getHiddenMethod());
 		formHtml.append(getSubmitValue());

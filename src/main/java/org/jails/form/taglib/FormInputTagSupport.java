@@ -1,6 +1,7 @@
 package org.jails.form.taglib;
 
 import org.jails.form.FormInput;
+import org.jails.form.FormTag;
 import org.jails.form.constructor.TagInputConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +24,16 @@ public abstract class FormInputTagSupport
 	private static Logger logger = LoggerFactory.getLogger(FormInputTagSupport.class);
 
 	protected String label;
+    protected String labelMarker;
 	protected String name;
 	protected String defaultValue;
 	protected String cssClass;
 	protected String format;
+    protected String style;
 	protected Map<String,String> attributes;
 	protected SimpleFormTag formTag;
 	protected RepeaterTag repeatTag;
+
 
 	public String getLabel() {
 		return label;
@@ -39,7 +43,15 @@ public abstract class FormInputTagSupport
 		this.label = label;
 	}
 
-	public String getName() {
+    public String getLabelMarker() {
+        return labelMarker;
+    }
+
+    public void setLabelMarker(String labelMarker) {
+        this.labelMarker = labelMarker;
+    }
+
+    public String getName() {
 		return name;
 	}
 
@@ -70,6 +82,18 @@ public abstract class FormInputTagSupport
 	public void setFormat(String format) {
 		this.format = format;
 	}
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public boolean isStacked() {
+        return FormTag.STACKED.equals(style);
+    }
 
 	public Map<String, String> getAttributes() {
 		return attributes;
@@ -107,7 +131,7 @@ public abstract class FormInputTagSupport
 
 		logger.info("wrapping input html" + name);
 
-		return constructor.wrapInputHtml(this);
+		return constructor.wrapInputHtml();
 
 	}
 

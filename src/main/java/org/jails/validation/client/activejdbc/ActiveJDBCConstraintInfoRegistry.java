@@ -23,6 +23,7 @@ public class ActiveJDBCConstraintInfoRegistry
 	private static ActiveJDBCConstraintInfoRegistry instance;
 
 	private ActiveJDBCConstraintInfoRegistry() {
+        super();
 		registry = new HashMap<Class<? extends Validator>, ActiveJDBCConstraintInfo>();
 		addClientConstraint(AttributePresenceValidator.class, PositionAbsolute.REQUIRED);
 		addClientConstraint(EmailValidator.class, PositionAbsolute.EMAIL);

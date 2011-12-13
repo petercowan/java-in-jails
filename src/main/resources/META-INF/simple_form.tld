@@ -26,11 +26,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-		<attribute>
-			<name>label</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>action</name>
 			<required>false</required>
@@ -84,6 +84,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -99,6 +104,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -123,6 +133,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -143,6 +158,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -167,6 +187,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>value</name>
 			<required>true</required>
@@ -182,12 +207,46 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+    <tag>
+        <name>radio_group</name>
+        <tag-class>org.jails.form.taglib.RadioGroupTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>
+            A tag to add a radio group to a SimpleForm, must contain radio tags in body.
+        </description>
+        <attribute>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 
 	<tag>
 		<name>radio</name>
@@ -198,7 +257,7 @@
 		</description>
 		<attribute>
 			<name>name</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
@@ -206,6 +265,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>value</name>
 			<required>true</required>
@@ -221,6 +285,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -245,6 +314,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -260,6 +334,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -289,6 +368,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -313,6 +397,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -333,6 +422,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -362,6 +456,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -372,6 +471,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -401,11 +505,21 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -427,12 +541,12 @@
 		</description>
 		<attribute>
 			<name>label</name>
-			<required>false</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
 			<name>value</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
@@ -459,6 +573,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>labelMarker</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>defaultValue</name>
 			<required>false</required>
@@ -469,6 +588,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>
@@ -488,6 +612,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
 		<attribute>
 			<name>attributes</name>
 			<required>false</required>

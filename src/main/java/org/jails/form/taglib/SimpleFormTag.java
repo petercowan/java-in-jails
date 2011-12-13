@@ -32,14 +32,11 @@ public class SimpleFormTag
 	protected Mapper mapper = new SimpleMapper();
 	protected PropertiesWrapper propertiesWrapper;
 
-	public static String STACKED = "stacked";
-	public static String SIDE_BY_SIDE = "side";
-
+    protected String labelMarker = ":";
 	protected String name;
 	protected String action;
 	protected String method;
 	protected String style = STACKED;
-	protected String legend;
 	protected String errorMessage;
 
 	protected Map<Integer, List<String>> elements = new LinkedHashMap<Integer, List<String>>();
@@ -64,14 +61,6 @@ public class SimpleFormTag
 
 	public String getName() {
 		return name;
-	}
-
-	public void setLegend(String legend) {
-		this.legend = legend;
-	}
-
-	public String getLegend() {
-		return legend;
 	}
 
 	public void setAction(String action) {
@@ -135,7 +124,15 @@ public class SimpleFormTag
 		return labels;
 	}
 
-	public String[] getInputValue(ServletRequest request, String elementName, Integer repeaterIndex) {
+    public String getLabelMarker() {
+        return labelMarker;
+    }
+
+    public void setLabelMarker(String labelMarker) {
+        this.labelMarker = labelMarker;
+    }
+
+    public String[] getInputValue(ServletRequest request, String elementName, Integer repeaterIndex) {
 		if (request.getParameter(elementName) != null) {
 			return new String[]{request.getParameter(elementName)};
 		} else if (propertiesWrapper != null) {
@@ -152,10 +149,10 @@ public class SimpleFormTag
 		try {
 			// Get the current bodyContent for this tag and
 			//wrap with form content
-			JspWriter jspOut = pageContext.getOut();
+			JspWriter out = pageContext.getOut();
 			if (bodyContent != null && !Strings.isEmpty(bodyContent.getString())) {
 				FormConstructor formConstructor = new FormConstructor(this);
-				formConstructor.wrapFormContent(bodyContent.getString());
+				out.print(formConstructor.wrapFormContent(bodyContent.getString()));
 			} else {
 				generateForm();
 			}

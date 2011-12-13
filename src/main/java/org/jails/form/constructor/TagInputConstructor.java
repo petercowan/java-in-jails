@@ -18,13 +18,13 @@ public abstract class TagInputConstructor<T extends FormInput> extends InputCons
 	public abstract String getInputHtml();
 
 	@Override
-	public String wrapInputHtml(FormInput tag, String inputTagHtml) {
+	public String wrapInputHtml(String inputTagHtml) {
 		return (inputTagHtml == null)
-				? super.wrapInputHtml(tag, getInputHtml())
-				: super.wrapInputHtml(tag, getInputHtml() + inputTagHtml);
+				? super.wrapInputHtml(getInputHtml())
+				: super.wrapInputHtml(getInputHtml() + inputTagHtml);
 	}
 
-	public String wrapInputHtml(FormInput tag) {
-		return super.wrapInputHtml(tag, getInputHtml());
+	public String wrapInputHtml() {
+		return super.wrapInputHtml(getInputHtml());
 	}
 }

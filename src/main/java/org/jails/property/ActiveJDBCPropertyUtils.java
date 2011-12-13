@@ -1,11 +1,14 @@
 package org.jails.property;
 
 import org.jails.util.Strings;
+import org.javalite.activejdbc.ColumnMetadata;
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class ActiveJDBCPropertyUtils implements PropertyUtils<Model> {
 	private static Logger logger = LoggerFactory.getLogger(ActiveJDBCPropertyUtils.class);
@@ -29,7 +32,13 @@ public class ActiveJDBCPropertyUtils implements PropertyUtils<Model> {
 	}
 
 	public Class<?> getPropertyType(Class<? extends Model> classType, String propertyName) {
-		//todo - getType
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		Map<String,ColumnMetadata> metadataMap = Registry.instance().getMetaModel(classType).getColumnMetadata();
+		String columnType = metadataMap.get(propertyName.toLowerCase()).getTypeName();
+		try {
+			//todo - get java Class<?> Type
+			return Class.forName(columnType);
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
 	}
 }

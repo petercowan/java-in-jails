@@ -46,12 +46,14 @@ public class SelectOptionTag
 
 		try {
 
+            String optionValue = ((value == null) ? label : value);
+            //todo - factor out display code
 			String[] fieldValues = selectInput.getBodyInputConstructor(formTag, repeatTag, request).getFieldValues();
 
 			StringBuffer optionHtml = new StringBuffer();
-			optionHtml.append("<option value=\"" + value + "\"");
+			optionHtml.append("<option value=\"" + optionValue + "\"");
 			for (String fieldValue : fieldValues) {
-				if (value.equals(fieldValue)) optionHtml.append(" SELECTED");
+				if (optionValue.equals(fieldValue)) optionHtml.append(" SELECTED");
 				break;
 			}
 			optionHtml.append("> " + label + "</option>");

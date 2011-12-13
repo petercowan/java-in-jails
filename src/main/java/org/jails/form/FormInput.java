@@ -20,6 +20,10 @@ public interface FormInput {
 
 	public String getLabel();
 
+    public String getLabelMarker();
+
+    public void setLabelMarker(String labelMarker);
+
 	public String getName();
 
 	public String getDefaultValue();
@@ -29,4 +33,10 @@ public interface FormInput {
 	public String getFormat();
 
 	public Map<String,String> getAttributes();
+
+    public void setStyle(String style);
+
+    public String getStyle();
+
+    public boolean isStacked();
 }

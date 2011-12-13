@@ -2,6 +2,7 @@ package org.jails.validation.client;
 
 import org.jails.property.ReflectionUtil;
 import org.jails.property.parser.PropertyParser;
+import org.jails.property.parser.SimplePropertyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintI
 	protected PropertyParser propertyParser;
 
 	protected ClientConstraintInfoRegistry() {
+        propertyParser = new SimplePropertyParser();
 	}
 
 	public void addClientConstraint(T constraint,

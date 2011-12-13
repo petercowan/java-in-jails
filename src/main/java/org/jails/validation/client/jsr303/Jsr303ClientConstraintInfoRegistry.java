@@ -39,6 +39,7 @@ public class Jsr303ClientConstraintInfoRegistry
 	private static Jsr303ClientConstraintInfoRegistry instance;
 
 	private Jsr303ClientConstraintInfoRegistry() {
+        super();
 		registry = new HashMap<Class<? extends Annotation>, Jsr303ClientConstraintInfo>();
 		addClientConstraint(NotNull.class, PositionAbsolute.REQUIRED);
 		addClientConstraint(NotEmpty.class, PositionAbsolute.REQUIRED);
@@ -107,12 +108,16 @@ public class Jsr303ClientConstraintInfoRegistry
 
 	protected List<Jsr303ClientConstraintInfo> _getClientConstraints(Class classType, String property) {
 		List<Jsr303ClientConstraintInfo> clientConstriants = new ArrayList<Jsr303ClientConstraintInfo>();
+        logger.info("getConstraints()");
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
 				.getInstance().getConstraints(classType, property);
+        logger.info("findConstraints()");
 		Set<ConstraintDescriptor<?>> classConstraints = BeanConstraints
 				.getInstance().findConstraints(classType, property);
 
+        logger.info("add constraints");
 		clientConstriants.addAll(getClientConstraints(constraints));
+        logger.info("add class constraint");
 		clientConstriants.addAll(getClientConstraints(classConstraints));
 		return clientConstriants;
 	}

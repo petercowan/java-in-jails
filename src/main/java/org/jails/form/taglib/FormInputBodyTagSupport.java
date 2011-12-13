@@ -1,6 +1,7 @@
 package org.jails.form.taglib;
 
 import org.jails.form.FormInput;
+import org.jails.form.FormTag;
 import org.jails.form.constructor.BodyTagInputConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,12 @@ public abstract class FormInputBodyTagSupport
 	private static Logger logger = LoggerFactory.getLogger(FormInputBodyTagSupport.class);
 
 	protected String label;
+    protected String labelMarker;
 	protected String name;
 	protected String defaultValue;
 	protected String cssClass;
 	protected String format;
+    protected String style;
 	protected Map<String,String> attributes;
 	protected SimpleFormTag formTag;
 	protected RepeaterTag repeatTag;
@@ -40,7 +43,15 @@ public abstract class FormInputBodyTagSupport
 		this.label = label;
 	}
 
-	public String getName() {
+    public String getLabelMarker() {
+        return labelMarker;
+    }
+
+    public void setLabelMarker(String labelMarker) {
+        this.labelMarker = labelMarker;
+    }
+
+    public String getName() {
 		return name;
 	}
 
@@ -72,7 +83,19 @@ public abstract class FormInputBodyTagSupport
 		this.format = format;
 	}
 
-	public Map<String, String> getAttributes() {
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public boolean isStacked() {
+        return FormTag.STACKED.equals(style);
+    }
+
+    public Map<String, String> getAttributes() {
 		return attributes;
 	}
 
@@ -109,7 +132,7 @@ public abstract class FormInputBodyTagSupport
 		BodyTagInputConstructor constructor = getBodyInputConstructor(formTag, repeatTag, request);
 		if (constructor != null) logger.info(constructor.getClass().toString());
 		String bodyContentString = (bodyContent == null) ? "" : bodyContent.getString();
-		return constructor.wrapInputHtml(this, bodyContentString);
+		return constructor.wrapInputHtml(bodyContentString);
 	}
 
 	protected abstract BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request)

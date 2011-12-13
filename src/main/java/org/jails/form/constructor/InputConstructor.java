@@ -31,225 +31,276 @@ import java.util.List;
  * @param <T>
  */
 public abstract class InputConstructor<T extends FormInput> {
-	protected static Logger logger = LoggerFactory.getLogger(InputConstructor.class);
+    protected static Logger logger = LoggerFactory.getLogger(InputConstructor.class);
 
-	protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
-	protected static SimpleFormatter formatter = new SimpleFormatter();
-	protected static PropertyUtils propertyUtils = new CommonsPropertyUtils();
+    protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
+    protected static SimpleFormatter formatter = new SimpleFormatter();
+    protected static PropertyUtils propertyUtils = new CommonsPropertyUtils();
 
-	protected T tag;
-	protected FormTag formTag;
-	protected SimpleForm simpleForm;
-	protected Repeater repeater;
-	protected String fieldName;
-	protected String[] fieldValues;
-	protected String labelCss;
-	protected String inputId;
-	protected String validation;
+    protected T tag;
+    protected FormTag formTag;
+    protected SimpleForm simpleForm;
+    protected Repeater repeater;
+    protected String fieldName;
+    protected String[] fieldValues;
+    protected String labelCss;
+    protected String inputId;
+    protected String validation;
 
-	public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
-		this.tag = tag;
-		this.formTag = formTag;
-		this.repeater = repeatTag;
-		initFormTag();
-		initFieldName();
-		initCssClass();
-		initFieldValues(request);
-		initInputId();
-		initClientValidation();
-	}
+    public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+        this.tag = tag;
+        this.formTag = formTag;
+        this.repeater = repeatTag;
+        initFormTag();
+        initFieldName();
+        initCssClass();
+        initFieldValues(request);
+        initInputId();
+        initClientValidation();
+    }
 
-	protected void initFormTag() {
-		simpleForm = formTag.getSimpleForm();
-		logger.info("adding element: " + tag.getName() + " of type "
-				+ tag.getClass().getSimpleName() + " to form: " + formTag.getClass().getSimpleName());
-		logger.info("adding to element index: " + getIndex());
-		formTag.addElement(tag.getName(), getIndex());
-		logger.info("setting element label: " + tag.getLabel());
-		formTag.addLabel(tag.getName(), tag.getLabel());
-		logger.info("added element: " + tag.getName());
-	}
+    protected void initFormTag() {
+        simpleForm = formTag.getSimpleForm();
+        logger.info("adding element: " + tag.getName() + " of type "
+                + tag.getClass().getSimpleName() + " to form: " + formTag.getClass().getSimpleName());
+        logger.info("adding to element index: " + getIndex());
+        formTag.addElement(tag.getName(), getIndex());
+        logger.info("setting element label: " + tag.getLabel());
+        formTag.addLabel(tag.getName(), tag.getLabel());
+        logger.info("added element: " + tag.getName());
+    }
 
-	public FormTag getFormTag() {
-		return formTag;
-	}
+    public FormTag getFormTag() {
+        return formTag;
+    }
 
-	protected void initFieldName() {
-		if (repeater != null) {
-			fieldName = simpleFormParams.getFormIndexedParameterName(
-					formTag.getName(), tag.getName(),
-					repeater.getIndex());
-		} else {
-			fieldName = simpleFormParams.getParameterName(formTag.getName(), tag.getName());
-		}
-		logger.info("constructing " + fieldName);
-	}
+    protected void initFieldName() {
+        initFieldName(tag.getName());
+    }
 
-	public String getFieldName() {
-		return fieldName;
-	}
+    protected void initFieldName(String tagName) {
+        if (repeater != null) {
+            fieldName = simpleFormParams.getFormIndexedParameterName(
+                    formTag.getName(), tagName,
+                    repeater.getIndex());
+        } else {
+            fieldName = simpleFormParams.getParameterName(formTag.getName(), tagName);
+        }
+        logger.info("constructing " + fieldName);
+    }
 
-	private int getIndex() {
-		return (repeater != null) ? repeater.getIndex() : 0;
-	}
+    public String getFieldName() {
+        return fieldName;
+    }
 
-	protected void initCssClass() {
-		if (simpleForm != null && simpleForm.hasError()
-				&& simpleForm.fieldHasError(tag.getName(), getIndex())) {
-			labelCss = "error";
-		} else {
-			labelCss = "formField";
-		}
-		logger.info("set css class " + labelCss);
-	}
+    private int getIndex() {
+        return (repeater != null) ? repeater.getIndex() : 0;
+    }
 
-	public String getLabelCss() {
-		return labelCss;
-	}
+    protected void initCssClass() {
+        if (simpleForm != null && simpleForm.hasError()
+                && simpleForm.fieldHasError(tag.getName(), getIndex())) {
+            labelCss = "error";
+        } else {
+            labelCss = "formField";
+        }
+        logger.info("set css class " + labelCss);
+    }
 
-	public String getLabelCssAttr() {
-		return getAttribute("class", labelCss);
-	}
+    public String getLabelCss() {
+        return labelCss;
+    }
 
-	/**
-	 * The fieldValue is decided in order of precedence:
-	 * 1. from the request
-	 * 2. from an object bound to the form
-	 * 3. from the default value specified from the form tag
-	 * 4. empty
-	 *
-	 * @param request
-	 */
-	protected void initFieldValues(ServletRequest request) {
+    public String getLabelCssAttr() {
+        return getAttribute("class", labelCss);
+    }
 
-		fieldValues = formTag.getInputValue(request, fieldName, (repeater == null) ? null : repeater.getIndex());
-		if (fieldValues == null) {
-			if (tag.getDefaultValue() != null) fieldValues = new String[]{tag.getDefaultValue()};
-			else fieldValues = new String[]{};
-		}
-		if (tag.getFormat() != null) {
-			for (int i = 0; i < fieldValues.length; i++) {
-				String fieldValue = fieldValues[i];
-				fieldValues[i] = formatter.format(fieldValue, tag.getFormat());
-			}
-		}
-		logger.info("fieldValues initialized");
-	}
+    /**
+     * The fieldValue is decided in order of precedence:
+     * 1. from the request
+     * 2. from an object bound to the form
+     * 3. from the default value specified from the form tag
+     * 4. empty
+     *
+     * @param request
+     */
+    protected void initFieldValues(ServletRequest request) {
 
-	public String[] getFieldValues() {
-		return fieldValues;
-	}
+        fieldValues = formTag.getInputValue(request, fieldName, (repeater == null) ? null : repeater.getIndex());
+        if (fieldValues == null) {
+            if (tag.getDefaultValue() != null) fieldValues = new String[]{tag.getDefaultValue()};
+            else fieldValues = new String[]{};
+        }
+        if (tag.getFormat() != null) {
+            for (int i = 0; i < fieldValues.length; i++) {
+                String fieldValue = fieldValues[i];
+                fieldValues[i] = formatter.format(fieldValue, tag.getFormat());
+            }
+        }
+        logger.info("fieldValues initialized");
+    }
 
-	public String getFieldValue(int index) {
-		String value = (fieldValues != null && fieldValues.length > 0 && fieldValues[index] != null)
-				? fieldValues[index] : "";
+    public String[] getFieldValues() {
+        return fieldValues;
+    }
 
-		return value;
-	}
+    public String getFieldValue(int index) {
+        String value = (fieldValues != null && fieldValues.length > 0 && fieldValues[index] != null)
+                ? fieldValues[index] : "";
 
-	protected void initClientValidation() {
-		if (simpleForm != null && simpleForm.getClassType() != null) {
-			StringBuffer validationBuffer = null;
+        return value;
+    }
 
-			ClientConstraintInfoRegistry constraintInfoRegistry = Jsr303ClientConstraintInfoRegistry.getInstance();
-			Class classType = simpleForm.getClassType();
-			String property = tag.getName();
-			logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
-			if (tag instanceof TextTag || tag instanceof PasswordTag || tag instanceof TextAreaTag
-					|| tag instanceof HiddenTag) {
+    protected void initClientValidation() {
+        if (simpleForm != null && simpleForm.getClassType() != null) {
+            StringBuffer validationBuffer = null;
 
-				List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
-						.getClientConstraints(classType, property);
+            ClientConstraintInfoRegistry constraintInfoRegistry = Jsr303ClientConstraintInfoRegistry.getInstance();
+            Class classType = simpleForm.getClassType();
+            String property = tag.getName();
+            logger.warn("Setting ClientConstraints for " + classType.getSimpleName() + ": " + property);
+            if (tag instanceof TextTag || tag instanceof PasswordTag || tag instanceof TextAreaTag
+                    || tag instanceof HiddenTag) {
 
-				Class propertyType = propertyUtils.getPropertyType(classType, property);
-				if (ReflectionUtil.isDecimal(propertyType)) {
-					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
-				} else if (ReflectionUtil.isInteger(propertyType)) {
-					clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
-				}
-				logger.info("Getting Validation script");
-				validation = constraintInfoRegistry.getValidationConstructor()
-						.getValidationHtml(clientConstraints, classType, property);
-				logger.info("clientValidation: " + validation);
-			} else {
-				if (formTag.getSimpleForm().isFieldRequired(tag.getName())) {
-					validation = constraintInfoRegistry
-							.getValidationConstructor().getRequiredHtml(classType, property);//" class=\"validate[required]\"";
-				}
-			}
-		}
-	}
+                logger.warn("Loading ClientConstraints from " + constraintInfoRegistry);
+                List<ClientConstraintInfo> clientConstraints = constraintInfoRegistry
+                        .getClientConstraints(classType, property);
 
-	public String getClientValidationAttr() {
-		return (validation != null)
-				? validation
-				: "";
-	}
+                if (clientConstraints != null) {
+                    Class propertyType = propertyUtils.getPropertyType(classType, property);
+                    if (ReflectionUtil.isDecimal(propertyType)) {
+                        clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsDecimal.class));
+                    } else if (ReflectionUtil.isInteger(propertyType)) {
+                        clientConstraints.add(constraintInfoRegistry.getClientConstraint(IsInteger.class));
+                    }
+                    logger.info("Getting Validation script");
+                    validation = constraintInfoRegistry.getValidationConstructor()
+                            .getValidationHtml(clientConstraints, classType, property);
+                    logger.info("clientValidation: " + validation);
+                }
+            } else {
+                if (formTag.getSimpleForm().isFieldRequired(tag.getName())) {
+                    validation = constraintInfoRegistry
+                            .getValidationConstructor().getRequiredHtml(classType, property);//" class=\"validate[required]\"";
+                }
+            }
+        }
+    }
 
-	protected void initInputId() {
-		inputId = (fieldName != null) ? fieldName.replaceAll("[^a-zA-Z0-9]+", "_") : "";
-		logger.info("inputId init: " + inputId);
-	}
+    public String getClientValidationAttr() {
+        return (validation != null)
+                ? validation
+                : "";
+    }
 
-	public String getInputId() {
-		return inputId;
-	}
+    protected void initInputId() {
+        inputId = (fieldName != null) ? fieldName.replaceAll("[^a-zA-Z0-9]+", "_") : "";
+        logger.info("inputId init: " + inputId);
+    }
 
-	public String getAttribute(String attrName) {
-		String attr = (tag.getAttributes() != null) ? tag.getAttributes().get(attrName) : null;
-		if (attr != null) logger.info("found attribute " + attrName + " with value " + attr);
-		return attr;
-	}
+    public String getInputId() {
+        return inputId;
+    }
 
-	public String getAttribute(String attrName, String attrValue) {
-		if (getAttribute(attrName) != null) attrValue = getAttribute(attrName);
-		return (attrValue != null) ? " " + attrName + "=\"" + attrValue + "\"" : "";
-	}
+    public String getAttribute(String attrName) {
+        String attr = (tag.getAttributes() != null) ? tag.getAttributes().get(attrName) : null;
+        if (attr != null) logger.info("found attribute " + attrName + " with value " + attr);
+        return attr;
+    }
 
-	public String getAttributes() {
-		StringBuffer attrString = new StringBuffer();
-		for (String attrName : tag.getAttributes().keySet()) {
-			getAttribute(attrName, tag.getAttributes().get(attrName));
-		}
-		return attrString.toString();
-	}
+    public String getAttribute(String attrName, String attrValue) {
+        if (getAttribute(attrName) != null) attrValue = getAttribute(attrName);
+        return (attrValue != null) ? " " + attrName + "=\"" + attrValue + "\"" : "";
+    }
 
-	public String getFieldNameAttr() {
-		return getAttribute("name", fieldName);
-	}
+    public String getAttributes() {
+        StringBuffer attrString = new StringBuffer();
+        for (String attrName : tag.getAttributes().keySet()) {
+            getAttribute(attrName, tag.getAttributes().get(attrName));
+        }
+        return attrString.toString();
+    }
 
-	public String getInputIdAttr() {
-		return getAttribute("id", inputId);
-	}
+    public String getFieldNameAttr() {
+        return getAttribute("name", fieldName);
+    }
 
-	public String getTypeAttr(String type) {
-		return getAttribute("type", type);
-	}
+    public String getInputIdAttr() {
+        return getAttribute("id", inputId);
+    }
 
-	public String getValueAttr(String value) {
-		return getAttribute("value", value);
-	}
+    public String getTypeAttr(String type) {
+        return getAttribute("type", type);
+    }
 
-	public String wrapInputHtml(FormInput tag, String inputTagHtml) {
-		StringBuffer tagHtml = new StringBuffer();
+    public String getValueAttr(String value) {
+        return getAttribute("value", value);
+    }
 
-		tagHtml.append("<div" + getLabelCssAttr() + ">\n\t");
+    public String wrapInputHtml(String inputTagHtml) {
+        StringBuffer tagHtml = new StringBuffer();
 
-		tagHtml.append("<label" + getAttribute("for", tag.getName()) + ">");
-		tagHtml.append(tag.getLabel()).append(":");
-		tagHtml.append("</label>\n\t");
+        tagHtml.append(getOpeningCss());
 
-		if (getFormTag().isStacked()) tagHtml.append("<br />");
+        tagHtml.append(getLabelHtml());
 
-		tagHtml.append(inputTagHtml).append("\n");
+        tagHtml.append(getLineBreakHtml());
 
-		if (formTag.getSimpleForm() != null
-				&& formTag.getSimpleForm().isFieldRequired(tag.getName())) {
-			tagHtml.append(" *");
-		}
-		tagHtml.append("<br />").append("\n");
-		tagHtml.append("</div>\n");
+        tagHtml.append(inputTagHtml).append("\n");
 
-		return tagHtml.toString();
-	}
+        tagHtml.append(getRequiredMarker());
+
+        tagHtml.append(getClosingCss());
+
+        return tagHtml.toString();
+    }
+
+    public String getOpeningCss() {
+        return "<div" + getLabelCssAttr() + ">\n\t";
+    }
+
+    public String getClosingCss() {
+        return "</div>\n";
+    }
+
+    public String getLabelHtml() {
+        return getLabelHtml(tag.getLabel());
+    }
+
+    protected String getLabelHtml(String label) {
+        StringBuffer labelHtml = new StringBuffer();
+
+        labelHtml.append("<label" + getAttribute("for", tag.getName()) + ">");
+        labelHtml.append(label).append(getLabelMarkerHtml());
+        labelHtml.append("</label>\n\t");
+
+        return labelHtml.toString();
+    }
+
+    private String getLabelMarkerHtml() {
+        return (tag.getLabelMarker() != null) ? tag.getLabelMarker() : (formTag.getLabelMarker());
+    }
+
+    public String getRequiredMarker() {
+        StringBuffer tagHtml = new StringBuffer();
+
+        if (formTag.getSimpleForm() != null
+                && formTag.getSimpleForm().isFieldRequired(tag.getName())) {
+            tagHtml.append(" *");
+        }
+
+        return tagHtml.toString();
+    }
+
+
+    public String getLineBreakHtml() {
+        StringBuffer lineBreakHtml = new StringBuffer();
+
+        if (tag.isStacked() ||
+                (getFormTag().isStacked() && !FormTag.SIDE_BY_SIDE.equals(tag.getStyle()))) {
+            lineBreakHtml.append("<br />");
+        }
+
+        return lineBreakHtml.toString();
+    }
 }

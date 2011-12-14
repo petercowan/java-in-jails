@@ -4,12 +4,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.jails.demo.controller.SimpleFormRouter;
 import org.jails.property.IdentifyBy;
 import org.jails.property.Identity;
-import org.jails.property.ReflectionUtil;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
 import org.jails.util.Strings;
-import org.jails.validation.constraint.BeanConstraints;
-import org.jails.validation.constraint.RequiredChecks;
+import org.jails.validation.client.jsr303.Jsr303ClientConstraintInfoRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class AbstractFormBuilder<T> extends SimpleForm<T> {
 	private static Logger logger = LoggerFactory.getLogger(AbstractFormBuilder.class);
@@ -148,41 +145,11 @@ public class AbstractFormBuilder<T> extends SimpleForm<T> {
 		return repeatCount > 0;
 	}
 
-	//todo - should paramName take full parameter, or just attribute name? (formName.field vs field)
 	public boolean isFieldRequired(String paramName) {
-		if (propertyParser.hasNestedProperty(paramName)) {
-
-			Class nestedClass = ReflectionUtil.getPropertyType(classType, paramName);
-			String nestedParam = (paramName.lastIndexOf(".") > 0)
-					? paramName.substring(paramName.lastIndexOf(".") + 1)
-					: paramName;
-
-			return isFieldRequired(nestedClass, nestedParam);
-		} else {
-			return isFieldRequired(classType, paramName);
-		}
+        return Jsr303ClientConstraintInfoRegistry.getInstance().isRequired(classType, paramName);
 	}
 
-	protected boolean isFieldRequired(Class type, String paramName) {
-		logger.info("isFieldRequired? " + paramName + " of " + type);
-
-        //todo - use ClientConstraint registry to determine if required by annotation type
-		Set<Class<?>> constraints = BeanConstraints.getInstance()
-				.getConstraintGroups(type, paramName);
-		if (constraints != null) {
-			for (Class<?> group : constraints) {
-				logger.trace("Checking group " + group);
-				logger.trace("Required group " + RequiredChecks.class);
-				if (RequiredChecks.class.equals(group)) {
-					logger.debug(paramName + " isRequired");
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	protected Map<String, List<String>> getErrorFieldMap(int index) {
+    protected Map<String, List<String>> getErrorFieldMap(int index) {
 		logger.info("Getting error map " + index + " of " + repeatCount);
 		if (index <= repeatCount && errorFieldMaps != null) {
 			Map<String, List<String>> errorFieldMap = errorFieldMaps.get(index);

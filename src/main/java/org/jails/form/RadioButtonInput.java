@@ -1,5 +1,7 @@
 package org.jails.form;
 
+import org.jails.form.taglib.RadioGroupTag;
+
 public interface RadioButtonInput extends FormInput {
 	public String getValue();
 
@@ -13,4 +15,5 @@ public interface RadioButtonInput extends FormInput {
 
 	public String getTabIndex();
 
+    public RadioGroupTag getRadioGroupTag();
 }

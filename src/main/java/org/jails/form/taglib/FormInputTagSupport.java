@@ -25,6 +25,7 @@ public abstract class FormInputTagSupport
 
 	protected String label;
     protected String labelMarker;
+    protected String displayLabel;
 	protected String name;
 	protected String defaultValue;
 	protected String cssClass;
@@ -42,6 +43,14 @@ public abstract class FormInputTagSupport
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+    public String getDisplayLabel() {
+        return displayLabel;
+    }
+
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
+    }
 
     public String getLabelMarker() {
         return labelMarker;

@@ -3,22 +3,15 @@ package org.jails.property;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
-import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ReflectionUtil {
 	private static Logger logger = LoggerFactory.getLogger(ReflectionUtil.class);
@@ -86,113 +79,7 @@ public class ReflectionUtil {
 		return ids;
 	}
 
-	public static Map<String, Method> getGetterMethods(Class classType) {
-		Map<String, Method> getters = new HashMap<String, Method>();
-
-		Method[] methods = classType.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
-			if (method.getParameterTypes() == null || method.getParameterTypes().length == 0
-					&& !method.getReturnType().equals(Void.TYPE)) {
-				if ((method.getName().startsWith("get") || method.getName().startsWith("is"))
-						&& !"getClass".equals(method.getName())) {
-					String property = (method.getName().startsWith("get"))
-							? Strings.initLowercase(method.getName().substring(3))
-							: Strings.initLowercase(method.getName().substring(2));
-					getters.put(property, method);
-				}
-			}
-		}
-		return getters;
-	}
-
-	public static Map<String, Method> getSetterMethods(Class classType) {
-		Map<String, Method> setters = new HashMap<String, Method>();
-
-		Method[] methods = classType.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
-			if (method.getParameterTypes() != null && method.getParameterTypes().length == 1
-					&& method.getReturnType().equals(Void.TYPE)) {
-				if (method.getName().startsWith("set")) {
-					String property = Strings.initLowercase(method.getName().substring(3));
-					setters.put(property, method);
-				}
-			}
-		}
-		return setters;
-	}
-
-	public static Class getGetterMethodReturnType(Class classType, String propertyName) {
-		try {
-			Method getter = classType.getMethod("get" + Strings.initCaps(propertyName), null);
-			return (getter == null) ? Void.TYPE : getter.getReturnType();
-		} catch (NoSuchMethodException e) {
-			logger.warn(e.getMessage());
-			return Void.TYPE;
-		}
-	}
-
-	public static Map<String, Object> getProperties(Object object) {
-		Map<String, Object> propertyMap = getFields(object);
-		//getters take precedence in case of any name collisions
-		propertyMap.putAll(getGetters(object));
-		return propertyMap;
-	}
-
-	public static Map<String, Object> getGetters(Object object) {
-		Map<String, Object> result = new HashMap<String, Object>();
-		BeanInfo info;
-		try {
-			info = Introspector.getBeanInfo(object.getClass());
-			for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-				Method reader = pd.getReadMethod();
-				if (reader != null) {
-					String name = pd.getName();
-					if (!"class".equals(name)) {
-						try {
-							Object value = reader.invoke(object);
-							result.put(name, value);
-						} catch (Exception e) {
-							//you can choose to do something here
-						}
-					}
-				}
-			}
-		} catch (IntrospectionException e) {
-			//you can choose to do something here
-		} finally {
-			return result;
-		}
-	}
-
-	public static Map<String, Object> getPublicFields(Object object) {
-		return getFields(object, object.getClass(), true);
-	}
-
-	public static Map<String, Object> getFields(Object object) {
-		return getFields(object, object.getClass(), false);
-	}
-
-	private static Map<String, Object> getFields(Object object, Class<?> classType, boolean onlyPublic) {
-		Map<String, Object> result = new HashMap<String, Object>();
-
-		Class superClass = classType.getSuperclass();
-		if (superClass != null) result.putAll(getFields(object, superClass, onlyPublic));
-
-		//get public fields only
-		Field[] fields = (onlyPublic) ? classType.getFields() : classType.getDeclaredFields();
-		for (Field field : fields) {
-			try {
-				result.put(field.getName(), field.get(object));
-			} catch (IllegalAccessException e) {
-				//you can choose to do something here
-			}
-		}
-		return result;
-	}
-
-	public static boolean isDecimal(Class<?> type) {
+    public static boolean isDecimal(Class<?> type) {
 		logger.trace("isDecimal type: " + type.getName());
 		boolean isDecimal = type.equals(Float.class) || type.equals(float.class)
 				|| type.equals(Double.class) || type.equals(double.class)
@@ -212,46 +99,4 @@ public class ReflectionUtil {
 		return isInteger;
 	}
 
-
-	private static Class _getPropertyType(Class classType, String property) {
-		logger.warn("classType: " + classType + ", property: " + property);
-
-		try {
-			Class propertyType = null;
-			PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(classType);
-			if (pds != null) {
-				logger.warn("looping through descriptors: " + pds.length);
-				PropertyDescriptor descriptor;
-				for (int i = 0; i < pds.length; i++) {
-					if (property.equals(pds[i].getName())) {
-						descriptor = pds[i];
-						propertyType = descriptor.getPropertyType();
-						break;
-					}
-				}
-			}
-			logger.warn("Property: " + property + ". Class: " + propertyType);
-			return propertyType;
-		} catch (Exception e) {
-			logger.warn(Strings.getStackTrace(e));
-			return null;
-		}
-	}
-
-	public static Class getPropertyType(Class classType, String property) {
-		if (propertyParser.hasNestedProperty(property)) {
-			Class nestedClass = classType;
-			String nestedParam = property;
-			while (propertyParser.hasNestedProperty(nestedParam)) {
-				String rootParam = propertyParser.getRootProperty(nestedParam);
-				logger.debug("rootParam: " + rootParam);
-				nestedClass = _getPropertyType(nestedClass, rootParam);
-				nestedParam = propertyParser.getNestedProperty(nestedParam);
-				logger.debug("nestedClass: " + nestedClass + ", nestedParam: " + nestedParam);
-			}
-			return nestedClass;
-		} else {
-			return _getPropertyType(classType, property);
-		}
-	}
 }

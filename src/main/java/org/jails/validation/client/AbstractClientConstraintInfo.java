@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public abstract class AbstractClientConstraintInfo<T,U>
-		implements ClientConstraintInfo<T,U> {
+public abstract class AbstractClientConstraintInfo<T,V>
+		implements ClientConstraintInfo<T,V> {
 	private static Logger logger = LoggerFactory.getLogger(Jsr303ClientConstraintInfo.class);
 
 	protected T constraint;

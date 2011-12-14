@@ -14,6 +14,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class RadioButtonTag
 		extends FormInputTagSupport
 		implements RadioButtonInput {
+    protected static Logger logger = LoggerFactory.getLogger(RadioButtonTag.class);
 
 	private String value;
 	private String checked;
@@ -44,7 +45,9 @@ public class RadioButtonTag
 		return tabIndex;
 	}
 
-    private static Logger logger = LoggerFactory.getLogger(RadioButtonTag.class);
+    public RadioGroupTag getRadioGroupTag() {
+        return radioGroupTag;
+    }
 
     @Override
     public int doStartTag() throws JspException {
@@ -52,11 +55,15 @@ public class RadioButtonTag
         if (radioGroupTag == null) {
             throw new JspTagException("A RadioButtonTag must be nested within a RadioGroupTag.");
         }
+        logger.info("adding button to radioGroupTag");
+        radioGroupTag.addButton(this);
         return super.doStartTag();
     }
 
     @Override
 	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+        logger.info("setting radioGroupTag in RadioButtonConstructor: " + radioGroupTag);
+
 		return new RadioButtonConstructor(this, radioGroupTag, formTag, repeatTag, request);
 	}
 }

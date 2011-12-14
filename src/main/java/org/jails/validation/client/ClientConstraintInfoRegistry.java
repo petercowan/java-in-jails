@@ -1,24 +1,30 @@
 package org.jails.validation.client;
 
-import org.jails.property.ReflectionUtil;
+import org.jails.property.CommonsPropertyUtils;
+import org.jails.property.PropertyUtils;
 import org.jails.property.parser.PropertyParser;
 import org.jails.property.parser.SimplePropertyParser;
+import org.jails.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintInfo> {
+public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintInfo<T,V>, V> {
 	private static Logger logger = LoggerFactory.getLogger(ClientConstraintInfoRegistry.class);
 
 	private static ClientConstraintInfoRegistry instance;
 	protected Map<T, U> registry;
+    protected Set<T> requiredConstraints;
 	protected ClientValidationConstructor validationConstructor;
 	protected PropertyParser propertyParser;
+    protected PropertyUtils propertyUtils;
 
 	protected ClientConstraintInfoRegistry() {
         propertyParser = new SimplePropertyParser();
+        propertyUtils = new CommonsPropertyUtils();
 	}
 
 	public void addClientConstraint(T constraint,
@@ -43,36 +49,56 @@ public abstract class ClientConstraintInfoRegistry<T,U extends ClientConstraintI
 
 	public List<String> getClientValidations(Class classType, String property) {
 		if (propertyParser.hasNestedProperty(property)) {
-			Class nestedClass = ReflectionUtil.getPropertyType(classType, property);
-			String nestedProperty = (property.lastIndexOf(".") > 0)
-					? property.substring(property.lastIndexOf(".") + 1)
-					: property;
+            Tuple<Class<?>, String> tuple = propertyUtils.getNestedPropertyType(classType, property);
+            Class<?> nestedClass = tuple.get0();
+			String nestedProperty = tuple.get1();
 
-			return _getClientValidations(nestedClass, nestedProperty);
+			return getValidations(nestedClass, nestedProperty);
 		} else {
-			return _getClientValidations(classType, property);
+			return getValidations(classType, property);
 		}
 	}
 
-	protected abstract List<String> _getClientValidations(Class classType, String property);
+	protected abstract List<String> getValidations(Class classType, String property);
 
 	public List<U> getClientConstraints(Class classType, String property) {
 		if (propertyParser.hasNestedProperty(property)) {
-			Class nestedClass = ReflectionUtil.getPropertyType(classType, property);
-			String nestedProperty = (property.lastIndexOf(".") > 0)
-					? property.substring(property.lastIndexOf(".") + 1)
-					: property;
+            Tuple<Class<?>, String> tuple = propertyUtils.getNestedPropertyType(classType, property);
+            Class<?> nestedClass = tuple.get0();
+			String nestedProperty = tuple.get1();
 
-			return _getClientConstraints(nestedClass, nestedProperty);
+			return getConstraints(nestedClass, nestedProperty);
 		} else {
-			return _getClientConstraints(classType, property);
+			return getConstraints(classType, property);
 		}
 	}
 
-	protected abstract List<U> _getClientConstraints(Class classType, String property);
+	protected abstract List<U> getConstraints(Class classType, String property);
 
 	public ClientValidationConstructor getValidationConstructor() {
 		return validationConstructor;
 	}
 
+    public boolean isRequired(Class classType, String property) {
+        if (propertyParser.hasNestedProperty(property)) {
+            Tuple<Class<?>, String> tuple = propertyUtils.getNestedPropertyType(classType, property);
+            Class<?> nestedClass = tuple.get0();
+			String nestedProperty = tuple.get1();
+
+            return isPropertyRequired(nestedClass, nestedProperty);
+        } else {
+            return isPropertyRequired(classType, property);
+        }
+    }
+
+    protected boolean isPropertyRequired(Class classType, String property) {
+        List<U> constraintInfoList = getClientConstraints(classType, property);
+
+        for (U constraintInfo: constraintInfoList) {
+            if (requiredConstraints.contains(constraintInfo.getConstraint())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

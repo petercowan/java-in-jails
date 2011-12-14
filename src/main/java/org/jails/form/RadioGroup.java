@@ -11,15 +11,19 @@ public interface RadioGroup {
 
     public void setLabel(String name);
 
+    public String getDisplayLabel();
+
+    public void setDisplayLabel(String displayLabel);
+
     public String getLabelMarker();
 
     public void setLabelMarker(String labelMarker);
 
-    public Map<String, RadioButtonInput> getButtons();
+    public Map<RadioButtonInput, Integer> getButtons();
 
-    public void setButtons(Map<String, RadioButtonInput> buttons);
+    public void setButtons(Map<RadioButtonInput, Integer> buttons);
 
-    public void addButtons(RadioButtonInput button);
+    public void addButton(RadioButtonInput button);
 
     public String getStyle();
 

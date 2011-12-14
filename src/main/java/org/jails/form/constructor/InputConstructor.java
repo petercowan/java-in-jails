@@ -47,10 +47,17 @@ public abstract class InputConstructor<T extends FormInput> {
     protected String inputId;
     protected String validation;
 
+    protected InputConstructor() {
+    }
+
     public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
         this.tag = tag;
         this.formTag = formTag;
         this.repeater = repeatTag;
+        init(request);
+    }
+
+    protected void init(ServletRequest request) {
         initFormTag();
         initFieldName();
         initCssClass();
@@ -61,13 +68,8 @@ public abstract class InputConstructor<T extends FormInput> {
 
     protected void initFormTag() {
         simpleForm = formTag.getSimpleForm();
-        logger.info("adding element: " + tag.getName() + " of type "
-                + tag.getClass().getSimpleName() + " to form: " + formTag.getClass().getSimpleName());
-        logger.info("adding to element index: " + getIndex());
         formTag.addElement(tag.getName(), getIndex());
-        logger.info("setting element label: " + tag.getLabel());
         formTag.addLabel(tag.getName(), tag.getLabel());
-        logger.info("added element: " + tag.getName());
     }
 
     public FormTag getFormTag() {
@@ -102,7 +104,7 @@ public abstract class InputConstructor<T extends FormInput> {
                 && simpleForm.fieldHasError(tag.getName(), getIndex())) {
             labelCss = "error";
         } else {
-            labelCss = "formField";
+            labelCss = "form_field";
         }
         logger.info("set css class " + labelCss);
     }
@@ -112,7 +114,7 @@ public abstract class InputConstructor<T extends FormInput> {
     }
 
     public String getLabelCssAttr() {
-        return getAttribute("class", labelCss);
+        return getAttribute("class", labelCss) + " " + getAttribute("id", "form_field_" + inputId);
     }
 
     /**
@@ -264,13 +266,14 @@ public abstract class InputConstructor<T extends FormInput> {
     }
 
     public String getLabelHtml() {
-        return getLabelHtml(tag.getLabel());
+        if ("".equals(tag.getDisplayLabel())) return "";
+        return getLabelHtml((tag.getDisplayLabel() != null) ? tag.getDisplayLabel() : tag.getLabel());
     }
 
     protected String getLabelHtml(String label) {
         StringBuffer labelHtml = new StringBuffer();
 
-        labelHtml.append("<label" + getAttribute("for", tag.getName()) + ">");
+        labelHtml.append("<label" + getAttribute("for", tag.getName()) + " id=\"" + inputId + "_label" + "\">");
         labelHtml.append(label).append(getLabelMarkerHtml());
         labelHtml.append("</label>\n\t");
 
@@ -291,7 +294,6 @@ public abstract class InputConstructor<T extends FormInput> {
 
         return tagHtml.toString();
     }
-
 
     public String getLineBreakHtml() {
         StringBuffer lineBreakHtml = new StringBuffer();

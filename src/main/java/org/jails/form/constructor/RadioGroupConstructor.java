@@ -16,18 +16,40 @@ public class RadioGroupConstructor {
     public RadioGroupConstructor(RadioGroup tag, FormTag formTag, Repeater repeater, ServletRequest request) {
         this.tag = tag;
         this.formTag = formTag;
-        this.simpleForm = formTag.getSimpleForm();
         this.repeater = repeater;
+        initFormTag();
+    }
+
+    protected void initFormTag() {
+        simpleForm = formTag.getSimpleForm();
+        formTag.addElement(tag.getName(), getIndex());
+        formTag.addLabel(tag.getName(), tag.getLabel());
     }
 
     public String getOpeningHtml(String inputTagHtml) {
         StringBuffer tagHtml = new StringBuffer();
 
-        tagHtml.append("<div>\n\t");
+        String divCss;
+        if (simpleForm != null && simpleForm.hasError()
+                && simpleForm.fieldHasError(tag.getName(), getIndex())) {
+            divCss = "error";
+        } else {
+            divCss = "form_field";
+        }
 
-        tagHtml.append("<label for=\"" + tag.getName() + "\">");
-        tagHtml.append(tag.getLabel()).append(getLabelMarkerHtml());
-        tagHtml.append("</label>\n\t");
+        String id = formTag.getName() + "_" + tag.getName().replaceAll("[^a-zA-Z0-9]+", "_");
+        tagHtml.append("<div class=\"" + divCss + "\" id=\""
+                + "form_field_" + id + "\">\n\t");
+
+        String label;
+        if ("".equals(tag.getDisplayLabel())) label = "";
+        else label = (tag.getDisplayLabel() != null) ? tag.getDisplayLabel() : tag.getLabel();
+
+        if (!label.equals("")) {
+            tagHtml.append("<label for=\"" + tag.getName() + "\" id=\"" + id + "_label\">");
+            tagHtml.append(label).append(getLabelMarkerHtml());
+            tagHtml.append("</label>\n\t");
+        }
 
         if (tag.isStacked() ||
                 (formTag.isStacked() && !FormTag.SIDE_BY_SIDE.equals(tag.getStyle()))) {
@@ -56,4 +78,9 @@ public class RadioGroupConstructor {
 
         return tagHtml.toString();
     }
+
+    private int getIndex() {
+        return (repeater != null) ? repeater.getIndex() : 0;
+    }
+
 }

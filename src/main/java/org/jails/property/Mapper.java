@@ -273,7 +273,7 @@ public class Mapper {
 				if (value == null) value = propertiesMap.getSelectOtherValue(propertyValueKey);
 
 				//process value based on underlying Object type
-				Class<?> returnType = ReflectionUtil.getGetterMethodReturnType(object.getClass(), propertyName);
+				Class<?> returnType = propertyUtils.getPropertyType(object.getClass(), propertyName);
 				logger.info("returnType: " + returnType);
 				if (ReflectionUtil.isInteger(returnType)) {
 					logger.info("Cleaning int value");
@@ -328,14 +328,14 @@ public class Mapper {
 		return recursiveToMap(object, type + indexStr, cache);
 	}
 
-	protected static Map<String, String[]> recursiveToMap(Object object, String prefix, Set cache) {
+	protected Map<String, String[]> recursiveToMap(Object object, String prefix, Set cache) {
 		if (cache.contains(object)) return Collections.EMPTY_MAP;
 		cache.add(object);
 		prefix = (prefix != null) ? prefix + "." : "";
 
 		Map<String, String[]> beanMap = new TreeMap<String, String[]>();
 
-		Map<String, Object> properties = ReflectionUtil.getProperties(object);
+		Map<String, Object> properties = propertyUtils.getProperties(object);
 		for (String property : properties.keySet()) {
 			Object value = properties.get(property);
 			try {
@@ -357,7 +357,7 @@ public class Mapper {
 		return beanMap;
 	}
 
-	protected static Map<String, String[]> convertAll(Collection<Object> values, String key, Set cache) {
+	protected Map<String, String[]> convertAll(Collection<Object> values, String key, Set cache) {
 		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
 		Object[] valArray = values.toArray();
 		for (int i = 0; i < valArray.length; i++) {
@@ -367,7 +367,7 @@ public class Mapper {
 		return valuesMap;
 	}
 
-	protected static Map<String, String[]> convertMap(Map<Object, Object> values, String key, Set cache) {
+	protected Map<String, String[]> convertMap(Map<Object, Object> values, String key, Set cache) {
 		Map<String, String[]> valuesMap = new HashMap<String, String[]>();
 		for (Object thisKey : values.keySet()) {
 			Object value = values.get(thisKey);
@@ -376,7 +376,7 @@ public class Mapper {
 		return valuesMap;
 	}
 
-	protected static Map<String, String[]> convertObject(Object value, String key, Set cache) {
+	protected Map<String, String[]> convertObject(Object value, String key, Set cache) {
 		//if this type has a registered converted, then get the string and return
 		if (ConverterUtil.getInstance().canConvert(value)) {
 			String stringValue = ConverterUtil.getInstance().convert(value);

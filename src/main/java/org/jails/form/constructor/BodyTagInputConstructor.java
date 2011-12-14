@@ -7,7 +7,10 @@ import org.jails.form.Repeater;
 import javax.servlet.ServletRequest;
 
 public abstract class BodyTagInputConstructor<T extends FormInput> extends InputConstructor<T> {
-	protected BodyTagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+    protected BodyTagInputConstructor() {
+    }
+
+    protected BodyTagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

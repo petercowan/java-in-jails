@@ -14,16 +14,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class ActiveJDBCConstraintInfoRegistry
-		extends ClientConstraintInfoRegistry<Class<? extends Validator>,ActiveJDBCConstraintInfo> {
+		extends ClientConstraintInfoRegistry<Class<? extends Validator>,ActiveJDBCConstraintInfo, Validator> {
 	private static Logger logger = LoggerFactory.getLogger(ActiveJDBCConstraintInfoRegistry.class);
 
 	private static ActiveJDBCConstraintInfoRegistry instance;
 
 	private ActiveJDBCConstraintInfoRegistry() {
         super();
+        requiredConstraints = new HashSet<Class<? extends Validator>>();
+        requiredConstraints.add(AttributePresenceValidator.class);
 		registry = new HashMap<Class<? extends Validator>, ActiveJDBCConstraintInfo>();
 		addClientConstraint(AttributePresenceValidator.class, PositionAbsolute.REQUIRED);
 		addClientConstraint(EmailValidator.class, PositionAbsolute.EMAIL);
@@ -72,7 +75,7 @@ public class ActiveJDBCConstraintInfoRegistry
 	}
 
 	//todo - dedup code, mapping constraints to validators
-	protected List<String> _getClientValidations(Class classType, String property) {
+	protected List<String> getValidations(Class classType, String property) {
 
 		List<String> clientValidations = new ArrayList<String>();
 		Registry registry = Registry.instance();
@@ -91,7 +94,7 @@ public class ActiveJDBCConstraintInfoRegistry
 		return clientValidations;
 	}
 
-	protected List<ActiveJDBCConstraintInfo> _getClientConstraints(Class classType, String property) {
+	protected List<ActiveJDBCConstraintInfo> getConstraints(Class classType, String property) {
 		List<ActiveJDBCConstraintInfo> clientConstriants = new ArrayList<ActiveJDBCConstraintInfo>();
 		List<Validator> validators = ActiveJDBCValidatorUtil.getValidators(classType, property);
 		clientConstriants.addAll(getClientConstraints(validators));

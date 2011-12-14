@@ -5,21 +5,42 @@ import org.jails.form.RadioButtonInput;
 import org.jails.form.Repeater;
 import org.jails.form.taglib.RadioGroupTag;
 import org.jails.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 
 public class RadioButtonConstructor
 extends TagInputConstructor<RadioButtonInput> {
+    protected static Logger logger = LoggerFactory.getLogger(RadioButtonConstructor.class);
+
     private RadioGroupTag radioGroupTag;
 
 	public RadioButtonConstructor(RadioButtonInput tag, RadioGroupTag radioGroupTag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
-		super(tag, formTag, repeatTag, request);
+        this.tag = tag;
+        this.formTag = formTag;
+        this.repeater = repeatTag;
         this.radioGroupTag = radioGroupTag;
+        init(request);
 	}
+
+    @Override
+    protected void initFormTag() {
+        simpleForm = formTag.getSimpleForm();
+    }
 
     @Override
     protected void initFieldName() {
         initFieldName((radioGroupTag == null) ? tag.getName() : radioGroupTag.getName());
+    }
+
+    @Override
+    protected void initInputId() {
+        super.initInputId();
+        logger.info("inputId " + inputId);
+        logger.info("radioGroupTag " + radioGroupTag);
+        logger.info("radioGroupTag.getButtons() " + radioGroupTag.getButtons());
+        inputId += "_" + radioGroupTag.getButtons().get(tag);
     }
 
     @Override

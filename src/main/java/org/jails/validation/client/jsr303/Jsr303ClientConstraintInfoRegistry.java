@@ -14,6 +14,7 @@ import org.jails.validation.constraint.BeanConstraints;
 import org.jails.validation.constraint.FieldMatch;
 import org.jails.validation.constraint.IsDecimal;
 import org.jails.validation.constraint.IsInteger;
+import org.jails.validation.constraint.RequiredChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +30,23 @@ import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Jsr303ClientConstraintInfoRegistry
-		extends ClientConstraintInfoRegistry<Class<? extends Annotation>,Jsr303ClientConstraintInfo> {
+		extends ClientConstraintInfoRegistry<Class<? extends Annotation>,Jsr303ClientConstraintInfo, ConstraintDescriptor> {
 	private static Logger logger = LoggerFactory.getLogger(Jsr303ClientConstraintInfoRegistry.class);
 
 	private static Jsr303ClientConstraintInfoRegistry instance;
 
 	private Jsr303ClientConstraintInfoRegistry() {
         super();
+        requiredConstraints = new HashSet<Class<? extends Annotation>>();
+        requiredConstraints.add(NotNull.class);
+        requiredConstraints.add(NotEmpty.class);
+        requiredConstraints.add(NotBlank.class);
+
 		registry = new HashMap<Class<? extends Annotation>, Jsr303ClientConstraintInfo>();
 		addClientConstraint(NotNull.class, PositionAbsolute.REQUIRED);
 		addClientConstraint(NotEmpty.class, PositionAbsolute.REQUIRED);
@@ -87,7 +94,7 @@ public class Jsr303ClientConstraintInfoRegistry
 		return new Jsr303ClientConstraintInfo(constraint, clientFunction, attributeNames);
 	}
 
-	protected List<String> _getClientValidations(Class classType, String property) {
+	protected List<String> getValidations(Class classType, String property) {
 
 		List<String> clientValidations = new ArrayList<String>();
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
@@ -106,7 +113,7 @@ public class Jsr303ClientConstraintInfoRegistry
 		return clientValidations;
 	}
 
-	protected List<Jsr303ClientConstraintInfo> _getClientConstraints(Class classType, String property) {
+	protected List<Jsr303ClientConstraintInfo> getConstraints(Class classType, String property) {
 		List<Jsr303ClientConstraintInfo> clientConstriants = new ArrayList<Jsr303ClientConstraintInfo>();
         logger.info("getConstraints()");
 		Set<ConstraintDescriptor<?>> constraints = BeanConstraints
@@ -136,4 +143,26 @@ public class Jsr303ClientConstraintInfoRegistry
 		}
 		return clientConstriants;
 	}
+
+    @Override
+    protected boolean isPropertyRequired(Class classType, String property) {
+        return (super.isPropertyRequired(classType, property))
+                ? true
+                :  hasRequiredChecks(classType, property);
+    }
+
+    protected boolean hasRequiredChecks(Class type, String paramName) {
+        Set<Class<?>> constraints = BeanConstraints.getInstance()
+                .getConstraintGroups(type, paramName);
+        if (constraints != null) {
+            for (Class<?> group : constraints) {
+                logger.trace("Checking group " + group);
+                if (RequiredChecks.class.equals(group)) {
+                    logger.debug(paramName + " isRequired");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

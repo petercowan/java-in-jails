@@ -11,11 +11,14 @@ import javax.servlet.ServletRequest;
 public abstract class TagInputConstructor<T extends FormInput> extends InputConstructor<T> {
 	private static Logger logger = LoggerFactory.getLogger(TagInputConstructor.class);
 
-	protected TagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+    protected TagInputConstructor() {
+    }
+
+    protected TagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 
-	public abstract String getInputHtml();
+    public abstract String getInputHtml();
 
 	@Override
 	public String wrapInputHtml(String inputTagHtml) {

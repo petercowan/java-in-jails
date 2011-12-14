@@ -25,6 +25,7 @@ public abstract class FormInputBodyTagSupport
 	private static Logger logger = LoggerFactory.getLogger(FormInputBodyTagSupport.class);
 
 	protected String label;
+    protected String displayLabel;
     protected String labelMarker;
 	protected String name;
 	protected String defaultValue;
@@ -35,13 +36,21 @@ public abstract class FormInputBodyTagSupport
 	protected SimpleFormTag formTag;
 	protected RepeaterTag repeatTag;
 
-	public String getLabel() {
+    public String getLabel() {
 		return label;
 	}
 
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+    public String getDisplayLabel() {
+        return displayLabel;
+    }
+
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
+    }
 
     public String getLabelMarker() {
         return labelMarker;

@@ -6,33 +6,37 @@ import java.util.Map;
  * FormInput models the most basic interface for an HTML form input tag
  */
 public interface FormInput {
+    public String getName();
+
 	public void setName(String name);
+
+    public String getLabel();
 
 	public void setLabel(String label);
 
+    public String getDefaultValue();
+
 	public void setDefaultValue(String defaultValue);
+
+    public String getCssClass();
 
 	public void setCssClass(String cssClass);
 
+    public String getFormat();
+
 	public void setFormat(String format);
 
-	public void setAttributes(Map<String,String> attributes);
+    public Map<String,String> getAttributes();
 
-	public String getLabel();
+	public void setAttributes(Map<String,String> attributes);
 
     public String getLabelMarker();
 
     public void setLabelMarker(String labelMarker);
 
-	public String getName();
+    public String getDisplayLabel();
 
-	public String getDefaultValue();
-
-	public String getCssClass();
-
-	public String getFormat();
-
-	public Map<String,String> getAttributes();
+    public void setDisplayLabel(String displayLabel);
 
     public void setStyle(String style);
 

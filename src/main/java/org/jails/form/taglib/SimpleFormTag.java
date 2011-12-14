@@ -5,7 +5,6 @@ import org.jails.form.SimpleForm;
 import org.jails.form.constructor.FormConstructor;
 import org.jails.property.Mapper;
 import org.jails.property.PropertiesWrapper;
-import org.jails.property.ReflectionUtil;
 import org.jails.property.SimpleMapper;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -153,8 +151,6 @@ public class SimpleFormTag
 			if (bodyContent != null && !Strings.isEmpty(bodyContent.getString())) {
 				FormConstructor formConstructor = new FormConstructor(this);
 				out.print(formConstructor.wrapFormContent(bodyContent.getString()));
-			} else {
-				generateForm();
 			}
 			return EVAL_PAGE;
 		} catch (IOException ioe) {
@@ -164,31 +160,6 @@ public class SimpleFormTag
 
 	protected FormConstructor getFormConstructor() throws JspTagException {
 		return new FormConstructor(this);
-	}
-
-	protected void generateForm() throws JspException, IOException {
-		if (simpleForm != null) {
-			Map<String, Method> getters = ReflectionUtil.getGetterMethods(simpleForm.getClassType());
-
-			for (String fieldName : getters.keySet()) {
-				Method method = getters.get(fieldName);
-				TextTag textTag = new TextTag();
-				textTag.setParent(this);
-				textTag.setPageContext(pageContext);
-				textTag.setName(fieldName);
-				textTag.setLabel(Strings.initCaps(
-								Strings.join(" ",
-										Strings.splitCamelCase(fieldName))));
-				textTag.setSize("25");
-				textTag.doStartTag();
-				pageContext.getOut().print("\n");
-			}
-			SubmitButtonTag submitTag = new SubmitButtonTag();
-			submitTag.setParent(this);
-			submitTag.setPageContext(pageContext);
-			submitTag.setLabel("Submit");
-			submitTag.doStartTag();
-		}
 	}
 }
 

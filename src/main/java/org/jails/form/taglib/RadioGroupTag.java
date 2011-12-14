@@ -19,9 +19,10 @@ public class RadioGroupTag
         implements RadioGroup {
     private String name;
     private String label;
+    private String displayLabel;
     private String labelMarker;
-    private Map<String, RadioButtonInput> buttons = new HashMap<String, RadioButtonInput>();
-    protected String style;
+    private Map<RadioButtonInput, Integer> buttons = new HashMap<RadioButtonInput, Integer>();
+    private String style;
 
     SimpleFormTag formTag;
     RepeaterTag repeatTag;
@@ -42,6 +43,14 @@ public class RadioGroupTag
         this.label = label;
     }
 
+    public String getDisplayLabel() {
+        return displayLabel;
+    }
+
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
+    }
+
     public String getLabelMarker() {
         return labelMarker;
     }
@@ -50,17 +59,17 @@ public class RadioGroupTag
         this.labelMarker = labelMarker;
     }
 
-    public Map<String, RadioButtonInput> getButtons() {
+    public Map<RadioButtonInput, Integer> getButtons() {
         return buttons;
     }
 
-    public void setButtons(Map<String, RadioButtonInput> buttons) {
+    public void setButtons(Map<RadioButtonInput, Integer> buttons) {
         this.buttons = buttons;
     }
 
-    public void addButtons(RadioButtonInput button) {
-        if (buttons == null) buttons = new HashMap<String, RadioButtonInput>();
-        buttons.put(button.getName(), button);
+    public void addButton(RadioButtonInput button) {
+        if (buttons == null) buttons = new HashMap<RadioButtonInput, Integer>();
+        buttons.put(button, buttons.size());
     }
 
     public String getStyle() {

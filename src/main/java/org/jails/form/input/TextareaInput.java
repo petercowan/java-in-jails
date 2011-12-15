@@ -1,6 +1,6 @@
-package org.jails.form;
+package org.jails.form.input;
 
-public interface TextareaInput extends FormInput {
+public interface TextareaInput extends InputElement {
 	public void setRows(String rows);
 
 	public void setCols(String cols);

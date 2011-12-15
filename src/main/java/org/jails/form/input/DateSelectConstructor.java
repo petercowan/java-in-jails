@@ -1,8 +1,5 @@
-package org.jails.form.constructor;
+package org.jails.form.input;
 
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +13,11 @@ import java.util.Date;
 import java.util.List;
 
 public class DateSelectConstructor
-		extends TagInputConstructor<FormInput> {
+		extends TagInputConstructor<InputElement> {
 	private static Logger logger = LoggerFactory.getLogger(DateSelectConstructor.class);
 	private Calendar calendar;
 
-	public DateSelectConstructor(FormInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public DateSelectConstructor(InputElement tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

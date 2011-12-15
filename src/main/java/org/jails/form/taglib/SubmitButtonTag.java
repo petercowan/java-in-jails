@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.SubmitButtonInput;
-import org.jails.form.constructor.SubmitConstructor;
-import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.SubmitButtonInput;
+import org.jails.form.input.SubmitConstructor;
+import org.jails.form.input.TagInputConstructor;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
@@ -16,7 +16,7 @@ public class SubmitButtonTag
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		return new SubmitConstructor(this, formTag, repeatTag, request);
 	}
 

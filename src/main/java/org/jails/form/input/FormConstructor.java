@@ -1,7 +1,6 @@
-package org.jails.form.constructor;
+package org.jails.form.input;
 
 import org.jails.demo.controller.SimpleFormRouter;
-import org.jails.form.FormTag;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.util.Strings;
@@ -14,10 +13,10 @@ public class FormConstructor {
 	private static Logger logger = LoggerFactory.getLogger(FormConstructor.class);
 	private static SimpleFormParams simpleFormParams = new SimpleFormParams();
 
-	private FormTag formTag;
+	private FormElement formTag;
 	private SimpleForm simpleForm;
 
-	public FormConstructor(FormTag formTag) {
+	public FormConstructor(FormElement formTag) {
 		this.formTag = formTag;
 		this.simpleForm = formTag.getSimpleForm();
 	}

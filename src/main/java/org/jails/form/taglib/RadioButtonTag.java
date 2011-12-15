@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.RadioButtonInput;
-import org.jails.form.constructor.RadioButtonConstructor;
-import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.RadioButtonConstructor;
+import org.jails.form.input.RadioButtonInput;
+import org.jails.form.input.TagInputConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class RadioButtonTag
     }
 
     @Override
-	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
         logger.info("setting radioGroupTag in RadioButtonConstructor: " + radioGroupTag);
 
 		return new RadioButtonConstructor(this, radioGroupTag, formTag, repeatTag, request);

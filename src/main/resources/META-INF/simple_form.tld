@@ -16,7 +16,7 @@
 
 	<tag>
 		<name>form</name>
-		<tag-class>org.jails.form.taglib.SimpleFormTag</tag-class>
+		<tag-class>org.jails.form.taglib.FormTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>
 			A tag to make use of the JG SimpleForm API

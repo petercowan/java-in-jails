@@ -1,19 +1,16 @@
-package org.jails.form.constructor;
+package org.jails.form.input;
 
-import org.jails.form.FormTag;
-import org.jails.form.RadioGroup;
-import org.jails.form.Repeater;
 import org.jails.form.SimpleForm;
 
 import javax.servlet.ServletRequest;
 
 public class RadioGroupConstructor {
     protected RadioGroup tag;
-    protected FormTag formTag;
+    protected FormElement formTag;
     protected SimpleForm simpleForm;
     protected Repeater repeater;
 
-    public RadioGroupConstructor(RadioGroup tag, FormTag formTag, Repeater repeater, ServletRequest request) {
+    public RadioGroupConstructor(RadioGroup tag, FormElement formTag, Repeater repeater, ServletRequest request) {
         this.tag = tag;
         this.formTag = formTag;
         this.repeater = repeater;
@@ -52,7 +49,7 @@ public class RadioGroupConstructor {
         }
 
         if (tag.isStacked() ||
-                (formTag.isStacked() && !FormTag.SIDE_BY_SIDE.equals(tag.getStyle()))) {
+                (formTag.isStacked() && !FormElement.SIDE_BY_SIDE.equals(tag.getStyle()))) {
             tagHtml.append("<br />");
         }
 

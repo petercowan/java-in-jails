@@ -1,8 +1,8 @@
-package org.jails.form;
+package org.jails.form.input;
 
 import org.jails.form.taglib.RadioGroupTag;
 
-public interface RadioButtonInput extends FormInput {
+public interface RadioButtonInput extends InputElement {
 	public String getValue();
 
 	public void setValue(String value);

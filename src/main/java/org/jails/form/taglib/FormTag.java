@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.FormTag;
+import org.jails.form.input.FormConstructor;
+import org.jails.form.input.FormElement;
 import org.jails.form.SimpleForm;
-import org.jails.form.constructor.FormConstructor;
 import org.jails.property.Mapper;
 import org.jails.property.PropertiesWrapper;
 import org.jails.property.SimpleMapper;
@@ -22,10 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleFormTag
+public class FormTag
 		extends BodyTagSupport
-		implements FormTag {
-	private static Logger logger = LoggerFactory.getLogger(SimpleFormTag.class);
+		implements FormElement {
+	private static Logger logger = LoggerFactory.getLogger(FormTag.class);
 
 	protected Mapper mapper = new SimpleMapper();
 	protected PropertiesWrapper propertiesWrapper;

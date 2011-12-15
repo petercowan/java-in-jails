@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.SelectOptionInput;
+import org.jails.form.input.SelectOptionInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class SelectOptionTag
 		if (selectInput == null) {
 			throw new JspTagException("A SelectOptionInput tag must be nested within a SelectInput.");
 		}
-		SimpleFormTag formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+		FormTag formTag = (FormTag) TagSupport.findAncestorWithClass(this, FormTag.class);
 		if (formTag == null) {
 			if (formTag == null) {
 				throw new JspTagException("A FormInput tag must be nested within a FormTag.");

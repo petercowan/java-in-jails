@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.TextInput;
-import org.jails.form.constructor.TagInputConstructor;
-import org.jails.form.constructor.TextConstructor;
+import org.jails.form.input.TagInputConstructor;
+import org.jails.form.input.TextConstructor;
+import org.jails.form.input.TextInput;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
@@ -22,7 +22,7 @@ public class TextTag
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		return new TextConstructor(this, formTag, repeatTag, request);
 	}
 }

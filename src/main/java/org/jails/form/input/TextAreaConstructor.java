@@ -1,13 +1,9 @@
-package org.jails.form.constructor;
-
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
-import org.jails.form.TextareaInput;
+package org.jails.form.input;
 
 import javax.servlet.ServletRequest;
 
 public class TextAreaConstructor extends TagInputConstructor<TextareaInput> {
-	public TextAreaConstructor(TextareaInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public TextAreaConstructor(TextareaInput tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

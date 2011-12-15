@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.InputElement;
+import org.jails.form.input.FormElement;
+import org.jails.form.input.TagInputConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public abstract class FormInputTagSupport
 		extends TagSupport
-		implements FormInput {
+		implements InputElement {
 	private static Logger logger = LoggerFactory.getLogger(FormInputTagSupport.class);
 
 	protected String label;
@@ -32,7 +32,7 @@ public abstract class FormInputTagSupport
 	protected String format;
     protected String style;
 	protected Map<String,String> attributes;
-	protected SimpleFormTag formTag;
+	protected FormTag formTag;
 	protected RepeaterTag repeatTag;
 
 
@@ -101,7 +101,7 @@ public abstract class FormInputTagSupport
     }
 
     public boolean isStacked() {
-        return FormTag.STACKED.equals(style);
+        return FormElement.STACKED.equals(style);
     }
 
 	public Map<String, String> getAttributes() {
@@ -114,7 +114,7 @@ public abstract class FormInputTagSupport
 
 	public int doStartTag()
 			throws JspException {
-		formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+		formTag = (FormTag) TagSupport.findAncestorWithClass(this, FormTag.class);
 		if (formTag == null) {
 			if (formTag == null) {
 				throw new JspTagException("A FormInput tag must be nested within a FormTag.");
@@ -144,6 +144,6 @@ public abstract class FormInputTagSupport
 
 	}
 
-	protected abstract TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException;
+	protected abstract TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException;
 }
 

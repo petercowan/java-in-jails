@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.CheckboxInput;
-import org.jails.form.constructor.CheckBoxConstructor;
-import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.CheckBoxConstructor;
+import org.jails.form.input.CheckboxInput;
+import org.jails.form.input.TagInputConstructor;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
@@ -40,7 +40,7 @@ public class CheckboxTag
 	}
 
 	@Override
-	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		return new CheckBoxConstructor(this, formTag, repeatTag, request);
 	}
 

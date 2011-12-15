@@ -1,10 +1,12 @@
-package org.jails.form;
+package org.jails.form.input;
+
+import org.jails.form.SimpleForm;
 
 import javax.servlet.ServletRequest;
 import java.util.List;
 import java.util.Map;
 
-public interface FormTag {
+public interface FormElement {
 
     public static String STACKED = "stacked";
     public static String SIDE_BY_SIDE = "side";

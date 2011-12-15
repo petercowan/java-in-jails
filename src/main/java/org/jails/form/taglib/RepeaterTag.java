@@ -1,6 +1,6 @@
 package org.jails.form.taglib;
 
-import org.jails.form.Repeater;
+import org.jails.form.input.Repeater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class RepeaterTag
 
 	@Override
 	public int doStartTag() throws JspException {
-		SimpleFormTag formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+		FormTag formTag = (FormTag) TagSupport.findAncestorWithClass(this, FormTag.class);
 		if (formTag == null) {
 			if (formTag == null) {
 				throw new JspTagException("A RepeatTag tag must be nested within a FormTag.");

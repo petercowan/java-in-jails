@@ -1,8 +1,4 @@
-package org.jails.form.constructor;
-
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
-import org.jails.form.SelectInput;
+package org.jails.form.input;
 
 import javax.servlet.ServletRequest;
 import java.util.Map;
@@ -10,7 +6,7 @@ import java.util.Map;
 public class SelectConstructor extends BodyTagInputConstructor<SelectInput> {
 	private String[] otherValue;
 
-	public SelectConstructor(SelectInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public SelectConstructor(SelectInput tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 		if (tag.getOther() != null) {
 			otherValue = formTag.getInputValue(request, tag.getName() + "_select_other", null);

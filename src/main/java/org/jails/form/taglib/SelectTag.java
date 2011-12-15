@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.SelectInput;
-import org.jails.form.constructor.BodyTagInputConstructor;
-import org.jails.form.constructor.SelectConstructor;
+import org.jails.form.input.BodyTagInputConstructor;
+import org.jails.form.input.SelectConstructor;
+import org.jails.form.input.SelectInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class SelectTag
 	}
 
 	@Override
-	protected BodyTagInputConstructor getBodyInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected BodyTagInputConstructor getBodyInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		return new SelectConstructor(this, formTag, repeatTag, request);
 	}
 }

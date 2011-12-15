@@ -1,8 +1,8 @@
 package org.jails.form.taglib;
 
-import org.jails.form.HiddenInput;
-import org.jails.form.constructor.HiddenConstructor;
-import org.jails.form.constructor.TagInputConstructor;
+import org.jails.form.input.HiddenConstructor;
+import org.jails.form.input.HiddenInput;
+import org.jails.form.input.TagInputConstructor;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
@@ -12,7 +12,7 @@ public class HiddenTag
 		implements HiddenInput {
 
 	@Override
-	protected TagInputConstructor getInputConstructor(SimpleFormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
+	protected TagInputConstructor getInputConstructor(FormTag formTag, RepeaterTag repeatTag, ServletRequest request) throws JspTagException {
 		return new HiddenConstructor(this, formTag, repeatTag, request);
 	}
 

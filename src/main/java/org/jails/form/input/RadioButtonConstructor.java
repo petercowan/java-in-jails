@@ -1,8 +1,5 @@
-package org.jails.form.constructor;
+package org.jails.form.input;
 
-import org.jails.form.FormTag;
-import org.jails.form.RadioButtonInput;
-import org.jails.form.Repeater;
 import org.jails.form.taglib.RadioGroupTag;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
@@ -16,7 +13,7 @@ extends TagInputConstructor<RadioButtonInput> {
 
     private RadioGroupTag radioGroupTag;
 
-	public RadioButtonConstructor(RadioButtonInput tag, RadioGroupTag radioGroupTag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public RadioButtonConstructor(RadioButtonInput tag, RadioGroupTag radioGroupTag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
         this.tag = tag;
         this.formTag = formTag;
         this.repeater = repeatTag;

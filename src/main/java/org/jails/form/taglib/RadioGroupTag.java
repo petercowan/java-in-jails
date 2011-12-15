@@ -1,9 +1,9 @@
 package org.jails.form.taglib;
 
-import org.jails.form.FormTag;
-import org.jails.form.RadioButtonInput;
-import org.jails.form.RadioGroup;
-import org.jails.form.constructor.RadioGroupConstructor;
+import org.jails.form.input.FormElement;
+import org.jails.form.input.RadioButtonInput;
+import org.jails.form.input.RadioGroup;
+import org.jails.form.input.RadioGroupConstructor;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -24,7 +24,7 @@ public class RadioGroupTag
     private Map<RadioButtonInput, Integer> buttons = new HashMap<RadioButtonInput, Integer>();
     private String style;
 
-    SimpleFormTag formTag;
+    FormTag formTag;
     RepeaterTag repeatTag;
 
     public String getName() {
@@ -81,12 +81,12 @@ public class RadioGroupTag
     }
 
     public boolean isStacked() {
-        return FormTag.STACKED.equals(style);
+        return FormElement.STACKED.equals(style);
     }
 
     @Override
     public int doStartTag() throws JspException {
-        formTag = (SimpleFormTag) TagSupport.findAncestorWithClass(this, SimpleFormTag.class);
+        formTag = (FormTag) TagSupport.findAncestorWithClass(this, FormTag.class);
         if (formTag == null) {
             if (formTag == null) {
                 throw new JspTagException("A RepeatTag tag must be nested within a FormTag.");

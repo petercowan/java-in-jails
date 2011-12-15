@@ -1,15 +1,10 @@
-package org.jails.form.constructor;
-
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.HiddenInput;
-import org.jails.form.Repeater;
+package org.jails.form.input;
 
 import javax.servlet.ServletRequest;
 
 public class HiddenConstructor extends TagInputConstructor<HiddenInput>{
 
-	public HiddenConstructor(HiddenInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public HiddenConstructor(HiddenInput tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 
@@ -37,7 +32,7 @@ public class HiddenConstructor extends TagInputConstructor<HiddenInput>{
 				getValueAttr(getFieldValue(0)) + " />";
 	}
 
-	public String wrapInputHtml(FormInput tag) {
+	public String wrapInputHtml(InputElement tag) {
 		return getInputHtml();
 	}
 

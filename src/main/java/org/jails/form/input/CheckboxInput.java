@@ -1,6 +1,6 @@
-package org.jails.form;
+package org.jails.form.input;
 
-public interface CheckboxInput extends FormInput {
+public interface CheckboxInput extends InputElement {
 	public void setChecked(String checked);
 
 	public String getChecked();

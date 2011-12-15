@@ -1,6 +1,6 @@
-package org.jails.form;
+package org.jails.form.input;
 
-public interface SelectInput extends FormInput {
+public interface SelectInput extends InputElement {
 	public String getMultiple();
 
 	public void setMultiple(String multiple);

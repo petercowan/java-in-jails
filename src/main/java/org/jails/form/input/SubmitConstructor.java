@@ -1,14 +1,10 @@
-package org.jails.form.constructor;
-
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
-import org.jails.form.SubmitButtonInput;
+package org.jails.form.input;
 
 import javax.servlet.ServletRequest;
 
 public class SubmitConstructor
 		extends  TagInputConstructor<SubmitButtonInput> {
-	public SubmitConstructor(SubmitButtonInput tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+	public SubmitConstructor(SubmitButtonInput tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

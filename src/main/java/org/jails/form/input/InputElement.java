@@ -1,11 +1,11 @@
-package org.jails.form;
+package org.jails.form.input;
 
 import java.util.Map;
 
 /**
  * FormInput models the most basic interface for an HTML form input tag
  */
-public interface FormInput {
+public interface InputElement {
     public String getName();
 
 	public void setName(String name);

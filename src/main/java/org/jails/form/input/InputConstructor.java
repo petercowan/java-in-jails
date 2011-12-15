@@ -1,8 +1,5 @@
-package org.jails.form.constructor;
+package org.jails.form.input;
 
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
 import org.jails.form.taglib.HiddenTag;
@@ -30,7 +27,7 @@ import java.util.List;
  *
  * @param <T>
  */
-public abstract class InputConstructor<T extends FormInput> {
+public abstract class InputConstructor<T extends InputElement> {
     protected static Logger logger = LoggerFactory.getLogger(InputConstructor.class);
 
     protected static SimpleFormParams simpleFormParams = new SimpleFormParams();
@@ -38,7 +35,7 @@ public abstract class InputConstructor<T extends FormInput> {
     protected static PropertyUtils propertyUtils = new CommonsPropertyUtils();
 
     protected T tag;
-    protected FormTag formTag;
+    protected FormElement formTag;
     protected SimpleForm simpleForm;
     protected Repeater repeater;
     protected String fieldName;
@@ -50,7 +47,7 @@ public abstract class InputConstructor<T extends FormInput> {
     protected InputConstructor() {
     }
 
-    public InputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+    public InputConstructor(T tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
         this.tag = tag;
         this.formTag = formTag;
         this.repeater = repeatTag;
@@ -72,7 +69,7 @@ public abstract class InputConstructor<T extends FormInput> {
         formTag.addLabel(tag.getName(), tag.getLabel());
     }
 
-    public FormTag getFormTag() {
+    public FormElement getFormTag() {
         return formTag;
     }
 
@@ -299,7 +296,7 @@ public abstract class InputConstructor<T extends FormInput> {
         StringBuffer lineBreakHtml = new StringBuffer();
 
         if (tag.isStacked() ||
-                (getFormTag().isStacked() && !FormTag.SIDE_BY_SIDE.equals(tag.getStyle()))) {
+                (getFormTag().isStacked() && !FormElement.SIDE_BY_SIDE.equals(tag.getStyle()))) {
             lineBreakHtml.append("<br />");
         }
 

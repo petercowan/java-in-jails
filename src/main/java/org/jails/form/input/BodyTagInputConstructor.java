@@ -1,16 +1,12 @@
-package org.jails.form.constructor;
-
-import org.jails.form.FormInput;
-import org.jails.form.FormTag;
-import org.jails.form.Repeater;
+package org.jails.form.input;
 
 import javax.servlet.ServletRequest;
 
-public abstract class BodyTagInputConstructor<T extends FormInput> extends InputConstructor<T> {
+public abstract class BodyTagInputConstructor<T extends InputElement> extends InputConstructor<T> {
     protected BodyTagInputConstructor() {
     }
 
-    protected BodyTagInputConstructor(T tag, FormTag formTag, Repeater repeatTag, ServletRequest request) {
+    protected BodyTagInputConstructor(T tag, FormElement formTag, Repeater repeatTag, ServletRequest request) {
 		super(tag, formTag, repeatTag, request);
 	}
 

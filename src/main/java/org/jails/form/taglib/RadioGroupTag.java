@@ -104,8 +104,7 @@ public class RadioGroupTag
             JspWriter out = pageContext.getOut();
             RadioGroupConstructor radioGroupConstructor = new RadioGroupConstructor(this, formTag, repeatTag, pageContext.getRequest());
             String content = (bodyContent == null) ? "" : bodyContent.getString();
-            out.print(radioGroupConstructor.getOpeningHtml(content));
-            out.print(radioGroupConstructor.getClosingHtml());
+            out.print(radioGroupConstructor.getHtml(content));
 
             return EVAL_PAGE;
         } catch (IOException ioe) {

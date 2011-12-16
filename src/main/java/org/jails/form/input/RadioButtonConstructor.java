@@ -42,7 +42,7 @@ extends TagInputConstructor<RadioButtonInput> {
 
     @Override
     public String getOpeningCss() {
-        return "<span" + getLabelCssAttr() + ">\n\t";
+        return "<span" + getAttribute("id", inputId + "_form_field") + ">\n\t";
     }
 
     @Override

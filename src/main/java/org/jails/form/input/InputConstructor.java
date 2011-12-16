@@ -57,7 +57,6 @@ public abstract class InputConstructor<T extends InputElement> {
     protected void init(ServletRequest request) {
         initFormTag();
         initFieldName();
-        initCssClass();
         initFieldValues(request);
         initInputId();
         initClientValidation();
@@ -71,6 +70,16 @@ public abstract class InputConstructor<T extends InputElement> {
 
     public FormElement getFormTag() {
         return formTag;
+    }
+
+    protected boolean hasError() {
+        return simpleForm != null && simpleForm.hasError()
+                && simpleForm.fieldHasError(tag.getName(), getIndex());
+    }
+
+    protected boolean isRequired() {
+        return simpleForm != null
+                && simpleForm.isFieldRequired(tag.getName());
     }
 
     protected void initFieldName() {
@@ -94,24 +103,6 @@ public abstract class InputConstructor<T extends InputElement> {
 
     private int getIndex() {
         return (repeater != null) ? repeater.getIndex() : 0;
-    }
-
-    protected void initCssClass() {
-        if (simpleForm != null && simpleForm.hasError()
-                && simpleForm.fieldHasError(tag.getName(), getIndex())) {
-            labelCss = "error";
-        } else {
-            labelCss = "form_field";
-        }
-        logger.info("set css class " + labelCss);
-    }
-
-    public String getLabelCss() {
-        return labelCss;
-    }
-
-    public String getLabelCssAttr() {
-        return getAttribute("class", labelCss) + " " + getAttribute("id", "form_field_" + inputId);
     }
 
     /**
@@ -243,9 +234,7 @@ public abstract class InputConstructor<T extends InputElement> {
 
         tagHtml.append(getLabelHtml());
 
-        tagHtml.append(getLineBreakHtml());
-
-        tagHtml.append(inputTagHtml).append("\n");
+        tagHtml.append("\t").append(inputTagHtml).append("\n");
 
         tagHtml.append(getRequiredMarker());
 
@@ -255,11 +244,11 @@ public abstract class InputConstructor<T extends InputElement> {
     }
 
     public String getOpeningCss() {
-        return "<div" + getLabelCssAttr() + ">\n\t";
+        return "<div class=\"form_field\" " + getAttribute("id", inputId + "_form_field") + ">\n";
     }
 
     public String getClosingCss() {
-        return "</div>\n";
+        return "\t</div>\n";
     }
 
     public String getLabelHtml() {
@@ -270,9 +259,15 @@ public abstract class InputConstructor<T extends InputElement> {
     protected String getLabelHtml(String label) {
         StringBuffer labelHtml = new StringBuffer();
 
-        labelHtml.append("<label" + getAttribute("for", tag.getName()) + " id=\"" + inputId + "_label" + "\">");
-        labelHtml.append(label).append(getLabelMarkerHtml());
-        labelHtml.append("</label>\n\t");
+        labelHtml.append("\t<label")
+                .append(getAttribute("for", tag.getName()) + " ")
+                .append(getAttribute("class", "form_field_label") + " ")
+                .append(getAttribute("id", inputId + "_label"))
+                .append(" >\n");
+        if (hasError()) labelHtml.append("\t\t<div class=\"error\" " + getAttribute("id", inputId + "_field_error") + ">\n\t");
+        labelHtml.append("\t\t").append(label).append(getLabelMarkerHtml()).append("\n");
+        if (hasError()) labelHtml.append("\t\t</div>\n");
+        labelHtml.append("\t</label>\n");
 
         return labelHtml.toString();
     }
@@ -282,24 +277,15 @@ public abstract class InputConstructor<T extends InputElement> {
     }
 
     public String getRequiredMarker() {
-        StringBuffer tagHtml = new StringBuffer();
+        if (isRequired()) {
+            StringBuffer tagHtml = new StringBuffer();
 
-        if (formTag.getSimpleForm() != null
-                && formTag.getSimpleForm().isFieldRequired(tag.getName())) {
+            String css = (hasError()) ? "error" : "form_field_label";
+            tagHtml.append("\t<span class=\"" + css + "\" id=\"" + inputId + "_field_required\">");
             tagHtml.append(" *");
+            tagHtml.append("</span>\n");
+            return tagHtml.toString();
         }
-
-        return tagHtml.toString();
-    }
-
-    public String getLineBreakHtml() {
-        StringBuffer lineBreakHtml = new StringBuffer();
-
-        if (tag.isStacked() ||
-                (getFormTag().isStacked() && !FormElement.SIDE_BY_SIDE.equals(tag.getStyle()))) {
-            lineBreakHtml.append("<br />");
-        }
-
-        return lineBreakHtml.toString();
+        return "";
     }
 }

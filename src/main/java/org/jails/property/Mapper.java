@@ -211,74 +211,32 @@ public class Mapper {
         logger.info("type: " + type);
         logger.info("property: " + rawProperty);
 
-        MappedObject mappedObject = new MappedObject(object, rawProperty, propertiesWrapper, type, propertyParser);
-        _setValues(object, rawProperty, type, propertiesWrapper);
+        MappedObject mappedObject = new MappedObject(object, rawProperty, propertiesWrapper, type,
+                propertyParser, propertyUtils);
+        setValues(mappedObject);
     }
 
-    protected void _setValues(Object object, String property, String propertyStem, PropertiesWrapper propertiesMap) {
-        logger.info("property: " + property + " of Class: " + object.getClass());
-
-        //use this to retrieve value from propertiesMap
-        String propertyValueKey = propertyStem + "." + property;
+    protected void setValues(MappedObject mappedObject) {
+        logger.info("property: " + mappedObject.getProperty() + " of Class: " + mappedObject.getObject().getClass());
 
         //is this property is nested? (eg "nested.property")
-        if (propertyParser.hasNestedProperty(property)) {
-            setNestedValue(object, property, propertyStem, propertiesMap);
+        if (mappedObject.hasNestedProperty()) {
+            setNestedValue(mappedObject);
         } else {
-            //strip index from property, if it exists
-            String propertyName = propertyParser.getPropertyName(property);
-
             try {
-                String value = getPropertyMapValue(object, propertyName, propertiesMap, propertyValueKey);
-
-                value = cleanValue(object, propertyName, value, propertiesMap, propertyValueKey);
-
-                propertyUtils.setProperty(object, propertyName, value);
-
+                propertyUtils.setProperty(mappedObject.getObject(),
+                                        mappedObject.getPropertyName(),
+                                        mappedObject.cleanPropertyMapValue());
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
         }
     }
 
-    protected String getPropertyMapValue(Object object, String propertyName, PropertiesWrapper propertiesMap,
-                                String propertyValueKey) throws PropertyException {
-        logger.info("propertyValueKey: " + propertyValueKey);
-        String value = propertiesMap.getValue(propertyValueKey);
-        logger.info("Object's " + propertyName + " value: " + propertyUtils.getProperty(object, propertyName));
-        logger.info("Setting " + propertyName + " value to |" + value + "|");
-
-        if (value == null) value = propertiesMap.getSelectOtherValue(propertyValueKey);
-        if (value == null)  value = propertiesMap.composeDate(propertyValueKey);
-
-        return value;
-    }
-
-    protected String cleanValue(Object object, String propertyName, String value, PropertiesWrapper propertiesMap,
-                                String propertyValueKey) {
-        //process value based on underlying Object type
-        Class<?> returnType = propertyUtils.getPropertyType(object.getClass(), propertyName);
-        logger.info("returnType: " + returnType);
-        if (ReflectionUtil.isInteger(returnType)) {
-            logger.info("Cleaning int value");
-            value = Strings.cleanInt(value);
-        } else if (ReflectionUtil.isDecimal(returnType)) {
-            logger.info("Cleaning decimal value");
-            value = Strings.cleanDecimal(value);
-        }
-        return value;
-    }
-
-    protected void setNestedValue(Object object, String property, String propertyStem,
-                                  PropertiesWrapper propertiesMap) {
-        //use this to retrieve value from propertiesMap
-        String propertyValueKey = propertyStem + "." + property;
-
-        String nestedProperty = propertyParser.getNestedProperty(property);
-        property = propertyParser.getRootProperty(property);
-
-        //strip index from property, if it exists
-        String propertyName = propertyParser.getPropertyName(property);
+    protected void setNestedValue(MappedObject mappedObject) {
+        Object object = mappedObject.getObject();
+        String propertyName = mappedObject.getPropertyName();
+        String property = mappedObject.getProperty();
 
         //if the object allows nested properties to be set, retrieve the memberObject
         // and set the nested property there.
@@ -286,30 +244,26 @@ public class Mapper {
             try {
                 //propertyIndex refers to a properties position within a Collection or Array
                 Integer propertyIndex = propertyParser.getPropertyIndex(property);
-                logger.info("loading propertyName " + propertyName + " of Class: " + object.getClass() + ". index: " + propertyIndex);
+                logger.info("loading propertyName " + mappedObject.getPropertyName()
+                        + " of Class: " + object.getClass() + ". index: " + propertyIndex);
 
-                Object memberObject = getMemberObject(object, propertyName, propertyIndex,
-                        nestedProperty, propertiesMap, propertyValueKey);
-
+                Object memberObject = getMemberObject(mappedObject);
                 if (memberObject != null) {
                     logger.info("memberObject Class: " + memberObject.getClass());
-                    _setValues(memberObject, nestedProperty, propertyStem + "." + property, propertiesMap);
+                    setValues(mappedObject.getNestedMappedObject(memberObject));
                 }
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-        } else {
-            logger.info("ignoring nested property " + nestedProperty);
         }
-
     }
 
-    protected Object getMemberObject(Object object, String propertyName, Integer propertyIndex,
-                                     String nestedProperty, PropertiesWrapper propertiesMap,
-                                     String propertyValueKey) throws PropertyException {
+    protected Object getMemberObject(MappedObject mappedObject) throws PropertyException {
+        String propertyName = mappedObject.getPropertyName();
+        Object object = mappedObject.getObject();
         Object memberObject;
         if (propertyParser.isIndexed(propertyName)) {
-            memberObject = propertyUtils.getIndexedProperty(object, propertyName, propertyIndex);
+            memberObject = propertyUtils.getIndexedProperty(object, propertyName, mappedObject.getPropertyIndex());
         } else {
             memberObject = propertyUtils.getProperty(object, propertyName);
         }
@@ -317,9 +271,9 @@ public class Mapper {
 
         //memberObject is null, so attempt retrieve an instance using the PropertyHandler
         if (memberObject == null && propertyHandler != null) {
-            String[] valArray = propertiesMap.get(propertyValueKey);
+            String[] valArray = mappedObject.getPropertyMapValues();
             memberObject = propertyHandler.handleNullNestedProperty(object,
-                    propertyName, nestedProperty, valArray, propertyParser);
+                    propertyName, mappedObject.getNestedProperty(), valArray, propertyParser);
         }
         return memberObject;
     }

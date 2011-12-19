@@ -48,6 +48,7 @@ public class CommonsPropertyUtils implements PropertyUtils<Object> {
     public void setProperty(Object object, String propertyName, Object value) throws PropertyException {
         try {
             BeanUtils.setProperty(object, propertyName, value);
+            logger.info(propertyName + " set to : " + getProperty(object, propertyName));
         } catch (Exception e) {
             throw new PropertyException(e);
         }

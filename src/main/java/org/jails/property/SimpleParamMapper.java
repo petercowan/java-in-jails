@@ -97,12 +97,12 @@ import org.jails.property.parser.SimplePropertyParser;
  * @see org.jails.property.handler.LoadObjectHandler
  * @see IdentifyBy
  */
-public class SimpleMapper extends Mapper {
-	public SimpleMapper() {
+public class SimpleParamMapper extends ParamMapper {
+	public SimpleParamMapper() {
 		super(new SimplePropertyParser(), new SimplePropertyHandler());
 	}
 
-	public SimpleMapper(LoadObjectHandler loadObjectHandler) {
+	public SimpleParamMapper(LoadObjectHandler loadObjectHandler) {
 		super(new SimplePropertyParser(), new SimplePropertyHandler(loadObjectHandler));
 	}
 

@@ -10,25 +10,25 @@ import org.jails.util.Strings;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class MapperTest
+public class ParamMapperTest
         extends TestCase {
-    private Mapper beanMapper;
+    private ParamMapper beanMapper;
 
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public MapperTest(String testName) {
+    public ParamMapperTest(String testName) {
         super(testName);
-        beanMapper = new SimpleMapper();
+        beanMapper = new SimpleParamMapper();
     }
 
     /**
      * @return the suite of tests being tested
      */
     public static Test suite() {
-        return new TestSuite(MapperTest.class);
+        return new TestSuite(ParamMapperTest.class);
     }
 
     public void testMapToBean() {

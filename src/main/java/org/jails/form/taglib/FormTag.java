@@ -3,9 +3,9 @@ package org.jails.form.taglib;
 import org.jails.form.input.FormConstructor;
 import org.jails.form.input.FormElement;
 import org.jails.form.SimpleForm;
-import org.jails.property.Mapper;
+import org.jails.property.ParamMapper;
 import org.jails.property.PropertiesWrapper;
-import org.jails.property.SimpleMapper;
+import org.jails.property.SimpleParamMapper;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class FormTag
 		implements FormElement {
 	private static Logger logger = LoggerFactory.getLogger(FormTag.class);
 
-	protected Mapper mapper = new SimpleMapper();
+	protected ParamMapper mapper = new SimpleParamMapper();
 	protected PropertiesWrapper propertiesWrapper;
 
     protected String labelMarker = ":";

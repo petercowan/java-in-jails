@@ -1,9 +1,9 @@
 package org.jails.validation;
 
+import org.jails.property.ParamMapper;
 import org.jails.validation.cloner.Cloner;
 import org.jails.validation.cloner.XStreamCloner;
-import org.jails.property.Mapper;
-import org.jails.property.SimpleMapper;
+import org.jails.property.SimpleParamMapper;
 import org.jails.validation.constraint.RequiredChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +23,18 @@ public class SimpleValidator {
 	private static Logger logger = LoggerFactory.getLogger(SimpleValidator.class);
 
 	private Cloner cloner;
-	private Mapper beanMapper;
+	private ParamMapper beanMapper;
 	private Validator validator;
 
 	public SimpleValidator() {
-		this(new XStreamCloner(),new SimpleMapper());
+		this(new XStreamCloner(),new SimpleParamMapper());
 	}
 
-	public SimpleValidator(Mapper beanMapper) {
+	public SimpleValidator(ParamMapper beanMapper) {
 		this(new XStreamCloner(),beanMapper);
 	}
 
-	public SimpleValidator(Cloner cloner, Mapper beanMapper) {
+	public SimpleValidator(Cloner cloner, ParamMapper beanMapper) {
 		validator = ValidatorInstance.getInstance().getValidator();
 		this.cloner = cloner;
 		this.beanMapper = beanMapper;
@@ -173,7 +173,7 @@ public class SimpleValidator {
 	/*
 	 * retrieve assocaited Mapper
 	 */
-	public Mapper getMapper() {
+	public ParamMapper getMapper() {
 		return beanMapper;
 	}
 }

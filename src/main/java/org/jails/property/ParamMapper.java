@@ -30,7 +30,7 @@ import java.util.*;
  * 	// converts myObject.getMyProperty().getMyNestedProperty() to a String
  * </code>
  *
- * see {@link SimpleMapper} for an example implementation)
+ * see {@link SimpleParamMapper} for an example implementation)
  *
  * Mapper places no limits on the level of nested properties to be resolved. The default
  * behavior for handling nested properties is if the initial property is null, ignore the
@@ -51,12 +51,12 @@ import java.util.*;
  *
  * </pre>
  *
- * @see SimpleMapper
+ * @see SimpleParamMapper
  * @see org.jails.property.handler.SimplePropertyHandler
  * @see ConverterUtil
  */
-public class Mapper {
-    private static Logger logger = LoggerFactory.getLogger(Mapper.class);
+public class ParamMapper {
+    private static Logger logger = LoggerFactory.getLogger(ParamMapper.class);
 
     protected PropertyHandler propertyHandler;
     protected PropertyParser propertyParser;
@@ -66,7 +66,7 @@ public class Mapper {
         ConverterUtil.getInstance();
     }
 
-    private Mapper() {
+    private ParamMapper() {
         propertyUtils = new CommonsPropertyUtils();
     }
 
@@ -75,7 +75,7 @@ public class Mapper {
      *
      * @param propertyParser
      */
-    public Mapper(PropertyParser propertyParser) {
+    public ParamMapper(PropertyParser propertyParser) {
         this();
         this.propertyParser = propertyParser;
     }
@@ -86,7 +86,7 @@ public class Mapper {
      * @param propertyParser
      * @param propertyHandler
      */
-    public Mapper(PropertyParser propertyParser, PropertyHandler propertyHandler) {
+    public ParamMapper(PropertyParser propertyParser, PropertyHandler propertyHandler) {
         this();
         this.propertyHandler = propertyHandler;
         this.propertyParser = propertyParser;
@@ -135,7 +135,7 @@ public class Mapper {
      * @param propertiesMap properties to map to Object
      * @param <T>           same type as classType
      * @return List of Objects of of type T
-     * @see Mapper#toObject(Class, java.util.Map)
+     * @see ParamMapper#toObject(Class, java.util.Map)
      */
     public <T> List<T> toList(Class<T> classType, Map<String, String[]> propertiesMap) {
         PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
@@ -160,8 +160,8 @@ public class Mapper {
     /**
      * @param objects       List<?> of Objects to update
      * @param propertiesMap properties to map to Object
-     * @see Mapper#toExistingObject(Object, java.util.Map)
-     * @see Mapper#toList(Class, java.util.Map)
+     * @see ParamMapper#toExistingObject(Object, java.util.Map)
+     * @see ParamMapper#toList(Class, java.util.Map)
      */
     public void toExistingList(List<?> objects, Map<String, String[]> propertiesMap) {
         PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
@@ -293,7 +293,7 @@ public class Mapper {
     /**
      * @param objects List<?> of Objects
      * @return Map<String, String[]> of corresponding properties and values
-     * @see Mapper#toMap(Object)
+     * @see ParamMapper#toMap(Object)
      */
     public Map<String, String[]> toMap(List<?> objects) {
         Map<String, String[]> paramMap = new TreeMap<String, String[]>();

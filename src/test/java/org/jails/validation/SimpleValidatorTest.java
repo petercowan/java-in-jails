@@ -4,7 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.jails.demo.AccountForm;
-import org.jails.property.SimpleMapper;
+import org.jails.property.SimpleParamMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -139,7 +139,7 @@ public class SimpleValidatorTest
 		assertNull(errors);
 
 		System.out.println("\n------------------------------------------------");
-		AccountForm formTest = new SimpleMapper().toObject(AccountForm.class, getIncorrectParameterMap());
+		AccountForm formTest = new SimpleParamMapper().toObject(AccountForm.class, getIncorrectParameterMap());
 		System.out.println("formTest.getLimit()" + formTest.getBalance());
 		System.out.println("formTest.getSize()" + formTest.getAge());
 		System.out.println("formTest.getDateCreated()" + formTest.getBirthday());

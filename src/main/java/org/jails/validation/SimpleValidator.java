@@ -101,7 +101,7 @@ public class SimpleValidator {
 	 */
 	public <T> Map<String, List<String>> validate(T object, Map<String, String[]> params, Class<?>... groups) {
 		T copy = cloner.deepCopy(object);
-		beanMapper.toExistingObject(copy, params);
+		beanMapper.updateObject(copy, params);
 
 		return validate(copy, groups);
 	}

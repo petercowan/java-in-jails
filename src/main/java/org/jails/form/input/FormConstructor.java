@@ -1,8 +1,8 @@
 package org.jails.form.input;
 
-import org.jails.demo.controller.SimpleFormRouter;
 import org.jails.form.SimpleForm;
 import org.jails.form.SimpleFormParams;
+import org.jails.form.SimpleFormRouter;
 import org.jails.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

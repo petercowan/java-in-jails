@@ -1,6 +1,7 @@
 package org.jails.property;
 
 import org.jails.util.Strings;
+import org.jails.util.Tuple;
 import org.javalite.activejdbc.ColumnMetadata;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.Registry;
@@ -41,4 +42,14 @@ public class ActiveJDBCPropertyUtils implements PropertyUtils<Model> {
 			return null;
 		}
 	}
+
+    public Tuple<Class<?>, String> getNestedPropertyType(Class<? extends Model> classType, String propertyName) {
+        //todo
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Map<String, Object> getProperties(Model object) {
+        //todo
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

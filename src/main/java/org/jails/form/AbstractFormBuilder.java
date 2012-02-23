@@ -1,7 +1,6 @@
 package org.jails.form;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.jails.demo.controller.SimpleFormRouter;
 import org.jails.property.IdentifyBy;
 import org.jails.property.Identity;
 import org.jails.property.parser.PropertyParser;

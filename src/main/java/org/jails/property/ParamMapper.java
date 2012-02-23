@@ -105,7 +105,7 @@ public class ParamMapper {
     public <T> T toObject(Class<T> classType, Map<String, String[]> propertiesMap) {
         try {
             T object = classType.newInstance();
-            toExistingObject(object, propertiesMap);
+            updateObject(object, propertiesMap);
             return object;
         } catch (Exception e) {
             logger.warn(e.getMessage());
@@ -121,7 +121,7 @@ public class ParamMapper {
      * @param object        Object to update
      * @param propertiesMap properties to map to Object
      */
-    public void toExistingObject(Object object, Map<String, String[]> propertiesMap) {
+    public void updateObject(Object object, Map<String, String[]> propertiesMap) {
 
         PropertiesWrapper propertiesWrapper = new PropertiesWrapper(propertiesMap, object.getClass());
         for (String rawProperty : propertiesMap.keySet()) {
@@ -152,7 +152,7 @@ public class ParamMapper {
             throw new IllegalArgumentException("Class must have a public constructor with no args to use this method");
         }
 
-        _toExistingList(objects, multiMap);
+        _updateList(objects, multiMap);
 
         return objects;
     }
@@ -160,23 +160,23 @@ public class ParamMapper {
     /**
      * @param objects       List<?> of Objects to update
      * @param propertiesMap properties to map to Object
-     * @see ParamMapper#toExistingObject(Object, java.util.Map)
+     * @see ParamMapper#updateObject(Object, java.util.Map)
      * @see ParamMapper#toList(Class, java.util.Map)
      */
-    public void toExistingList(List<?> objects, Map<String, String[]> propertiesMap) {
+    public void updateList(List<?> objects, Map<String, String[]> propertiesMap) {
         PropertiesMultiMap multiMap = PropertiesMultiMap.getMultiMap(propertiesMap);
 
-        _toExistingList(objects, multiMap);
+        _updateList(objects, multiMap);
     }
 
-    protected void _toExistingList(List<?> objects, PropertiesMultiMap multiMap) {
+    protected void _updateList(List<?> objects, PropertiesMultiMap multiMap) {
         for (Integer propertyIndex : multiMap.keySet()) {
             Map<String, String[]> indexedMap = multiMap.get(propertyIndex);
 
             if (objects.size() > propertyIndex) {
                 Object object = objects.get(propertyIndex);
                 logger.info("Got object from list: " + object.getClass());
-                toExistingObject(object, indexedMap);
+                updateObject(object, indexedMap);
             }
         }
     }
